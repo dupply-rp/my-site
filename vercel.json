@@ -1,0 +1,26 @@
+{
+    "redirects": [
+      {
+        "source": "/(.*)",
+        "has": [
+          {
+            "type": "host",
+            "value": "projetos.dupply.com.br"
+          }
+        ],
+        "destination": "https://sprints.zoho.com/workspace/dupply#projects",
+        "permanent": true
+      },
+      {
+        "source": "/(.*)",
+        "has": [
+          {
+            "type": "host",
+            "value": "webmail.dupply.com.br"
+          }
+        ],
+        "destination": "https://mail.zoho.com/",
+        "permanent": true
+      }
+    ]
+  }
