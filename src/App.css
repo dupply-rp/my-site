@@ -5,10 +5,15 @@
   text-align: center;
 }
 
+.logo-container {
+  display: inline-block;
+  position: relative;
+}
+
 .dupply-logo {
   max-width: 300px;
   height: auto;
-  margin-bottom: 0.5rem;
+  display: block;
   border: none;
   outline: none;
 }
@@ -18,17 +23,23 @@
   font-weight: 300;
   letter-spacing: 0.02em;
   margin: 0;
+  margin-top: -0.2rem;
   color: #666;
+  text-align: right;
+  width: 300px;
+  max-width: 300px;
 }
 
 .instagram-link {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  margin-top: 1rem;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
   text-decoration: none;
   color: #666;
   transition: color 0.3s ease;
+  width: 300px;
+  max-width: 300px;
 }
 
 .instagram-link:hover {
