@@ -16,6 +16,17 @@
         "has": [
           {
             "type": "host",
+            "value": "drive.dupply.com.br"
+          }
+        ],
+        "destination": "https://workdrive.zoho.com/vuf8c0066ef49e7bf4c038f2d866e32e786e2/privatespace/folders/files",
+        "permanent": true
+      },
+      {
+        "source": "/(.*)",
+        "has": [
+          {
+            "type": "host",
             "value": "webmail.dupply.com.br"
           }
         ],
