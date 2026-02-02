@@ -1,11 +1,11 @@
-import dupplyLogo from './assets/dupply-logo.png'
+
 import './App.css'
 
 function App() {
   return (
     <>
       <div className="logo-container">
-        <img src={dupplyLogo} className="dupply-logo" alt="dupply logo" />
+        <h1>dupply</h1>
         <p className="development-message">Em desenvolvimento!</p>
         <a 
           href="https://instagram.com/dupplybr" 
