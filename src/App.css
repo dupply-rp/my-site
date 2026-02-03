@@ -5,47 +5,49 @@
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.logo-container {
+  display: inline-block;
+  position: relative;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.brand-name {
-  font-size: 4.325rem;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  margin: 1.5rem 0 0.5rem 0;
-  color: #555;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+.dupply-logo {
+  max-width: 300px;
+  height: auto;
+  display: block;
+  border: none;
+  outline: none;
+  
 }
 
 .development-message {
   font-size: 1rem;
   font-weight: 300;
   letter-spacing: 0.02em;
-  margin: 0.5rem 0 0 0;
-  color: #666;
+  margin: 0;
+  margin-top: -0.2rem;
+  color: #f5f5f5;
+  text-align: right;
+  width: 300px;
+  max-width: 300px;
+}
+
+.instagram-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+  text-decoration: none;
+  color: #f5f5f5;
+  transition: color 0.3s ease;
+  width: 300px;
+  max-width: 300px;
+}
+
+.instagram-link:hover {
+  color: #f5f5f5;
+}
+
+.instagram-icon {
+  width: 20px;
+  height: 20px;
 }
