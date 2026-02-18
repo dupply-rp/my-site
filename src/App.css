@@ -8,26 +8,28 @@
 .logo-container {
   display: inline-block;
   position: relative;
+  width: fit-content;
 }
 
 .dupply-logo {
-  max-width: 300px;
-  height: auto;
   display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
   border: none;
   outline: none;
 }
 
 .development-message {
+  font-family: 'Outfit', sans-serif;
   font-size: 1rem;
-  font-weight: 300;
+  font-weight: 400;
   letter-spacing: 0.02em;
   margin: 0;
   margin-top: -0.2rem;
-  color: #666;
+  color: #1c2628;
   text-align: right;
-  width: 300px;
-  max-width: 300px;
+  width: 100%;
 }
 
 .instagram-link {
@@ -36,14 +38,14 @@
   justify-content: flex-end;
   margin-top: 0.5rem;
   text-decoration: none;
-  color: #666;
+  color: #1c2628;
   transition: color 0.3s ease;
-  width: 300px;
-  max-width: 300px;
+  width: 100%;
 }
 
 .instagram-link:hover {
-  color: #555;
+  color: #1c2628;
+  opacity: 0.8;
 }
 
 .instagram-icon {
