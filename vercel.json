@@ -30,7 +30,7 @@
             "value": "webmail.dupply.com.br"
           }
         ],
-        "destination": "https://mail.zoho.com/",
+        "destination": "https://accounts.zoho.com/signin?service_language=pt&servicename=VirtualOffice&signupurl=https://www.zoho.com/pt-br/mail/zohomail-pricing.html&serviceurl=https://mail.zoho.com",
         "permanent": true
       }
     ]
