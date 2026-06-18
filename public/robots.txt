@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://dupply.com.br/sitemap.xml
