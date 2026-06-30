@@ -1,4 +1,5 @@
 import type { FlatQuestion, Answers } from '../types'
+import { formatPhoneBr, stripPhoneDigits } from '../formatPhone'
 import { OptionCard } from './OptionCard'
 
 interface QuizScreenProps {
@@ -56,8 +57,18 @@ export function QuizScreen({
                   type={field.inputType}
                   className={`diag-input-field${error ? ' diag-input-error' : ''}`}
                   placeholder={field.placeholder ?? ''}
-                  value={String(answers[field.id] ?? '')}
-                  onChange={(event) => onAnswer(field.id, event.target.value)}
+                  value={
+                    field.inputType === 'tel'
+                      ? formatPhoneBr(String(answers[field.id] ?? ''))
+                      : String(answers[field.id] ?? '')
+                  }
+                  onChange={(event) => {
+                    const raw = event.target.value
+                    onAnswer(
+                      field.id,
+                      field.inputType === 'tel' ? stripPhoneDigits(raw) : raw,
+                    )
+                  }}
                   onKeyDown={(event) => {
                     if (event.key === 'Enter') onNext()
                   }}

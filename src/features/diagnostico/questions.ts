@@ -27,7 +27,7 @@ export const questionSections: QuestionSection[] = [
           {
             id: 'telefone',
             label: 'Telefone / WhatsApp',
-            placeholder: '(77) 99999-9999',
+            placeholder: '(77) 98814-2278',
             inputType: 'tel',
             required: true,
           },
