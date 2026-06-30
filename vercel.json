@@ -1,37 +1,48 @@
 {
-    "redirects": [
-      {
-        "source": "/(.*)",
-        "has": [
-          {
-            "type": "host",
-            "value": "projetos.dupply.com.br"
-          }
-        ],
-        "destination": "https://sprints.zoho.com/workspace/dupply#projects",
-        "permanent": true
-      },
-      {
-        "source": "/(.*)",
-        "has": [
-          {
-            "type": "host",
-            "value": "drive.dupply.com.br"
-          }
-        ],
-        "destination": "https://workdrive.zoho.com/vuf8c0066ef49e7bf4c038f2d866e32e786e2/privatespace/folders/files",
-        "permanent": true
-      },
-      {
-        "source": "/(.*)",
-        "has": [
-          {
-            "type": "host",
-            "value": "webmail.dupply.com.br"
-          }
-        ],
-        "destination": "https://accounts.zoho.com/signin?service_language=pt&servicename=VirtualOffice&signupurl=https://www.zoho.com/pt-br/mail/zohomail-pricing.html&serviceurl=https://mail.zoho.com",
-        "permanent": true
-      }
-    ]
-  }
+  "functions": {
+    "api/diagnostico.ts": {
+      "maxDuration": 60
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/((?!api/).*)",
+      "destination": "/index.html"
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "projetos.dupply.com.br"
+        }
+      ],
+      "destination": "https://sprints.zoho.com/workspace/dupply#projects",
+      "permanent": true
+    },
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "drive.dupply.com.br"
+        }
+      ],
+      "destination": "https://workdrive.zoho.com/vuf8c0066ef49e7bf4c038f2d866e32e786e2/privatespace/folders/files",
+      "permanent": true
+    },
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "webmail.dupply.com.br"
+        }
+      ],
+      "destination": "https://accounts.zoho.com/signin?service_language=pt&servicename=VirtualOffice&signupurl=https://www.zoho.com/pt-br/mail/zohomail-pricing.html&serviceurl=https://mail.zoho.com",
+      "permanent": true
+    }
+  ]
+}

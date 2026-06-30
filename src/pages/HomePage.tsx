@@ -1,6 +1,7 @@
 import { Footer } from '../components/layout/Footer'
 import { Header } from '../components/layout/Header'
 import { BenefitsSection } from '../components/sections/BenefitsSection'
+import { DiagnosticoBanner } from '../components/sections/DiagnosticoBanner'
 import { DiagnosisSection } from '../components/sections/DiagnosisSection'
 import { FinalCtaSection } from '../components/sections/FinalCtaSection'
 import { MockupHero } from '../components/sections/MockupHero'
@@ -22,6 +23,7 @@ export function HomePage() {
         <MockupHero />
         <ResponsiveHero />
         <DiagnosisSection />
+        <DiagnosticoBanner />
         <TrajectorySection />
         <ProcessSection />
         <BenefitsSection />

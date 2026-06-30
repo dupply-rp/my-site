@@ -1,0 +1,20 @@
+import type { Answers, ScoreInfo } from './types'
+
+export function buildFallbackReport(answers: Answers, scoreInfo: ScoreInfo): string {
+  const empresa = String(answers.nome || 'sua empresa')
+  const setor = String(answers.setor || 'seu setor')
+  const maiorDor = String(answers.maior_dor || 'processos manuais')
+  const objetivo = String(answers.objetivo_principal || 'otimizar a operação')
+
+  return `
+    <h2>📍 Diagnóstico da Situação Atual</h2>
+    <p><strong>${empresa}</strong> atua em <strong>${setor}</strong> com nível <strong>${scoreInfo.label}</strong>.
+    A maior dor reportada é <strong>${maiorDor}</strong>, o que indica oportunidade clara de ganho com automação e IA.</p>
+    <div class="section-divider"></div>
+    <h2>🎯 Próximos Passos Recomendados</h2>
+    <p>Com base nas suas respostas, o foco principal deve ser <strong>${objetivo}</strong>.
+    Um relatório completo gerado por IA estará disponível assim que a integração com a API for configurada.</p>
+    <p>Enquanto isso, use o score e os pilares acima para priorizar onde começar. A Dupply pode ajudar a transformar
+    essas oportunidades em implementação prática nas primeiras semanas.</p>
+  `.trim()
+}

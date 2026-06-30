@@ -642,6 +642,10 @@ a {
   gap: 14px;
 }
 
+.section-cta {
+  margin-top: 32px;
+}
+
 .loss-card,
 .benefit-card,
 .step-card {
