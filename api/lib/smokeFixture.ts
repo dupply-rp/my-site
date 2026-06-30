@@ -1,0 +1,27 @@
+import type { Answers } from './diagnostico/types'
+
+export function createSmokeAnswers(): Answers {
+  const stamp = new Date().toISOString().replace(/[:.]/g, '-')
+
+  return {
+    nome: `Smoke Test Dupply ${stamp}`,
+    email: `smoke+${stamp}@dupply.com.br`,
+    telefone: '77999887766',
+    setor: 'Tecnologia / Software',
+    porte: '2 a 10 pessoas',
+    faturamento: 'R$ 50k a R$ 200k',
+    processos_manuais: ['Lançamento de dados em planilhas', 'Resposta a e-mails repetitivos'],
+    tempo_desperdicado: '5 a 15 horas',
+    sistemas: ['Planilhas (Excel/Sheets)', 'WhatsApp Business'],
+    atendimento: 'Telefone / WhatsApp manual',
+    volume_atendimento: '20 a 100',
+    funil_vendas: ['Follow-up não acontece'],
+    decisoes: 'Com base em relatórios manuais',
+    dados_disponiveis: ['Dados financeiros', 'Histórico de clientes'],
+    maior_dor: 'Falta de tempo — apagando incêndio',
+    experiencia_ia: 'Estamos explorando',
+    ferramentas_ia: ['ChatGPT / Claude / Gemini'],
+    budget: 'R$ 500 a R$ 2.000/mês',
+    objetivo_principal: 'Economizar tempo da equipe',
+  }
+}

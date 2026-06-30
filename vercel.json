@@ -2,8 +2,17 @@
   "functions": {
     "api/diagnostico.ts": {
       "maxDuration": 60
+    },
+    "api/**/*.ts": {
+      "maxDuration": 60
     }
   },
+  "crons": [
+    {
+      "path": "/api/cron/retry-sheets",
+      "schedule": "*/5 * * * *"
+    }
+  ],
   "rewrites": [
     {
       "source": "/((?!api/).*)",

@@ -89,5 +89,6 @@ export interface DiagnosticoApiResponse {
   pillars: Pillar[]
   aiGenerated: boolean
   sheetSaved?: boolean
+  sheetQueued?: boolean
   error?: string
 }

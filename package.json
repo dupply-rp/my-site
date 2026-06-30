@@ -8,7 +8,9 @@
     "dev:api": "vercel dev",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:diagnostico:prod": "node scripts/smoke-diagnostico.mjs",
+    "test:diagnostico:sheets": "SMOKE_MODE=sheets node scripts/smoke-diagnostico.mjs"
   },
   "dependencies": {
     "react": "^19.2.0",
