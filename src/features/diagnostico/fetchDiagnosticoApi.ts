@@ -17,6 +17,10 @@ export async function fetchDiagnosticoFromApi(
       return null
     }
 
+    if (data.sheetSaved === false) {
+      console.warn('[diagnostico] Lead não salvo na planilha — verifique GOOGLE_SHEETS_WEBHOOK_URL na Vercel')
+    }
+
     return data
   } catch (error) {
     console.warn('[diagnostico] API indisponível:', error)
