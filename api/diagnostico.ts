@@ -1,4 +1,3 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { buildSummary } from './lib/diagnostico/buildSummary'
 import { buildFallbackReport } from './lib/diagnostico/fallbackReport'
 import { calcPillars, calcScore, getScoreInfo } from './lib/diagnostico/scoring'
@@ -6,23 +5,41 @@ import type { Answers } from './lib/diagnostico/types'
 import { generateAnthropicReport } from './lib/anthropic'
 import { saveToGoogleSheets } from './lib/googleSheets'
 
+export const config = {
+  runtime: 'edge',
+}
+
 function isAnswers(value: unknown): value is Answers {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
 }
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Método não permitido' })
+function jsonResponse(body: unknown, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { 'Content-Type': 'application/json' },
+  })
+}
+
+export default async function handler(request: Request) {
+  if (request.method !== 'POST') {
+    return jsonResponse({ error: 'Método não permitido' }, 405)
   }
 
-  const { answers } = req.body ?? {}
+  let body: unknown
+  try {
+    body = await request.json()
+  } catch {
+    return jsonResponse({ error: 'JSON inválido' }, 400)
+  }
+
+  const { answers } = (body ?? {}) as { answers?: unknown }
 
   if (!isAnswers(answers)) {
-    return res.status(400).json({ error: 'Respostas inválidas' })
+    return jsonResponse({ error: 'Respostas inválidas' }, 400)
   }
 
   if (!String(answers.nome ?? '').trim()) {
-    return res.status(400).json({ error: 'Nome da empresa é obrigatório' })
+    return jsonResponse({ error: 'Nome da empresa é obrigatório' }, 400)
   }
 
   const summary = buildSummary(answers)
@@ -50,7 +67,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     console.error('[diagnostico] Google Sheets:', error)
   }
 
-  return res.status(200).json({
+  return jsonResponse({
     reportHtml,
     score,
     scoreInfo,
