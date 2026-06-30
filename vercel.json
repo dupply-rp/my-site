@@ -10,7 +10,7 @@
   "crons": [
     {
       "path": "/api/cron/retry-sheets",
-      "schedule": "*/5 * * * *"
+      "schedule": "0 9 * * *"
     }
   ],
   "rewrites": [

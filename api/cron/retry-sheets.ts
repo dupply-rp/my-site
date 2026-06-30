@@ -19,7 +19,7 @@ export default async function handler(request: Request) {
     return jsonResponse({ error: 'Não autorizado' }, 401)
   }
 
-  const result = await processRetryQueue(15)
+  const result = await processRetryQueue(50)
 
   return jsonResponse({
     ok: true,
