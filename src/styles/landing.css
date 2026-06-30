@@ -79,6 +79,7 @@ a {
   font-size: 15px;
   font-weight: 600;
   letter-spacing: -0.01em;
+  cursor: pointer;
   transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease, background 180ms ease;
   white-space: nowrap;
 }
@@ -298,6 +299,7 @@ a {
   border-radius: 10px;
   color: transparent;
   font-size: 0;
+  cursor: pointer;
   outline-offset: 3px;
 }
 

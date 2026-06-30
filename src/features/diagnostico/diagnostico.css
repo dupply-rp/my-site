@@ -33,6 +33,7 @@
   font-size: 14px;
   font-weight: 600;
   color: var(--diag-muted);
+  cursor: pointer;
   backdrop-filter: blur(12px);
   transition: color 180ms ease, border-color 180ms ease;
 }
