@@ -22,6 +22,44 @@ function asString(value: unknown): string {
   return String(value)
 }
 
+async function postToAppsScript(webhookUrl: string, payload: SheetPayload): Promise<void> {
+  // Google Apps Script responde 302; fetch com redirect:'follow' em POST retorna 500 no Node.
+  const response = await fetch(webhookUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+    redirect: 'manual',
+  })
+
+  let finalResponse = response
+
+  if (response.status === 302 || response.status === 301) {
+    const location = response.headers.get('location')
+    if (!location) {
+      throw new Error('Google Sheets webhook: redirect sem Location')
+    }
+    finalResponse = await fetch(location, { method: 'GET' })
+  }
+
+  const body = await finalResponse.text()
+
+  if (!finalResponse.ok) {
+    throw new Error(`Google Sheets webhook falhou (${finalResponse.status}): ${body.slice(0, 300)}`)
+  }
+
+  try {
+    const parsed = JSON.parse(body) as { ok?: boolean; error?: string }
+    if (parsed.ok === false) {
+      throw new Error(parsed.error ?? 'Google Sheets webhook retornou erro')
+    }
+  } catch (error) {
+    if (error instanceof SyntaxError) {
+      throw new Error(`Google Sheets webhook resposta inválida: ${body.slice(0, 300)}`)
+    }
+    throw error
+  }
+}
+
 export async function saveToGoogleSheets(input: {
   answers: Record<string, unknown>
   score: number
@@ -56,15 +94,5 @@ export async function saveToGoogleSheets(input: {
   const secret = process.env.DIAGNOSTICO_WEBHOOK_SECRET
   if (secret) payload.secret = secret
 
-  const response = await fetch(webhookUrl, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-    redirect: 'follow',
-  })
-
-  if (!response.ok) {
-    const body = await response.text()
-    throw new Error(`Google Sheets webhook falhou (${response.status}): ${body}`)
-  }
+  await postToAppsScript(webhookUrl, payload)
 }
