@@ -4,6 +4,8 @@ import { calcPillars, calcScore, getScoreInfo } from './lib/diagnostico/scoring'
 import type { Answers } from './lib/diagnostico/types'
 import { generateAnthropicReport } from './lib/anthropic'
 import { saveToGoogleSheets } from './lib/googleSheets'
+import { enqueueSheetRetry } from './lib/retryQueue'
+import { buildSheetPayload } from './lib/sheetPayload'
 
 export const config = {
   runtime: 'edge',
@@ -60,11 +62,17 @@ export default async function handler(request: Request) {
   }
 
   let sheetSaved = false
+  let sheetQueued = false
   try {
     await saveToGoogleSheets({ answers, score, scoreLabel: scoreInfo.label, reportHtml })
     sheetSaved = true
   } catch (error) {
-    console.error('[diagnostico] Google Sheets:', error)
+    const message = error instanceof Error ? error.message : 'Erro ao salvar na planilha'
+    console.error('[diagnostico] Google Sheets:', message)
+    sheetQueued = await enqueueSheetRetry(
+      buildSheetPayload({ answers, score, scoreLabel: scoreInfo.label, reportHtml }),
+      message,
+    )
   }
 
   return jsonResponse({
@@ -74,5 +82,6 @@ export default async function handler(request: Request) {
     pillars,
     aiGenerated,
     sheetSaved,
+    sheetQueued,
   })
 }
