@@ -1,7 +1,8 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { buildSummary } from '../src/features/diagnostico/buildSummary'
-import { calcPillars, calcScore, getScoreInfo } from '../src/features/diagnostico/scoring'
-import type { Answers } from '../src/features/diagnostico/types'
+import { buildSummary } from './lib/diagnostico/buildSummary'
+import { buildFallbackReport } from './lib/diagnostico/fallbackReport'
+import { calcPillars, calcScore, getScoreInfo } from './lib/diagnostico/scoring'
+import type { Answers } from './lib/diagnostico/types'
 import { generateAnthropicReport } from './lib/anthropic'
 import { saveToGoogleSheets } from './lib/googleSheets'
 
@@ -30,20 +31,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const pillars = calcPillars(answers)
 
   let reportHtml: string
+  let aiGenerated = false
 
   try {
     reportHtml = await generateAnthropicReport(summary)
+    aiGenerated = true
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Erro ao gerar relatório'
     console.error('[diagnostico] Anthropic:', message)
-    return res.status(502).json({ error: message })
+    reportHtml = buildFallbackReport(answers, scoreInfo)
   }
 
+  let sheetSaved = false
   try {
     await saveToGoogleSheets({ answers, score, scoreLabel: scoreInfo.label, reportHtml })
+    sheetSaved = true
   } catch (error) {
     console.error('[diagnostico] Google Sheets:', error)
-    // Não bloqueia o relatório se a planilha falhar
   }
 
   return res.status(200).json({
@@ -51,6 +55,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     score,
     scoreInfo,
     pillars,
-    aiGenerated: true,
+    aiGenerated,
+    sheetSaved,
   })
 }
