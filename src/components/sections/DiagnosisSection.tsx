@@ -1,4 +1,6 @@
+import { Link } from 'react-router-dom'
 import { lossItems } from '../../constants/content'
+import { DIAGNOSTICO_PATH } from '../../constants/links'
 
 export function DiagnosisSection() {
   return (
@@ -22,6 +24,12 @@ export function DiagnosisSection() {
               <h3>{title}</h3>
             </article>
           ))}
+        </div>
+
+        <div className="section-cta">
+          <Link className="btn btn-primary" to={DIAGNOSTICO_PATH}>
+            Fazer diagnóstico gratuito de IA
+          </Link>
         </div>
       </div>
     </section>
