@@ -118,7 +118,7 @@ export function ReportScreen({ answers, report, onRestart }: ReportScreenProps) 
           </div>
           {!aiGenerated && (
             <p className="diag-api-notice" role="status">
-              Relatório resumido — a análise completa com IA estará disponível após configurar a API em produção.
+              Não foi possível gerar o relatório completo com IA agora. Exibimos um resumo com base nas suas respostas.
             </p>
           )}
           <div
