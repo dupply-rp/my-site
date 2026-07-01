@@ -332,6 +332,19 @@
   box-shadow: 0 0 0 3px rgba(7, 24, 255, 0.1);
 }
 
+.diag-textarea {
+  min-height: 160px;
+  margin-bottom: 8px;
+  resize: vertical;
+  line-height: 1.55;
+}
+
+.diag-textarea-meta {
+  margin: 0 0 20px;
+  color: var(--diag-muted);
+  font-size: 13px;
+}
+
 .diag-input-error {
   border-color: #dc2626;
 }

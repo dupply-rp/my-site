@@ -1,4 +1,4 @@
-export type QuestionType = 'text' | 'select' | 'single' | 'multi' | 'contact'
+export type QuestionType = 'text' | 'textarea' | 'select' | 'single' | 'multi' | 'contact'
 
 export interface RichOption {
   e: string
@@ -27,6 +27,14 @@ export interface TextQuestion extends QuestionBase {
   placeholder?: string
 }
 
+export interface TextareaQuestion extends QuestionBase {
+  type: 'textarea'
+  placeholder?: string
+  minLength?: number
+  maxLength?: number
+  required?: boolean
+}
+
 export interface SelectQuestion extends QuestionBase {
   type: 'select'
   options: string[]
@@ -47,7 +55,7 @@ export interface ContactQuestion extends QuestionBase {
   fields: ContactField[]
 }
 
-export type Question = TextQuestion | SelectQuestion | SingleQuestion | MultiQuestion | ContactQuestion
+export type Question = TextQuestion | TextareaQuestion | SelectQuestion | SingleQuestion | MultiQuestion | ContactQuestion
 
 export interface QuestionSection {
   label: string

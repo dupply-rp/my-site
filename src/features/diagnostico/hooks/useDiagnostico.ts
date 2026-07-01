@@ -5,6 +5,7 @@ import { allQuestions, TOTAL_QUESTIONS } from '../questions'
 import { calcPillars, calcScore, getScoreInfo } from '../scoring'
 import type { Answers, DiagnosticoReport, DiagnosticoScreen } from '../types'
 import { validateContactFields } from '../validateContact'
+import { validateTextareaField } from '../validateTextarea'
 
 export function useDiagnostico() {
   const [screen, setScreen] = useState<DiagnosticoScreen>('intro')
@@ -87,6 +88,14 @@ export function useDiagnostico() {
       const errors = validateContactFields(question.fields, answers)
       if (Object.keys(errors).length > 0) {
         setFieldErrors(errors)
+        return
+      }
+    }
+
+    if (question.type === 'textarea') {
+      const error = validateTextareaField(question, String(answers[question.id] ?? ''))
+      if (error) {
+        setFieldErrors({ [question.id]: error })
         return
       }
     }

@@ -113,6 +113,36 @@ export function QuizScreen({
       )
     }
 
+    if (question.type === 'textarea') {
+      const error = fieldErrors[question.id]
+      const charCount = textValue.trim().length
+      const minLength = question.minLength ?? 0
+      return (
+        <>
+          <textarea
+            className={`diag-input-field diag-textarea${error ? ' diag-input-error' : ''}`}
+            placeholder={question.placeholder ?? ''}
+            value={textValue}
+            rows={6}
+            maxLength={question.maxLength}
+            onChange={(event) => onAnswer(question.id, event.target.value)}
+            aria-invalid={Boolean(error)}
+            aria-describedby={error ? `error-${question.id}` : `hint-${question.id}`}
+          />
+          <p id={`hint-${question.id}`} className="diag-textarea-meta">
+            {charCount > 0 && minLength > 0
+              ? `${charCount} caracteres${charCount < minLength ? ` · mínimo recomendado: ${minLength}` : ''}`
+              : 'Opcional — pode pular se preferir'}
+          </p>
+          {error && (
+            <p id={`error-${question.id}`} className="diag-field-error" role="alert">
+              {error}
+            </p>
+          )}
+        </>
+      )
+    }
+
     if (question.type === 'select') {
       return (
         <select

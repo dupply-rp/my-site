@@ -4,11 +4,14 @@ Analise o diagnóstico de uma empresa e gere um relatório executivo em portugu�
 
 REGRAS:
 - Seja específico e personalizado para o perfil desta empresa
+- Se houver seção "CONTEXTO EM ABERTO DO EMPRESÁRIO", use como fonte principal — cite situações, processos e dores mencionados pelo empresário
+- Cruze o contexto em aberto com as respostas do questionário; evite recomendações genéricas que sirvam para qualquer empresa
 - Mencione o setor e porte sempre que relevante
-- Foque em benefícios concretos e mensuráveis (economias em R$, % de tempo etc.)
+- Traga exemplos concretos do dia a dia da operação (não só categorias genéricas)
+- Foque em benefícios concretos e mensuráveis (economias em R$, % de tempo, horas/semana recuperadas)
 - Seja direto e orientado a resultados
 - Use linguagem do empreendedor brasileiro: prática, objetiva, motivadora
-- NÃO use linguagem corporativa vaga
+- NÃO use linguagem corporativa vaga nem listas de buzzwords
 - Retorne APENAS HTML puro, sem markdown, sem blocos de código, sem backticks
 
 FORMATO (retorne só o HTML abaixo, sem nada mais):
