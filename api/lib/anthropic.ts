@@ -30,7 +30,7 @@ export async function generateAnthropicReport(summary: string): Promise<string> 
     },
     body: JSON.stringify({
       model,
-      max_tokens: 1800,
+      max_tokens: 2800,
       system: DIAGNOSTICO_SYSTEM_PROMPT,
       messages: [
         {

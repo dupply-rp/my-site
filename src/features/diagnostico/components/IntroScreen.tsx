@@ -25,7 +25,7 @@ export function IntroScreen({ onStart }: IntroScreenProps) {
         />
       </div>
 
-      <span className="diag-hero-eyebrow">Diagnóstico Gratuito · 5 minutos</span>
+      <span className="diag-hero-eyebrow">Diagnóstico Gratuito · ~5 minutos</span>
 
       <h1 className="diag-hero-title">
         Descubra como a <span>IA pode transformar</span> sua empresa
@@ -33,7 +33,7 @@ export function IntroScreen({ onStart }: IntroScreenProps) {
 
       <p className="diag-hero-sub">
         Responda perguntas sobre suas operações e receba um relatório personalizado com oportunidades reais de
-        automação e inteligência artificial.
+        automação e inteligência artificial. Depois da maior dor, você pode descrever seu negócio com suas próprias palavras.
       </p>
 
       <div className="diag-hero-meta">

@@ -14,14 +14,12 @@ export function createSmokeAnswers(): Answers {
     tempo_desperdicado: '5 a 15 horas',
     sistemas: ['Planilhas (Excel/Sheets)', 'WhatsApp Business'],
     atendimento: 'Telefone / WhatsApp manual',
-    volume_atendimento: '20 a 100',
-    funil_vendas: ['Follow-up não acontece'],
     decisoes: 'Com base em relatórios manuais',
     dados_disponiveis: ['Dados financeiros', 'Histórico de clientes'],
     maior_dor: 'Falta de tempo — apagando incêndio',
+    contexto_negocio:
+      'Somos uma software house com 8 pessoas. Perdemos horas copiando dados entre planilhas e o CRM, e o follow-up comercial depende da memória de cada vendedor.',
     experiencia_ia: 'Estamos explorando',
-    ferramentas_ia: ['ChatGPT / Claude / Gemini'],
     budget: 'R$ 500 a R$ 2.000/mês',
-    objetivo_principal: 'Economizar tempo da equipe',
   }
 }

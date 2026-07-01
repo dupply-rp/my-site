@@ -42,7 +42,8 @@ export function buildSheetPayload(input: {
     scoreLabel,
     maiorDor: asString(answers.maior_dor),
     budget: asString(answers.budget),
-    objetivo: asString(answers.objetivo_principal),
+    objetivo:
+      asString(answers.contexto_negocio).slice(0, 200) || asString(answers.maior_dor),
     respostas: answers,
     relatorio: reportHtml.slice(0, 5000),
   }

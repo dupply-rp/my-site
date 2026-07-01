@@ -2,8 +2,10 @@ import { allQuestions } from './questions'
 import type { Answers } from './types'
 
 export function buildSummary(answers: Answers): string {
-  return allQuestions
+  const lines = allQuestions
     .flatMap((question) => {
+      if (question.id === 'contexto_negocio') return []
+
       if (question.type === 'contact') {
         return question.fields
           .map((field) => {
@@ -21,4 +23,9 @@ export function buildSummary(answers: Answers): string {
       return [`${question.text}: ${formatted}`]
     })
     .join('\n')
+
+  const contexto = String(answers.contexto_negocio ?? '').trim()
+  if (!contexto) return lines
+
+  return `${lines}\n\n--- CONTEXTO EM ABERTO DO EMPRESÁRIO (PRIORIZE NA ANÁLISE) ---\n${contexto}`
 }
