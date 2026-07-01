@@ -8,13 +8,13 @@ export function DiagnosticoBanner() {
         <div className="diag-banner-box">
           <div>
             <span className="eyebrow">Diagnóstico gratuito</span>
-            <h2 id="diag-banner-heading">Descubra em 5 minutos onde a IA pode gerar valor na sua empresa</h2>
+            <h2 id="diag-banner-heading">Descubra em ~5 minutos onde a IA pode gerar valor na sua empresa</h2>
             <p>
               Responda um questionário rápido e receba um relatório personalizado com score de maturidade,
               oportunidades de automação e um roadmap prático.
             </p>
             <div className="diag-banner-meta" role="list" aria-label="Benefícios do diagnóstico">
-              <span role="listitem">⏱ Menos de 5 min</span>
+              <span role="listitem">⏱ ~5 min</span>
               <span role="listitem">📊 Relatório com IA</span>
               <span role="listitem">🎯 100% gratuito</span>
             </div>

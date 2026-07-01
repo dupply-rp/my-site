@@ -835,6 +835,67 @@ a {
   box-shadow: 0 18px 44px rgba(0, 0, 0, 0.14);
 }
 
+/* Banner do diagnóstico na landing */
+.diag-banner {
+  padding: 0 0 106px;
+}
+
+.diag-banner-box {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 28px;
+  align-items: end;
+  padding: 36px;
+  border: 1px solid rgba(7, 24, 255, 0.14);
+  border-radius: calc(var(--radius) * 2);
+  background:
+    linear-gradient(135deg, rgba(7, 24, 255, 0.06), rgba(45, 115, 255, 0.04)),
+    #fff;
+  box-shadow: var(--shadow);
+}
+
+.diag-banner-box h2 {
+  margin: 12px 0 0;
+  max-width: 640px;
+  font-size: clamp(28px, 4vw, 44px);
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+}
+
+.diag-banner-box p {
+  margin: 14px 0 0;
+  max-width: 560px;
+  color: var(--muted);
+  font-size: 17px;
+}
+
+.diag-banner-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.diag-banner-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(7, 24, 255, 0.08);
+  color: var(--blue);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.nav-mobile[hidden] {
+  display: none !important;
+}
+
+.nav-mobile.is-open {
+  display: block;
+}
+
 .footer {
   padding: 34px 0;
   background: #10151d;
@@ -874,6 +935,10 @@ a {
     grid-template-columns: 1fr;
   }
 
+  .trajectory-grid {
+    gap: 32px;
+  }
+
   .hero {
     padding-top: 56px;
   }
@@ -911,6 +976,15 @@ a {
     width: min(100% - 32px, var(--max));
   }
 
+  .btn {
+    white-space: normal;
+    text-align: center;
+    line-height: 1.3;
+    padding: 12px 18px;
+    min-height: 48px;
+    height: auto;
+  }
+
   .nav {
     min-height: 68px;
   }
@@ -925,12 +999,18 @@ a {
 
   .hero-grid {
     gap: 28px;
+    grid-template-columns: 1fr;
+    min-width: 0;
+  }
+
+  .hero-copy {
+    min-width: 0;
   }
 
   .hero-copy h1 {
     margin-top: 22px;
-    font-size: clamp(36px, 10.5vw, 48px);
-    line-height: 1.04;
+    font-size: clamp(32px, 9vw, 48px);
+    line-height: 1.06;
   }
 
   .hero-problem {
@@ -939,6 +1019,13 @@ a {
 
   .hero-note {
     font-size: 16px;
+    padding-left: 14px;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+    margin-top: 24px;
   }
 
   .hero-actions .btn {
@@ -946,21 +1033,34 @@ a {
   }
 
   .hero-visual {
-    min-height: 520px;
-    overflow: hidden;
+    min-height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 8px;
+    overflow: visible;
+  }
+
+  .promise-stack {
+    display: none;
   }
 
   .portrait-card {
-    right: 28px;
-    bottom: 0;
-    width: 76%;
+    position: relative;
+    right: auto;
+    bottom: auto;
+    width: min(300px, 82%);
+    margin: 0 auto;
   }
 
   .dupply-card {
-    right: 6px;
+    position: relative;
+    right: auto;
     left: auto;
-    bottom: 10px;
-    width: 54%;
+    bottom: auto;
+    width: 100%;
+    max-width: 340px;
+    margin: 18px auto 0;
     padding: 18px;
   }
 
@@ -973,28 +1073,10 @@ a {
     font-size: 10px;
   }
 
-  .promise {
-    max-width: 184px;
-    padding: 11px 12px;
-    font-size: 12px;
-  }
-
-  .promise::before {
-    width: 20px;
-    height: 20px;
-    font-size: 16px;
-  }
-
-  .promise:nth-child(1) { left: 4px; top: 18px; }
-  .promise:nth-child(2) { right: 0; top: 54px; }
-  .promise:nth-child(3) { left: 0; top: 158px; }
-  .promise:nth-child(4) { right: -18px; top: 220px; }
-  .promise:nth-child(5) { left: 0; bottom: 118px; }
-  .promise:nth-child(6) { right: -8px; bottom: 116px; }
-
   .proof-line {
     display: grid;
     gap: 12px;
+    margin-top: 28px;
   }
 
   .proof-line span,
@@ -1007,13 +1089,30 @@ a {
     border-left: 0;
   }
 
-  .section,
-  .final-cta {
-    padding: 72px 0;
+  .section-head {
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .section-head h2 {
+    font-size: clamp(30px, 8vw, 42px);
+  }
+
+  .section-head p {
+    font-size: 16px;
   }
 
   .editorial {
-    padding: 54px 0;
+    padding: 48px 0;
+  }
+
+  .editorial p {
+    font-size: clamp(22px, 6vw, 28px);
+  }
+
+  .section,
+  .final-cta {
+    padding: 72px 0;
   }
 
   .card-grid,
@@ -1025,6 +1124,51 @@ a {
   .benefit-card,
   .step-card {
     min-height: 128px;
+    padding: 18px;
+  }
+
+  .loss-card h3,
+  .benefit-card h3,
+  .step-card h3 {
+    font-size: 20px;
+  }
+
+  .diag-banner {
+    padding: 0 0 72px;
+  }
+
+  .diag-banner-box {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 24px 20px;
+  }
+
+  .diag-banner-box h2 {
+    font-size: clamp(26px, 7vw, 34px);
+  }
+
+  .diag-banner-box p {
+    font-size: 16px;
+  }
+
+  .diag-banner-box .btn {
+    width: 100%;
+  }
+
+  .final-box {
+    gap: 24px;
+  }
+
+  .final-box h2 {
+    font-size: clamp(30px, 8vw, 42px);
+  }
+
+  .final-box p {
+    font-size: 17px;
+  }
+
+  .final-box .btn {
+    width: 100%;
   }
 
   .footer-grid,
@@ -1032,25 +1176,31 @@ a {
     grid-template-columns: 1fr;
     justify-content: flex-start;
   }
+
+  .leader-card img {
+    max-height: 420px;
+  }
 }
 
 @media (max-width: 420px) {
-  .hero-visual {
-    min-height: 450px;
+  .wrap {
+    width: min(100% - 24px, var(--max));
+  }
+
+  .hero-copy h1 {
+    font-size: clamp(28px, 8.5vw, 36px);
   }
 
   .portrait-card {
-    right: 8px;
-    width: 80%;
+    width: min(260px, 88%);
   }
 
-  .dupply-card {
-    width: 58%;
+  .diag-banner-meta {
+    gap: 8px;
   }
 
-  .promise:nth-child(4),
-  .promise:nth-child(6) {
-    display: none;
+  .diag-banner-meta span {
+    font-size: 12px;
   }
 }
 

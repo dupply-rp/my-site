@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import dupplyLogo from '../../assets/dupply-logo.png'
-import { WHATSAPP_URL } from '../../constants/links'
+import { DIAGNOSTICO_PATH, WHATSAPP_URL } from '../../constants/links'
 
 const navItems = [
   { href: '#gargalos', label: 'Soluções' },
   { href: '#atuacao', label: 'Processo' },
   { href: '#beneficios', label: 'Resultados' },
   { href: '#trajetoria', label: 'Sobre' },
+  { to: DIAGNOSTICO_PATH, label: 'Diagnóstico', route: true as const },
   { href: WHATSAPP_URL, label: 'Contato', external: true as const },
 ]
 
@@ -38,6 +40,10 @@ export function Header() {
               >
                 {item.label}
               </a>
+            ) : 'route' in item ? (
+              <Link key={item.label} to={item.to!}>
+                {item.label}
+              </Link>
             ) : (
               <a key={item.label} href={item.href}>
                 {item.label}
@@ -80,6 +86,10 @@ export function Header() {
               >
                 {item.label}
               </a>
+            ) : 'route' in item ? (
+              <Link key={item.label} to={item.to!} onClick={closeMenu}>
+                {item.label}
+              </Link>
             ) : (
               <a key={item.label} href={item.href} onClick={closeMenu}>
                 {item.label}

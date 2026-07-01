@@ -871,60 +871,76 @@
   gap: 10px;
 }
 
-/* Landing banner */
-.diag-banner {
-  padding: 0 0 106px;
-}
-
-.diag-banner-box {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 28px;
-  align-items: end;
-  padding: 36px;
-  border: 1px solid rgba(7, 24, 255, 0.14);
-  border-radius: calc(var(--radius, 8px) * 2);
-  background:
-    linear-gradient(135deg, rgba(7, 24, 255, 0.06), rgba(45, 115, 255, 0.04)),
-    #fff;
-  box-shadow: var(--shadow, 0 24px 80px rgba(20, 31, 48, 0.12));
-}
-
-.diag-banner-box h2 {
-  margin: 12px 0 0;
-  max-width: 640px;
-  font-size: clamp(28px, 4vw, 44px);
-  line-height: 1.02;
-  letter-spacing: -0.04em;
-}
-
-.diag-banner-box p {
-  margin: 14px 0 0;
-  max-width: 560px;
-  color: var(--muted);
-  font-size: 17px;
-}
-
-.diag-banner-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 14px;
-  margin-top: 18px;
-}
-
-.diag-banner-meta span {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  border-radius: 999px;
-  background: rgba(7, 24, 255, 0.08);
-  color: var(--blue);
-  font-size: 13px;
-  font-weight: 600;
-}
-
 @media (max-width: 720px) {
+  .diag-intro {
+    padding: 88px 20px 48px;
+  }
+
+  .diag-hero-title {
+    font-size: clamp(26px, 7.5vw, 40px);
+  }
+
+  .diag-hero-sub {
+    margin-bottom: 28px;
+    font-size: 16px;
+  }
+
+  .diag-hero-meta {
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .diag-meta-item {
+    font-size: 13px;
+  }
+
+  .diag-btn-lg {
+    width: 100%;
+    max-width: 360px;
+  }
+
+  .diag-back-link {
+    top: 10px;
+    left: 10px;
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  .diag-quiz-header {
+    padding: 12px 16px;
+  }
+
+  .diag-quiz-header-inner {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .diag-quiz-logo {
+    justify-content: center;
+  }
+
+  .diag-quiz-body {
+    padding: 28px 16px 64px;
+  }
+
+  .diag-question-text {
+    font-size: clamp(20px, 5.5vw, 24px);
+  }
+
+  .diag-quiz-nav {
+    flex-direction: column-reverse;
+    align-items: stretch;
+    gap: 10px;
+    margin-top: 8px;
+  }
+
+  .diag-quiz-nav .btn {
+    width: 100%;
+    justify-content: center;
+    white-space: normal;
+  }
+
   .diag-options-grid.cols-2 {
     grid-template-columns: 1fr;
   }
@@ -934,14 +950,58 @@
     text-align: center;
   }
 
-  .diag-banner-box {
-    grid-template-columns: 1fr;
-    padding: 28px 24px;
+  .diag-report {
+    padding: 72px 16px 48px;
   }
 
-  .diag-back-link {
-    top: 12px;
-    left: 12px;
+  .diag-report-header {
+    padding: 0 4px;
+  }
+
+  .diag-report-title {
+    font-size: clamp(24px, 6.5vw, 32px);
+  }
+
+  .diag-report-body {
+    padding: 24px 16px;
+  }
+
+  .diag-pillars-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .diag-report-cta {
+    padding: 24px 18px;
+    margin-top: 28px;
+  }
+
+  .diag-cta-buttons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .diag-cta-buttons .btn {
+    width: 100%;
+    white-space: normal;
+  }
+
+  .diag-report-formatted h2 {
+    font-size: 20px;
+  }
+
+  .diag-report-formatted h3 {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 420px) {
+  .diag-pillars-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .diag-intro {
+    padding-top: 80px;
   }
 }
 
