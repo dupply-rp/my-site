@@ -13,19 +13,23 @@ function cleanReportHtml(raw: string): string {
   return raw.replace(/```html?/gi, '').replace(/```/g, '').trim()
 }
 
-export async function generateAnthropicReport(summary: string): Promise<string> {
-  const apiKey = process.env.ANTHROPIC_API_KEY
-  if (!apiKey) {
-    throw new Error('ANTHROPIC_API_KEY não configurada')
-  }
+const DEFAULT_MODEL = 'claude-sonnet-4-6'
+const FALLBACK_MODELS = ['claude-sonnet-4-5-20250929', 'claude-haiku-4-5-20251001']
 
-  const model = process.env.ANTHROPIC_MODEL ?? 'claude-sonnet-4-20250514'
+function getModelCandidates(): string[] {
+  const preferred = process.env.ANTHROPIC_MODEL?.trim()
+  const candidates = [preferred, DEFAULT_MODEL, ...FALLBACK_MODELS].filter(
+    (model): model is string => Boolean(model),
+  )
+  return [...new Set(candidates)]
+}
 
+async function requestReport(model: string, summary: string): Promise<string> {
   const response = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'x-api-key': apiKey,
+      'x-api-key': process.env.ANTHROPIC_API_KEY!,
       'anthropic-version': '2023-06-01',
     },
     body: JSON.stringify({
@@ -54,4 +58,26 @@ export async function generateAnthropicReport(summary: string): Promise<string> 
   }
 
   return cleanReportHtml(text)
+}
+
+export async function generateAnthropicReport(summary: string): Promise<string> {
+  const apiKey = process.env.ANTHROPIC_API_KEY
+  if (!apiKey) {
+    throw new Error('ANTHROPIC_API_KEY não configurada')
+  }
+
+  const models = getModelCandidates()
+  let lastError: Error | null = null
+
+  for (const model of models) {
+    try {
+      return await requestReport(model, summary)
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Erro Anthropic'
+      lastError = new Error(message)
+      console.error(`[anthropic] Modelo ${model} falhou:`, message)
+    }
+  }
+
+  throw lastError ?? new Error('Nenhum modelo Anthropic disponível')
 }

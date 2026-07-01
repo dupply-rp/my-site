@@ -22,7 +22,7 @@ export function buildFallbackReport(answers: Answers, scoreInfo: ScoreInfo): str
     <div class="section-divider"></div>
     <h2>🎯 Próximos Passos Recomendados</h2>
     <p>Com base nas suas respostas, o foco principal deve ser <strong>${foco}</strong>.
-    Um relatório completo gerado por IA estará disponível assim que a integração com a API for configurada.</p>
+    Este é um resumo automático — a análise completa com IA não pôde ser gerada neste momento.</p>
     <p>Enquanto isso, use o score e os pilares acima para priorizar onde começar. A Dupply pode ajudar a transformar
     essas oportunidades em implementação prática nas primeiras semanas.</p>
   `.trim()
