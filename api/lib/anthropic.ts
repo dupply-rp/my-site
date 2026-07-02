@@ -15,6 +15,7 @@ function cleanReportHtml(raw: string): string {
 
 // Edge Runtime da Vercel limita a resposta a ~25s. Haiku entrega relatório completo dentro do prazo.
 const EDGE_MODEL = 'claude-haiku-4-5-20251001'
+const MAX_OUTPUT_TOKENS = 1400
 
 async function requestReport(model: string, summary: string, timeoutMs: number): Promise<string> {
   const controller = new AbortController()
@@ -30,12 +31,12 @@ async function requestReport(model: string, summary: string, timeoutMs: number):
       },
       body: JSON.stringify({
         model,
-        max_tokens: 1800,
+        max_tokens: MAX_OUTPUT_TOKENS,
         system: DIAGNOSTICO_SYSTEM_PROMPT,
         messages: [
           {
             role: 'user',
-            content: `Analise o diagnóstico desta empresa e gere o relatório:\n\n${summary}`,
+            content: `Gere o relatório com base neste diagnóstico:\n\n${summary}`,
           },
         ],
       }),
