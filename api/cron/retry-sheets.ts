@@ -1,4 +1,4 @@
-import { processRetryQueue } from '../lib/retryQueue.js'
+import { processRetryQueue } from '../../server/lib/retryQueue.js'
 
 export const config = {
   runtime: 'edge',
