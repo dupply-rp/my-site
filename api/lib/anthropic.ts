@@ -13,18 +13,18 @@ function cleanReportHtml(raw: string): string {
   return raw.replace(/```html?/gi, '').replace(/```/g, '').trim()
 }
 
-const DEFAULT_MODEL = 'claude-sonnet-4-6'
-const FALLBACK_MODELS = ['claude-sonnet-4-5-20250929', 'claude-haiku-4-5-20251001']
+const SONNET_MODEL = 'claude-sonnet-4-6'
+const FAST_MODEL = 'claude-haiku-4-5-20251001'
 
-function getModelCandidates(): string[] {
-  const preferred = process.env.ANTHROPIC_MODEL?.trim()
-  const candidates = [preferred, DEFAULT_MODEL, ...FALLBACK_MODELS].filter(
-    (model): model is string => Boolean(model),
-  )
-  return [...new Set(candidates)]
+function getMaxTokens(model: string): number {
+  return model.includes('haiku') ? 1800 : 2000
 }
 
-async function requestReport(model: string, summary: string): Promise<string> {
+async function requestReport(
+  model: string,
+  summary: string,
+  timeoutMs: number,
+): Promise<string> {
   const response = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
@@ -34,7 +34,7 @@ async function requestReport(model: string, summary: string): Promise<string> {
     },
     body: JSON.stringify({
       model,
-      max_tokens: 2400,
+      max_tokens: getMaxTokens(model),
       system: DIAGNOSTICO_SYSTEM_PROMPT,
       messages: [
         {
@@ -43,7 +43,7 @@ async function requestReport(model: string, summary: string): Promise<string> {
         },
       ],
     }),
-    signal: AbortSignal.timeout(50_000),
+    signal: AbortSignal.timeout(timeoutMs),
   })
 
   const data = (await response.json()) as AnthropicResponse
@@ -67,12 +67,21 @@ export async function generateAnthropicReport(summary: string): Promise<string> 
     throw new Error('ANTHROPIC_API_KEY não configurada')
   }
 
-  const models = getModelCandidates()
+  const preferred = process.env.ANTHROPIC_MODEL?.trim()
+  const primaryModel = preferred || SONNET_MODEL
+  const attempts: Array<{ model: string; timeoutMs: number }> = [
+    { model: primaryModel, timeoutMs: 20_000 },
+  ]
+
+  if (primaryModel !== FAST_MODEL) {
+    attempts.push({ model: FAST_MODEL, timeoutMs: 18_000 })
+  }
+
   let lastError: Error | null = null
 
-  for (const model of models) {
+  for (const { model, timeoutMs } of attempts) {
     try {
-      return await requestReport(model, summary)
+      return await requestReport(model, summary, timeoutMs)
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Erro Anthropic'
       lastError = new Error(message)
