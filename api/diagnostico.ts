@@ -1,3 +1,4 @@
+import { waitUntil } from '@vercel/functions'
 import { buildSummary } from './lib/diagnostico/buildSummary'
 import { buildFallbackReport } from './lib/diagnostico/fallbackReport'
 import { calcPillars, calcScore, getScoreInfo } from './lib/diagnostico/scoring'
@@ -8,7 +9,7 @@ import { enqueueSheetRetry } from './lib/retryQueue'
 import { buildSheetPayload } from './lib/sheetPayload'
 
 export const config = {
-  runtime: 'edge',
+  maxDuration: 60,
 }
 
 function isAnswers(value: unknown): value is Answers {
@@ -61,19 +62,22 @@ export default async function handler(request: Request) {
     reportHtml = buildFallbackReport(answers, scoreInfo)
   }
 
-  let sheetSaved = false
-  let sheetQueued = false
-  try {
-    await saveToGoogleSheets({ answers, score, scoreLabel: scoreInfo.label, reportHtml })
-    sheetSaved = true
-  } catch (error) {
-    const message = error instanceof Error ? error.message : 'Erro ao salvar na planilha'
-    console.error('[diagnostico] Google Sheets:', message)
-    sheetQueued = await enqueueSheetRetry(
-      buildSheetPayload({ answers, score, scoreLabel: scoreInfo.label, reportHtml }),
-      message,
-    )
-  }
+  const sheetPayload = buildSheetPayload({
+    answers,
+    score,
+    scoreLabel: scoreInfo.label,
+    reportHtml,
+  })
+
+  waitUntil(
+    saveToGoogleSheets({ answers, score, scoreLabel: scoreInfo.label, reportHtml }).catch(
+      async (error) => {
+        const message = error instanceof Error ? error.message : 'Erro ao salvar na planilha'
+        console.error('[diagnostico] Google Sheets:', message)
+        await enqueueSheetRetry(sheetPayload, message)
+      },
+    ),
+  )
 
   return jsonResponse({
     reportHtml,
@@ -81,7 +85,6 @@ export default async function handler(request: Request) {
     scoreInfo,
     pillars,
     aiGenerated,
-    sheetSaved,
-    sheetQueued,
+    sheetPending: true,
   })
 }

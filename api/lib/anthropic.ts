@@ -34,7 +34,7 @@ async function requestReport(model: string, summary: string): Promise<string> {
     },
     body: JSON.stringify({
       model,
-      max_tokens: 2800,
+      max_tokens: 2400,
       system: DIAGNOSTICO_SYSTEM_PROMPT,
       messages: [
         {
@@ -43,6 +43,7 @@ async function requestReport(model: string, summary: string): Promise<string> {
         },
       ],
     }),
+    signal: AbortSignal.timeout(50_000),
   })
 
   const data = (await response.json()) as AnthropicResponse

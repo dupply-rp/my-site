@@ -98,5 +98,6 @@ export interface DiagnosticoApiResponse {
   aiGenerated: boolean
   sheetSaved?: boolean
   sheetQueued?: boolean
+  sheetPending?: boolean
   error?: string
 }
