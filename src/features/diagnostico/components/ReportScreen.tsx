@@ -9,7 +9,15 @@ interface ReportScreenProps {
 }
 
 export function ReportScreen({ answers, report, onRestart }: ReportScreenProps) {
-  const { score, scoreInfo, pillars, reportHtml, aiGenerated = true } = report
+  const {
+    score,
+    scoreInfo,
+    pillars,
+    reportHtml,
+    aiGenerated = true,
+    emailDispatched = false,
+    emailTo,
+  } = report
   const company = String(answers.nome || 'Sua Empresa')
   const [displayScore, setDisplayScore] = useState(0)
   const [ringOffset, setRingOffset] = useState(408)
@@ -44,6 +52,11 @@ export function ReportScreen({ answers, report, onRestart }: ReportScreenProps) 
     <div className="diag-report">
       <header className="diag-report-header">
         <span className="diag-report-badge">✓ Diagnóstico concluído</span>
+        {emailDispatched && emailTo ? (
+          <p className="diag-email-notice" role="status">
+            Enviamos uma cópia deste relatório para <strong>{emailTo}</strong>. Verifique também a caixa de spam.
+          </p>
+        ) : null}
         <h1 className="diag-report-title">Relatório de IA — {company}</h1>
         <p className="diag-report-company">{subtitle}</p>
       </header>

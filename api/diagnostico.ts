@@ -8,6 +8,7 @@ import { saveToGoogleSheets } from '../server/lib/googleSheets.js'
 import { enqueueSheetRetry } from '../server/lib/retryQueue.js'
 import { buildSheetPayload } from '../server/lib/sheetPayload.js'
 import { checkDiagnosticoRateLimit, getClientIp } from '../server/lib/rateLimit.js'
+import { canSendReportEmail, sendReportEmail } from '../server/lib/sendReportEmail.js'
 import { verifyTurnstileToken } from '../server/lib/turnstile.js'
 
 export const config = {
@@ -122,6 +123,25 @@ export default async function handler(request: Request) {
     ),
   )
 
+  const recipientEmail = String(answers.email ?? '').trim()
+  const emailDispatched = canSendReportEmail(recipientEmail)
+
+  if (emailDispatched) {
+    waitUntil(
+      sendReportEmail({
+        to: recipientEmail,
+        companyName: String(answers.nome ?? 'Sua empresa'),
+        score,
+        scoreLabel: scoreInfo.label,
+        reportHtml,
+        aiGenerated,
+      }).catch((error) => {
+        const message = error instanceof Error ? error.message : 'Erro ao enviar e-mail'
+        console.error('[diagnostico] E-mail:', message)
+      }),
+    )
+  }
+
   return jsonResponse({
     reportHtml,
     score,
@@ -129,5 +149,7 @@ export default async function handler(request: Request) {
     pillars,
     aiGenerated,
     sheetPending: true,
+    emailDispatched,
+    emailTo: emailDispatched ? recipientEmail : undefined,
   })
 }

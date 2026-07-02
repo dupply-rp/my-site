@@ -332,6 +332,46 @@
   box-shadow: 0 0 0 3px rgba(7, 24, 255, 0.1);
 }
 
+.diag-select-wrap {
+  position: relative;
+  margin-bottom: 28px;
+}
+
+.diag-select-wrap .diag-input-field {
+  margin-bottom: 0;
+}
+
+.diag-select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 44px;
+  cursor: pointer;
+}
+
+.diag-select.diag-select-placeholder {
+  color: var(--diag-muted);
+}
+
+.diag-select option {
+  color: var(--diag-ink);
+}
+
+.diag-select-chevron {
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--diag-muted);
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.diag-select-wrap.diag-select-error {
+  margin-bottom: 8px;
+}
+
 .diag-textarea {
   min-height: 160px;
   margin-bottom: 8px;
@@ -802,6 +842,22 @@
   color: #92400e;
   font-size: 13px;
   line-height: 1.5;
+}
+
+.diag-email-notice {
+  margin: 0 0 14px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(5, 150, 105, 0.25);
+  background: var(--diag-success-soft);
+  color: #065f46;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.diag-email-notice strong {
+  color: #047857;
+  font-weight: 700;
 }
 
 .diag-report-formatted {

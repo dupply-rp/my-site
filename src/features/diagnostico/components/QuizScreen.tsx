@@ -152,19 +152,37 @@ export function QuizScreen({
     }
 
     if (question.type === 'select') {
+      const error = fieldErrors[question.id]
       return (
-        <select
-          className="diag-input-field"
-          value={textValue}
-          onChange={(event) => onAnswer(question.id, event.target.value)}
-        >
-          <option value="">Selecione…</option>
-          {question.options.map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
-          ))}
-        </select>
+        <>
+          <div className={`diag-select-wrap${error ? ' diag-select-error' : ''}`}>
+            <select
+              id={`field-${question.id}`}
+              className={`diag-input-field diag-select${error ? ' diag-input-error' : ''}${!textValue ? ' diag-select-placeholder' : ''}`}
+              value={textValue}
+              onChange={(event) => onAnswer(question.id, event.target.value)}
+              aria-invalid={Boolean(error)}
+              aria-describedby={error ? `error-${question.id}` : undefined}
+            >
+              <option value="">Selecione…</option>
+              {question.options.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+            <span className="diag-select-chevron" aria-hidden>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </span>
+          </div>
+          {error && (
+            <p id={`error-${question.id}`} className="diag-field-error" role="alert">
+              {error}
+            </p>
+          )}
+        </>
       )
     }
 

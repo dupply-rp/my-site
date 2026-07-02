@@ -41,6 +41,8 @@ export function useDiagnostico() {
         pillars: data.pillars,
         reportHtml: data.reportHtml,
         aiGenerated: data.aiGenerated,
+        emailDispatched: data.emailDispatched,
+        emailTo: data.emailTo,
       })
       setAnswers(finalAnswers)
       setScreen('report')
@@ -114,6 +116,11 @@ export function useDiagnostico() {
         setFieldErrors({ [question.id]: error })
         return
       }
+    }
+
+    if (question.type === 'select' && !String(answers[question.id] ?? '').trim()) {
+      setFieldErrors({ [question.id]: 'Selecione uma opção para continuar' })
+      return
     }
 
     if (currentIndex < TOTAL_QUESTIONS - 1) {
