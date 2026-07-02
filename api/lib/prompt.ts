@@ -7,7 +7,7 @@ Regras:
 - Benefícios mensuráveis: R$, % de tempo, horas/semana
 - Linguagem prática de empreendedor; sem buzzwords
 - Retorne APENAS HTML puro, sem markdown nem backticks
-- Parágrafos concisos (2–4 frases cada)
+- Parágrafos concisos (máx 3 frases); complete TODAS as seções abaixo
 
 Estrutura obrigatória:
 <h2>📍 Diagnóstico da Situação Atual</h2><p>...</p><div class="section-divider"></div>

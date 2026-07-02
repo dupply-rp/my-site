@@ -15,7 +15,7 @@ function cleanReportHtml(raw: string): string {
 
 // Edge Runtime da Vercel limita a resposta a ~25s. Haiku entrega relatório completo dentro do prazo.
 const EDGE_MODEL = 'claude-haiku-4-5-20251001'
-const MAX_OUTPUT_TOKENS = 1400
+const MAX_OUTPUT_TOKENS = 1600
 
 async function requestReport(model: string, summary: string, timeoutMs: number): Promise<string> {
   const controller = new AbortController()
