@@ -14,7 +14,6 @@ Formato:
 <h2>🎯 Oportunidades Prioritárias de IA</h2>
 <h3>[Oportunidade 1]</h3><p>...</p>
 <h3>[Oportunidade 2]</h3><p>...</p>
-<h3>[Oportunidade 3]</h3><p>...</p>
 <div class="section-divider"></div>
 <h2>🛠️ Ferramentas Recomendadas</h2><ul><li><strong>[Ferramenta]</strong> — ...</li></ul>
 <div class="section-divider"></div>
