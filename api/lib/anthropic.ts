@@ -67,6 +67,7 @@ export async function generateAnthropicReport(summary: string): Promise<string> 
     throw new Error('ANTHROPIC_API_KEY não configurada')
   }
 
-  const model = process.env.ANTHROPIC_MODEL?.trim() || EDGE_MODEL
+  // Sonnet excede o limite de 25s do Edge; ignoramos ANTHROPIC_MODEL em produção edge.
+  const model = EDGE_MODEL
   return requestReport(model, summary, 22_000)
 }
