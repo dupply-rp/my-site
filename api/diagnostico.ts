@@ -9,7 +9,7 @@ import { enqueueSheetRetry } from './lib/retryQueue'
 import { buildSheetPayload } from './lib/sheetPayload'
 
 export const config = {
-  maxDuration: 60,
+  runtime: 'edge',
 }
 
 function isAnswers(value: unknown): value is Answers {
