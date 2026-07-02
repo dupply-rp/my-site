@@ -31,12 +31,12 @@ export function buildSummary(answers: Answers): string {
     lines.push(`${label}: ${formatValue(answer as string | string[])}`)
   }
 
+  const body = lines.join('\n')
   const contexto = String(answers.contexto_negocio ?? '').trim()
-  if (contexto) {
-    const trimmed =
-      contexto.length > CONTEXT_MAX_CHARS ? `${contexto.slice(0, CONTEXT_MAX_CHARS)}…` : contexto
-    lines.push(`contexto_empresario: ${trimmed}`)
-  }
+  if (!contexto) return body
 
-  return lines.join('\n')
+  const trimmed =
+    contexto.length > CONTEXT_MAX_CHARS ? `${contexto.slice(0, CONTEXT_MAX_CHARS)}…` : contexto
+
+  return `${body}\n\n--- CONTEXTO EM ABERTO DO EMPRESÁRIO (PRIORIZE) ---\n${trimmed}`
 }
