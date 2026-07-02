@@ -436,6 +436,25 @@
   display: block;
 }
 
+.diag-turnstile-wrap {
+  margin: 8px 0 20px;
+}
+
+.diag-turnstile {
+  min-height: 65px;
+}
+
+.diag-security-error {
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: rgba(220, 38, 38, 0.08);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+  color: #b91c1c;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
 .diag-quiz-nav {
   display: flex;
   align-items: center;

@@ -1,6 +1,8 @@
 import type { FlatQuestion, Answers } from '../types'
 import { formatPhoneBr, stripPhoneDigits } from '../formatPhone'
+import { IS_TURNSTILE_ENABLED, TURNSTILE_SITE_KEY } from '../turnstileConfig'
 import { OptionCard } from './OptionCard'
+import { TurnstileWidget } from './TurnstileWidget'
 
 interface QuizScreenProps {
   question: FlatQuestion
@@ -9,10 +11,13 @@ interface QuizScreenProps {
   progressPct: number
   answers: Answers
   fieldErrors: Record<string, string>
+  securityError?: string | null
   onAnswer: (questionId: string, value: string | string[]) => void
   onToggleMulti: (questionId: string, value: string) => void
   onNext: () => void
   onPrev: () => void
+  onTurnstileToken: (token: string) => void
+  onTurnstileExpire: () => void
 }
 
 function ArrowIcon() {
@@ -30,10 +35,13 @@ export function QuizScreen({
   progressPct,
   answers,
   fieldErrors,
+  securityError,
   onAnswer,
   onToggleMulti,
   onNext,
   onPrev,
+  onTurnstileToken,
+  onTurnstileExpire,
 }: QuizScreenProps) {
   const textValue = String(answers[question.id] ?? '')
   const isFirst = currentIndex === 0
@@ -232,6 +240,23 @@ export function QuizScreen({
           )}
 
           {renderOptions()}
+
+          {isLast && IS_TURNSTILE_ENABLED ? (
+            <div className="diag-turnstile-wrap">
+              <TurnstileWidget
+                siteKey={TURNSTILE_SITE_KEY}
+                onToken={onTurnstileToken}
+                onExpire={onTurnstileExpire}
+                onError={onTurnstileExpire}
+              />
+            </div>
+          ) : null}
+
+          {securityError ? (
+            <p className="diag-security-error" role="alert">
+              {securityError}
+            </p>
+          ) : null}
 
           <div className="diag-quiz-nav">
             {!isFirst ? (

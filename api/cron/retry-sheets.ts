@@ -12,10 +12,10 @@ function jsonResponse(body: unknown, status = 200) {
 }
 
 export default async function handler(request: Request) {
-  const cronSecret = process.env.CRON_SECRET
+  const cronSecret = process.env.CRON_SECRET?.trim()
   const authHeader = request.headers.get('authorization')
 
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+  if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
     return jsonResponse({ error: 'Não autorizado' }, 401)
   }
 

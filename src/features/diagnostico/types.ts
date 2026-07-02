@@ -99,5 +99,6 @@ export interface DiagnosticoApiResponse {
   sheetSaved?: boolean
   sheetQueued?: boolean
   sheetPending?: boolean
+  retryAfterSec?: number
   error?: string
 }

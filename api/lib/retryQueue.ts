@@ -1,5 +1,10 @@
 import { postSheetPayload } from './googleSheets'
 import type { SheetPayload } from './sheetPayload'
+import { upstashCommand } from './upstash'
+
+import { isUpstashEnabled } from './upstash'
+
+export { isUpstashEnabled as isRetryQueueEnabled } from './upstash'
 
 const QUEUE_KEY = 'diagnostico:sheet-retry'
 const MAX_ATTEMPTS = 8
@@ -13,40 +18,8 @@ export interface RetryJob {
   lastError?: string
 }
 
-interface UpstashResult {
-  result?: unknown
-  error?: string
-}
-
 function getRetryDelayMs(attempts: number): number {
   return BASE_DELAY_MS * 2 ** Math.min(attempts, 6)
-}
-
-async function upstashCommand(command: (string | number)[]): Promise<UpstashResult | null> {
-  const url = process.env.UPSTASH_REDIS_REST_URL
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN
-
-  if (!url || !token) return null
-
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(command),
-  })
-
-  if (!response.ok) {
-    const body = await response.text()
-    throw new Error(`Upstash falhou (${response.status}): ${body.slice(0, 200)}`)
-  }
-
-  return (await response.json()) as UpstashResult
-}
-
-export function isRetryQueueEnabled(): boolean {
-  return Boolean(process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN)
 }
 
 export async function enqueueSheetRetry(payload: SheetPayload, error: string): Promise<boolean> {

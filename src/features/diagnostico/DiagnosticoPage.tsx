@@ -16,6 +16,7 @@ export function DiagnosticoPage() {
     progressPct,
     answers,
     fieldErrors,
+    securityError,
     report,
     startQuiz,
     restartQuiz,
@@ -23,6 +24,8 @@ export function DiagnosticoPage() {
     toggleMulti,
     goNext,
     goPrev,
+    handleTurnstileToken,
+    handleTurnstileExpire,
   } = useDiagnostico()
 
   return (
@@ -43,10 +46,13 @@ export function DiagnosticoPage() {
           progressPct={progressPct}
           answers={answers}
           fieldErrors={fieldErrors}
+          securityError={securityError}
           onAnswer={setAnswer}
           onToggleMulti={toggleMulti}
           onNext={goNext}
           onPrev={goPrev}
+          onTurnstileToken={handleTurnstileToken}
+          onTurnstileExpire={handleTurnstileExpire}
         />
       )}
 
