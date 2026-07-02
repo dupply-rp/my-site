@@ -7,6 +7,7 @@ Regras:
 - Linguagem prática de empreendedor; sem buzzwords
 - Retorne APENAS HTML puro, sem markdown nem backticks
 - Parágrafos concisos; inclua todas as seções abaixo
+- Relatório completo em até ~1.200 palavras; sem HTML extra além do formato
 
 Formato:
 <h2>📍 Diagnóstico da Situação Atual</h2><p>...</p><div class="section-divider"></div>

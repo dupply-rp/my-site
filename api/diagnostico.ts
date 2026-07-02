@@ -54,7 +54,10 @@ export default async function handler(request: Request) {
   let aiGenerated = false
 
   try {
-    reportHtml = await generateAnthropicReport(summary)
+    reportHtml = await generateAnthropicReport(summary, {
+      score,
+      scoreLabel: scoreInfo.label,
+    })
     aiGenerated = true
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Erro ao gerar relatório'

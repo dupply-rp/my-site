@@ -15,9 +15,9 @@ function cleanReportHtml(raw: string): string {
 
 // Edge Runtime da Vercel limita a resposta a ~25s. Haiku entrega relatório completo dentro do prazo.
 const EDGE_MODEL = 'claude-haiku-4-5-20251001'
-const MAX_OUTPUT_TOKENS = 1800
+const MAX_OUTPUT_TOKENS = 2000
 
-async function requestReport(model: string, summary: string, timeoutMs: number): Promise<string> {
+async function requestReport(model: string, userContent: string, timeoutMs: number): Promise<string> {
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), timeoutMs)
 
@@ -33,12 +33,7 @@ async function requestReport(model: string, summary: string, timeoutMs: number):
         model,
         max_tokens: MAX_OUTPUT_TOKENS,
         system: DIAGNOSTICO_SYSTEM_PROMPT,
-        messages: [
-          {
-            role: 'user',
-            content: `Gere o relatório com base neste diagnóstico:\n\n${summary}`,
-          },
-        ],
+        messages: [{ role: 'user', content: userContent }],
       }),
       signal: controller.signal,
     })
@@ -62,13 +57,18 @@ async function requestReport(model: string, summary: string, timeoutMs: number):
   }
 }
 
-export async function generateAnthropicReport(summary: string): Promise<string> {
+export async function generateAnthropicReport(
+  summary: string,
+  meta?: { score: number; scoreLabel: string },
+): Promise<string> {
   const apiKey = process.env.ANTHROPIC_API_KEY
   if (!apiKey) {
     throw new Error('ANTHROPIC_API_KEY não configurada')
   }
 
-  // Sonnet excede o limite de 25s do Edge; ignoramos ANTHROPIC_MODEL em produção edge.
+  const scoreLine = meta ? `\nscore: ${meta.score}/100 (${meta.scoreLabel})` : ''
+  const userContent = `Gere o relatório com base neste diagnóstico:${scoreLine}\n\n${summary}`
+
   const model = EDGE_MODEL
-  return requestReport(model, summary, 22_000)
+  return requestReport(model, userContent, 22_000)
 }
