@@ -1,3 +1,4 @@
+import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { waitUntil } from '@vercel/functions'
 import { buildSummary } from './lib/diagnostico/buildSummary'
 import { buildFallbackReport } from './lib/diagnostico/fallbackReport'
@@ -9,40 +10,26 @@ import { enqueueSheetRetry } from './lib/retryQueue'
 import { buildSheetPayload } from './lib/sheetPayload'
 
 export const config = {
-  runtime: 'edge',
+  maxDuration: 60,
 }
 
 function isAnswers(value: unknown): value is Answers {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
 }
 
-function jsonResponse(body: unknown, status = 200) {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { 'Content-Type': 'application/json' },
-  })
-}
-
-export default async function handler(request: Request) {
-  if (request.method !== 'POST') {
-    return jsonResponse({ error: 'Método não permitido' }, 405)
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Método não permitido' })
   }
 
-  let body: unknown
-  try {
-    body = await request.json()
-  } catch {
-    return jsonResponse({ error: 'JSON inválido' }, 400)
-  }
-
-  const { answers } = (body ?? {}) as { answers?: unknown }
+  const { answers } = (req.body ?? {}) as { answers?: unknown }
 
   if (!isAnswers(answers)) {
-    return jsonResponse({ error: 'Respostas inválidas' }, 400)
+    return res.status(400).json({ error: 'Respostas inválidas' })
   }
 
   if (!String(answers.nome ?? '').trim()) {
-    return jsonResponse({ error: 'Nome da empresa é obrigatório' }, 400)
+    return res.status(400).json({ error: 'Nome da empresa é obrigatório' })
   }
 
   const summary = buildSummary(answers)
@@ -79,7 +66,7 @@ export default async function handler(request: Request) {
     ),
   )
 
-  return jsonResponse({
+  return res.status(200).json({
     reportHtml,
     score,
     scoreInfo,
