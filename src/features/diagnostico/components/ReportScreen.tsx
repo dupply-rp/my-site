@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import dupplyLogoTransparent from '../../../assets/dupply-logo-transparent.png'
 import { WHATSAPP_URL } from '../../../constants/links'
 import type { Answers, DiagnosticoReport } from '../types'
 
@@ -51,14 +52,32 @@ export function ReportScreen({ answers, report, onRestart }: ReportScreenProps) 
   return (
     <div className="diag-report">
       <header className="diag-report-header">
-        <span className="diag-report-badge">✓ Diagnóstico concluído</span>
-        {emailDispatched && emailTo ? (
-          <p className="diag-email-notice" role="status">
-            Enviamos uma cópia deste relatório para <strong>{emailTo}</strong>. Verifique também a caixa de spam.
-          </p>
-        ) : null}
-        <h1 className="diag-report-title">Relatório de IA — {company}</h1>
-        <p className="diag-report-company">{subtitle}</p>
+        <div className="diag-report-brand-bar">
+          <div className="diag-report-brand">
+            <img
+              className="diag-report-logo"
+              src={dupplyLogoTransparent}
+              alt="Dupply"
+              width={168}
+              height={40}
+            />
+          </div>
+          <div className="diag-report-brand-meta">
+            <span className="diag-report-brand-label">Diagnóstico de IA</span>
+            <span className="diag-report-brand-url">dupply.com.br</span>
+          </div>
+        </div>
+
+        <div className="diag-report-header-content">
+          <span className="diag-report-badge">✓ Diagnóstico concluído</span>
+          {emailDispatched && emailTo ? (
+            <p className="diag-email-notice" role="status">
+              Enviamos uma cópia deste relatório para <strong>{emailTo}</strong>. Verifique também a caixa de spam.
+            </p>
+          ) : null}
+          <h1 className="diag-report-title">Relatório — {company}</h1>
+          <p className="diag-report-company">{subtitle}</p>
+        </div>
       </header>
 
       <div className="diag-report-body">
