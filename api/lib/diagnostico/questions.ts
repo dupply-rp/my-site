@@ -1,4 +1,4 @@
-import type { FlatQuestion, QuestionSection } from './types'
+import type { FlatQuestion, QuestionSection } from './types.js'
 
 export const questionSections: QuestionSection[] = [
   {

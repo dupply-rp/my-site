@@ -1,11 +1,11 @@
-import { buildSummary } from '../lib/diagnostico/buildSummary'
-import { buildFallbackReport } from '../lib/diagnostico/fallbackReport'
-import { calcPillars, calcScore, getScoreInfo } from '../lib/diagnostico/scoring'
-import { generateAnthropicReport } from '../lib/anthropic'
-import { saveToGoogleSheets } from '../lib/googleSheets'
-import { isRetryQueueEnabled, enqueueSheetRetry } from '../lib/retryQueue'
-import { createSmokeAnswers } from '../lib/smokeFixture'
-import { buildSheetPayload } from '../lib/sheetPayload'
+import { buildSummary } from '../lib/diagnostico/buildSummary.js'
+import { buildFallbackReport } from '../lib/diagnostico/fallbackReport.js'
+import { calcPillars, calcScore, getScoreInfo } from '../lib/diagnostico/scoring.js'
+import { generateAnthropicReport } from '../lib/anthropic.js'
+import { saveToGoogleSheets } from '../lib/googleSheets.js'
+import { isRetryQueueEnabled, enqueueSheetRetry } from '../lib/retryQueue.js'
+import { createSmokeAnswers } from '../lib/smokeFixture.js'
+import { buildSheetPayload } from '../lib/sheetPayload.js'
 
 export const config = {
   runtime: 'edge',

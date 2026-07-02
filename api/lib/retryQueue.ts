@@ -1,10 +1,8 @@
-import { postSheetPayload } from './googleSheets'
-import type { SheetPayload } from './sheetPayload'
-import { upstashCommand } from './upstash'
+import { postSheetPayload } from './googleSheets.js'
+import type { SheetPayload } from './sheetPayload.js'
+import { isUpstashEnabled, upstashCommand } from './upstash.js'
 
-import { isUpstashEnabled } from './upstash'
-
-export { isUpstashEnabled as isRetryQueueEnabled } from './upstash'
+export { isUpstashEnabled as isRetryQueueEnabled } from './upstash.js'
 
 const QUEUE_KEY = 'diagnostico:sheet-retry'
 const MAX_ATTEMPTS = 8
@@ -61,7 +59,7 @@ export async function processRetryQueue(limit = 10): Promise<{
   requeued: number
   dropped: number
 }> {
-  if (!isRetryQueueEnabled()) {
+  if (!isUpstashEnabled()) {
     return { processed: 0, succeeded: 0, requeued: 0, dropped: 0 }
   }
 

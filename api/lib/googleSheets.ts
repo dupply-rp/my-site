@@ -1,4 +1,4 @@
-import { buildSheetPayload, type SheetPayload } from './sheetPayload'
+import { buildSheetPayload, type SheetPayload } from './sheetPayload.js'
 
 export type { SheetPayload }
 

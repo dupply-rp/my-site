@@ -1,4 +1,4 @@
-import { DIAGNOSTICO_SYSTEM_PROMPT } from './prompt'
+import { DIAGNOSTICO_SYSTEM_PROMPT } from './prompt.js'
 
 interface AnthropicMessage {
   content?: Array<{ type?: string; text?: string }>

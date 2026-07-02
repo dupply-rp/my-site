@@ -1,5 +1,5 @@
-import { allQuestions } from './questions'
-import type { Answers } from './types'
+import { allQuestions } from './questions.js'
+import type { Answers } from './types.js'
 
 const CONTEXT_MAX_CHARS = 800
 const SKIP_CONTACT_FIELDS = new Set(['email', 'telefone'])

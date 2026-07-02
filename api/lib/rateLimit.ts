@@ -1,4 +1,4 @@
-import { upstashCommand, isUpstashEnabled } from './upstash'
+import { upstashCommand, isUpstashEnabled } from './upstash.js'
 
 const RATE_KEY_PREFIX = 'diagnostico:rate:'
 
