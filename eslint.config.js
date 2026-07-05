@@ -6,10 +6,9 @@ import tseslint from 'typescript-eslint'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  globalIgnores(['dist', '**/dist/**', 'node_modules', '**/.turbo/**']),
   {
-    files: ['**/*.{ts,tsx}'],
-    ignores: ['api/**'],
+    files: ['apps/web/**/*.{ts,tsx}', 'packages/ui/**/*.{ts,tsx}'],
     extends: [
       js.configs.recommended,
       tseslint.configs.recommended,
@@ -22,7 +21,7 @@ export default defineConfig([
     },
   },
   {
-    files: ['api/**/*.ts'],
+    files: ['apps/api/**/*.ts', 'api/**/*.ts'],
     extends: [js.configs.recommended, tseslint.configs.recommended],
     languageOptions: {
       ecmaVersion: 2020,

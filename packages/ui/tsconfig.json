@@ -1,0 +1,4 @@
+{
+  "extends": "@dupply/config/tsconfig/react.json",
+  "include": ["src"]
+}

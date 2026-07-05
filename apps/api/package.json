@@ -1,0 +1,21 @@
+{
+  "name": "@dupply/api",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@dupply/types": "workspace:*"
+  },
+  "devDependencies": {
+    "@dupply/config": "workspace:*",
+    "@eslint/js": "^9.39.1",
+    "@vercel/node": "^5.8.22",
+    "eslint": "^9.39.1",
+    "globals": "^16.5.0",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.46.4"
+  }
+}

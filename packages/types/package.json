@@ -1,0 +1,9 @@
+{
+  "name": "@dupply/types",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    "./diagnostico": "./src/diagnostico.ts"
+  }
+}

@@ -1,4 +1,7 @@
 {
+  "buildCommand": "pnpm --filter @dupply/web build",
+  "outputDirectory": "apps/web/dist",
+  "installCommand": "pnpm install",
   "functions": {
     "api/diagnostico.ts": {
       "maxDuration": 60

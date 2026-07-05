@@ -55,7 +55,13 @@ export interface ContactQuestion extends QuestionBase {
   fields: ContactField[]
 }
 
-export type Question = TextQuestion | TextareaQuestion | SelectQuestion | SingleQuestion | MultiQuestion | ContactQuestion
+export type Question =
+  | TextQuestion
+  | TextareaQuestion
+  | SelectQuestion
+  | SingleQuestion
+  | MultiQuestion
+  | ContactQuestion
 
 export interface QuestionSection {
   label: string
@@ -97,5 +103,6 @@ export interface DiagnosticoApiResponse {
   pillars: Pillar[]
   aiGenerated: boolean
   sheetSaved?: boolean
+  sheetQueued?: boolean
   error?: string
 }
