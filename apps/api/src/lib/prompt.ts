@@ -22,7 +22,6 @@ FORMATO (retorne só o HTML abaixo, sem nada mais):
 <h2>🎯 Oportunidades Prioritárias de IA</h2>
 <h3>[Oportunidade 1]</h3><p>[descrição com impacto estimado]</p>
 <h3>[Oportunidade 2]</h3><p>[descrição]</p>
-<h3>[Oportunidade 3]</h3><p>[descrição]</p>
 <div class="section-divider"></div>
 <h2>🛠️ Ferramentas Recomendadas</h2>
 <ul><li><strong>[Ferramenta]</strong> — [justificativa prática]</li></ul>

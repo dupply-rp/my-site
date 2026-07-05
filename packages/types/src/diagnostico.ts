@@ -94,6 +94,8 @@ export interface DiagnosticoReport {
   pillars: Pillar[]
   reportHtml: string
   aiGenerated?: boolean
+  emailDispatched?: boolean
+  emailTo?: string
 }
 
 export interface DiagnosticoApiResponse {
@@ -104,5 +106,9 @@ export interface DiagnosticoApiResponse {
   aiGenerated: boolean
   sheetSaved?: boolean
   sheetQueued?: boolean
+  sheetPending?: boolean
+  emailDispatched?: boolean
+  emailTo?: string
+  retryAfterSec?: number
   error?: string
 }

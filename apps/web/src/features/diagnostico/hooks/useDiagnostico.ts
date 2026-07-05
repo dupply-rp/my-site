@@ -3,6 +3,7 @@ import { buildFallbackReport } from '../fallbackReport'
 import { fetchDiagnosticoFromApi } from '../fetchDiagnosticoApi'
 import { allQuestions, TOTAL_QUESTIONS } from '../questions'
 import { calcPillars, calcScore, getScoreInfo } from '../scoring'
+import { IS_TURNSTILE_ENABLED } from '../turnstileConfig'
 import type { Answers, DiagnosticoReport, DiagnosticoScreen } from '../types'
 import { validateContactFields } from '../validateContact'
 import { validateTextareaField } from '../validateTextarea'
@@ -12,23 +13,36 @@ export function useDiagnostico() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [answers, setAnswers] = useState<Answers>({})
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
+  const [securityError, setSecurityError] = useState<string | null>(null)
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
   const [report, setReport] = useState<DiagnosticoReport | null>(null)
 
   const currentQuestion = allQuestions[currentIndex]
   const progressPct = Math.round((currentIndex / TOTAL_QUESTIONS) * 100)
 
-  const generateReport = useCallback(async (finalAnswers: Answers) => {
+  const generateReport = useCallback(async (finalAnswers: Answers, token?: string | null) => {
     setScreen('loading')
+    setSecurityError(null)
 
-    const apiResult = await fetchDiagnosticoFromApi(finalAnswers)
+    const apiResult = await fetchDiagnosticoFromApi(finalAnswers, token ?? undefined)
 
-    if (apiResult) {
+    if (!apiResult.ok) {
+      if (!apiResult.showFallback) {
+        setSecurityError(apiResult.error)
+        setTurnstileToken(null)
+        setScreen('quiz')
+        return
+      }
+    } else {
+      const { data } = apiResult
       setReport({
-        score: apiResult.score,
-        scoreInfo: apiResult.scoreInfo,
-        pillars: apiResult.pillars,
-        reportHtml: apiResult.reportHtml,
-        aiGenerated: apiResult.aiGenerated,
+        score: data.score,
+        scoreInfo: data.scoreInfo,
+        pillars: data.pillars,
+        reportHtml: data.reportHtml,
+        aiGenerated: data.aiGenerated,
+        emailDispatched: data.emailDispatched,
+        emailTo: data.emailTo,
       })
       setAnswers(finalAnswers)
       setScreen('report')
@@ -49,6 +63,8 @@ export function useDiagnostico() {
     setCurrentIndex(0)
     setAnswers({})
     setFieldErrors({})
+    setSecurityError(null)
+    setTurnstileToken(null)
     setReport(null)
     setScreen('quiz')
   }, [])
@@ -58,6 +74,8 @@ export function useDiagnostico() {
     setCurrentIndex(0)
     setAnswers({})
     setFieldErrors({})
+    setSecurityError(null)
+    setTurnstileToken(null)
     setReport(null)
   }, [])
 
@@ -100,20 +118,41 @@ export function useDiagnostico() {
       }
     }
 
+    if (question.type === 'select' && !String(answers[question.id] ?? '').trim()) {
+      setFieldErrors({ [question.id]: 'Selecione uma opção para continuar' })
+      return
+    }
+
     if (currentIndex < TOTAL_QUESTIONS - 1) {
+      setSecurityError(null)
       setCurrentIndex((index) => index + 1)
       return
     }
 
-    void generateReport(answers)
-  }, [answers, currentIndex, generateReport])
+    if (IS_TURNSTILE_ENABLED && !turnstileToken) {
+      setSecurityError('Confirme a verificação de segurança antes de gerar o relatório.')
+      return
+    }
+
+    void generateReport(answers, turnstileToken)
+  }, [answers, currentIndex, generateReport, turnstileToken])
 
   const goPrev = useCallback(() => {
     if (currentIndex > 0) {
       setFieldErrors({})
+      setSecurityError(null)
       setCurrentIndex((index) => index - 1)
     }
   }, [currentIndex])
+
+  const handleTurnstileToken = useCallback((token: string) => {
+    setTurnstileToken(token)
+    setSecurityError(null)
+  }, [])
+
+  const handleTurnstileExpire = useCallback(() => {
+    setTurnstileToken(null)
+  }, [])
 
   return {
     screen,
@@ -123,6 +162,8 @@ export function useDiagnostico() {
     progressPct,
     answers,
     fieldErrors,
+    securityError,
+    turnstileToken,
     report,
     startQuiz,
     restartQuiz,
@@ -130,5 +171,7 @@ export function useDiagnostico() {
     toggleMulti,
     goNext,
     goPrev,
+    handleTurnstileToken,
+    handleTurnstileExpire,
   }
 }

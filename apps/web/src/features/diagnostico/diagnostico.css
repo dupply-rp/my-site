@@ -332,6 +332,46 @@
   box-shadow: 0 0 0 3px rgba(7, 24, 255, 0.1);
 }
 
+.diag-select-wrap {
+  position: relative;
+  margin-bottom: 28px;
+}
+
+.diag-select-wrap .diag-input-field {
+  margin-bottom: 0;
+}
+
+.diag-select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 44px;
+  cursor: pointer;
+}
+
+.diag-select.diag-select-placeholder {
+  color: var(--diag-muted);
+}
+
+.diag-select option {
+  color: var(--diag-ink);
+}
+
+.diag-select-chevron {
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--diag-muted);
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.diag-select-wrap.diag-select-error {
+  margin-bottom: 8px;
+}
+
 .diag-textarea {
   min-height: 160px;
   margin-bottom: 8px;
@@ -434,6 +474,25 @@
 
 .diag-option-card.selected .diag-option-check svg {
   display: block;
+}
+
+.diag-turnstile-wrap {
+  margin: 8px 0 20px;
+}
+
+.diag-turnstile {
+  min-height: 65px;
+}
+
+.diag-security-error {
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: rgba(220, 38, 38, 0.08);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+  color: #b91c1c;
+  font-size: 14px;
+  line-height: 1.45;
 }
 
 .diag-quiz-nav {
@@ -556,9 +615,61 @@
 
 .diag-report-header {
   width: 100%;
-  padding: 36px 24px;
+  padding: 0 24px 36px;
   border-bottom: 1px solid var(--diag-line);
   background: #fff;
+}
+
+.diag-report-brand-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  max-width: 840px;
+  margin: 0 auto;
+  padding: 28px 0 24px;
+  border-bottom: 1px solid var(--diag-line);
+}
+
+.diag-report-brand {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.diag-report-logo {
+  display: block;
+  width: auto;
+  height: 40px;
+  max-width: min(168px, 42vw);
+}
+
+.diag-report-brand-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  text-align: right;
+}
+
+.diag-report-brand-label {
+  color: var(--diag-ink);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.diag-report-brand-url {
+  color: var(--diag-muted);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.diag-report-header-content {
+  max-width: 840px;
+  margin: 0 auto;
+  padding-top: 28px;
   text-align: center;
 }
 
@@ -785,6 +896,22 @@
   line-height: 1.5;
 }
 
+.diag-email-notice {
+  margin: 0 0 14px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(5, 150, 105, 0.25);
+  background: var(--diag-success-soft);
+  color: #065f46;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.diag-email-notice strong {
+  color: #047857;
+  font-weight: 700;
+}
+
 .diag-report-formatted {
   padding: 28px 24px;
   border: 1px solid var(--diag-line);
@@ -1006,9 +1133,89 @@
 }
 
 @media print {
+  @page {
+    margin: 14mm 12mm;
+  }
+
+  body {
+    background: #fff;
+  }
+
+  .diag-app {
+    background: #fff;
+  }
+
   .diag-back-link,
   .diag-quiz-header,
-  .diag-report-cta {
-    display: none;
+  .diag-report-cta,
+  .diag-email-notice {
+    display: none !important;
+  }
+
+  .diag-report {
+    min-height: auto;
+    padding-top: 0;
+  }
+
+  .diag-report-header {
+    padding: 0 0 20px;
+    border-bottom: 2px solid rgba(16, 21, 29, 0.12);
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .diag-report-brand-bar {
+    padding: 0 0 16px;
+    border-bottom: 1px solid rgba(16, 21, 29, 0.1);
+  }
+
+  .diag-report-logo {
+    height: 36px;
+    max-width: 150px;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .diag-report-brand-label {
+    font-size: 11px;
+  }
+
+  .diag-report-brand-url {
+    font-size: 11px;
+  }
+
+  .diag-report-header-content {
+    padding-top: 18px;
+  }
+
+  .diag-report-body {
+    max-width: none;
+    padding: 24px 0 0;
+  }
+
+  .diag-score-section,
+  .diag-pillars-grid,
+  .diag-report-section {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .diag-pillar-bar-fill,
+  .diag-score-ring-fill {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
+@media (max-width: 520px) {
+  .diag-report-brand-bar {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .diag-report-brand-meta {
+    align-items: center;
+    text-align: center;
   }
 }

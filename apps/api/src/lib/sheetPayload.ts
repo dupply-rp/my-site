@@ -1,3 +1,5 @@
+import { htmlToPlainText } from './htmlToPlainText'
+
 export interface SheetPayload {
   timestamp: string
   empresa: string
@@ -45,7 +47,7 @@ export function buildSheetPayload(input: {
     objetivo:
       asString(answers.contexto_negocio).slice(0, 200) || asString(answers.maior_dor),
     respostas: answers,
-    relatorio: reportHtml.slice(0, 5000),
+    relatorio: htmlToPlainText(reportHtml).slice(0, 8000),
   }
 
   const secret = process.env.DIAGNOSTICO_WEBHOOK_SECRET

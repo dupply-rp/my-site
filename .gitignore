@@ -12,6 +12,7 @@ dist
 dist-ssr
 .turbo
 *.local
+*.tsbuildinfo
 
 # Editor directories and files
 .vscode/*
