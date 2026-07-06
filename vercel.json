@@ -1,5 +1,6 @@
 {
-  "buildCommand": "pnpm --filter @dupply/web build",
+  "buildCommand": "pnpm build",
+  "devCommand": "pnpm --filter @dupply/web exec vite --host --port $PORT",
   "outputDirectory": "apps/web/dist",
   "installCommand": "pnpm install",
   "functions": {
@@ -18,7 +19,15 @@
   ],
   "rewrites": [
     {
-      "source": "/((?!api/).*)",
+      "source": "/console",
+      "destination": "/console/index.html"
+    },
+    {
+      "source": "/console/:path*",
+      "destination": "/console/index.html"
+    },
+    {
+      "source": "/((?!api/|console/).*)",
       "destination": "/index.html"
     }
   ],

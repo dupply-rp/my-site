@@ -1,0 +1,25 @@
+{
+  "name": "@dupply/db",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./schema": "./src/schema.ts"
+  },
+  "scripts": {
+    "generate": "drizzle-kit generate",
+    "push": "dotenv -e ../../.env.local -- drizzle-kit push",
+    "studio": "dotenv -e ../../.env.local -- drizzle-kit studio"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^1.0.1",
+    "drizzle-orm": "^0.44.5"
+  },
+  "devDependencies": {
+    "@dupply/config": "workspace:*",
+    "dotenv-cli": "^10.0.0",
+    "drizzle-kit": "^0.31.4",
+    "typescript": "~5.9.3"
+  }
+}

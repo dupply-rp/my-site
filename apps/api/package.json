@@ -7,8 +7,10 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@dupply/db": "workspace:*",
     "@dupply/types": "workspace:*",
-    "@vercel/functions": "^3.7.5"
+    "@vercel/functions": "^3.7.5",
+    "drizzle-orm": "^0.44.5"
   },
   "devDependencies": {
     "@dupply/config": "workspace:*",

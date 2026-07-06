@@ -6,6 +6,7 @@ import type { Answers } from './lib/diagnostico/types'
 import { generateAnthropicReport } from './lib/anthropic'
 import { saveToGoogleSheets } from './lib/googleSheets'
 import { enqueueSheetRetry } from './lib/retryQueue'
+import { saveDiagnosticoToDb } from './lib/saveDiagnostico'
 import { buildSheetPayload } from './lib/sheetPayload'
 import { checkDiagnosticoRateLimit, getClientIp } from './lib/rateLimit'
 import { canSendReportEmail, sendReportEmail } from './lib/sendReportEmail'
@@ -121,6 +122,19 @@ export default async function handler(request: Request) {
         await enqueueSheetRetry(sheetPayload, message)
       },
     ),
+  )
+
+  waitUntil(
+    saveDiagnosticoToDb({
+      answers,
+      score,
+      scoreLabel: scoreInfo.label,
+      reportHtml,
+      aiGenerated,
+    }).catch((error) => {
+      const message = error instanceof Error ? error.message : 'Erro ao salvar no banco'
+      console.error('[diagnostico] Postgres:', message)
+    }),
   )
 
   const recipientEmail = String(answers.email ?? '').trim()

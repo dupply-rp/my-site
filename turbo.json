@@ -5,6 +5,10 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**"]
     },
+    "@dupply/console#build": {
+      "dependsOn": ["@dupply/web#build", "^build"],
+      "outputs": ["dist/**"]
+    },
     "lint": {
       "dependsOn": ["^build"]
     },

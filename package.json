@@ -7,12 +7,16 @@
   "scripts": {
     "dev": "turbo dev --filter=@dupply/web",
     "dev:web": "turbo dev --filter=@dupply/web",
-    "dev:api": "vercel dev",
+    "dev:console": "turbo dev --filter=@dupply/console",
+    "dev:api": "dotenv -e .env.local -- pnpm exec vercel dev --listen 3000",
+    "dev:local": "concurrently --names api,console -c blue,magenta \"pnpm dev:api\" \"pnpm dev:console\"",
     "build": "turbo build",
     "lint": "turbo lint",
     "preview": "pnpm --filter @dupply/web preview",
     "test:diagnostico:prod": "node scripts/smoke-diagnostico.mjs",
-    "test:diagnostico:sheets": "SMOKE_MODE=sheets node scripts/smoke-diagnostico.mjs"
+    "test:diagnostico:sheets": "SMOKE_MODE=sheets node scripts/smoke-diagnostico.mjs",
+    "db:push": "pnpm --filter @dupply/db push",
+    "db:studio": "pnpm --filter @dupply/db studio"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
@@ -22,7 +26,10 @@
     "eslint-plugin-react-refresh": "^0.4.24",
     "globals": "^16.5.0",
     "turbo": "^2.5.4",
+    "concurrently": "^9.2.1",
+    "dotenv-cli": "^10.0.0",
     "typescript": "~5.9.3",
-    "typescript-eslint": "^8.46.4"
+    "typescript-eslint": "^8.46.4",
+    "vercel": "^54.20.1"
   }
 }
