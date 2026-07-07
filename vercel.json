@@ -4,11 +4,6 @@
   "outputDirectory": "apps/web/dist",
   "installCommand": "pnpm install",
   "functions": {
-    "api/diagnostico.ts": {
-      "maxDuration": 60,
-      "memory": 1024,
-      "includeFiles": "apps/api/src/**"
-    },
     "api/diagnostico/smoke.ts": {
       "maxDuration": 60,
       "includeFiles": "apps/api/src/**"
