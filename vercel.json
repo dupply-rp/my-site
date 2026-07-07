@@ -4,13 +4,12 @@
   "outputDirectory": "apps/web/dist",
   "installCommand": "pnpm install",
   "functions": {
-    "api/health.ts": {
-      "maxDuration": 60,
-      "includeFiles": "apps/api/src/**,packages/diagnostico/src/**,packages/types/src/**,packages/db/src/**"
-    },
-    "api/diagnostico/smoke.ts": {
+    "api/diagnostico-handler.ts": {
       "maxDuration": 60,
       "includeFiles": "apps/api/src/**"
+    },
+    "api/diagnostico/smoke.ts": {
+      "maxDuration": 60
     },
     "api/cron/retry-sheets.ts": {
       "maxDuration": 60,
