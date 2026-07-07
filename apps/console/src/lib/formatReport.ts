@@ -28,12 +28,16 @@ export interface PreparedReport {
   content: string
 }
 
-export function prepareReportForDisplay(relatorio: string): PreparedReport {
-  const withoutBlocks = stripStyleAndScriptBlocks(relatorio)
+export function prepareReportForDisplay(relatorio: string): PreparedReport | null {
+  const raw = relatorio.trim()
+  if (!raw) return null
+
+  const withoutBlocks = stripStyleAndScriptBlocks(raw)
 
   if (looksLikeHtml(withoutBlocks)) {
-    return { mode: 'html', content: withoutBlocks }
+    return { mode: 'html', content: withoutBlocks || raw }
   }
 
-  return { mode: 'text', content: stripLeadingPlainCss(withoutBlocks) }
+  const text = stripLeadingPlainCss(withoutBlocks)
+  return { mode: 'text', content: text || withoutBlocks || raw }
 }

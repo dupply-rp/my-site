@@ -6,12 +6,13 @@ import { ConsoleClient } from '@dupply/sdk'
 interface AppShellProps {
   title: string
   subtitle?: string
+  actions?: ReactNode
   children: ReactNode
 }
 
 const navItems = [{ to: '/', label: 'Diagnósticos', end: true }]
 
-export function AppShell({ title, subtitle, children }: AppShellProps) {
+export function AppShell({ title, subtitle, actions, children }: AppShellProps) {
   const navigate = useNavigate()
 
   function handleLogout() {
@@ -51,6 +52,7 @@ export function AppShell({ title, subtitle, children }: AppShellProps) {
             <h1>{title}</h1>
             {subtitle ? <p className="muted">{subtitle}</p> : null}
           </div>
+          {actions ? <div className="app-shell-actions">{actions}</div> : null}
         </header>
         <div className="app-shell-content">{children}</div>
       </div>
@@ -117,6 +119,15 @@ export function AppShell({ title, subtitle, children }: AppShellProps) {
 
         .app-shell-header {
           padding: 24px 32px 0;
+          display: flex;
+          align-items: flex-start;
+          justify-content: space-between;
+          gap: 16px;
+          flex-wrap: wrap;
+        }
+
+        .app-shell-actions {
+          flex-shrink: 0;
         }
 
         .app-shell-header h1 {
