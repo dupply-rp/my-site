@@ -7,19 +7,19 @@
     "api/diagnostico.ts": {
       "maxDuration": 60,
       "memory": 1024,
-      "includeFiles": "apps/api/src/**"
+      "includeFiles": "api/src/**"
     },
     "api/diagnostico/smoke.ts": {
       "maxDuration": 60,
-      "includeFiles": "apps/api/src/**"
+      "includeFiles": "api/src/**"
     },
     "api/cron/retry-sheets.ts": {
       "maxDuration": 60,
-      "includeFiles": "apps/api/src/**"
+      "includeFiles": "api/src/**"
     },
     "api/console/*.ts": {
       "maxDuration": 30,
-      "includeFiles": "apps/api/src/**"
+      "includeFiles": "api/src/**"
     }
   },
   "crons": [
