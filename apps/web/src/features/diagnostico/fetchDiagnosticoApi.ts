@@ -9,7 +9,7 @@ export async function fetchDiagnosticoFromApi(
   turnstileToken?: string,
 ): Promise<DiagnosticoApiResult> {
   try {
-    const response = await fetch('/api/gerar-diagnostico', {
+    const response = await fetch('/api/health', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
