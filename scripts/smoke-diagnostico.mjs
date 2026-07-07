@@ -9,7 +9,7 @@ if (!secret) {
   process.exit(1)
 }
 
-const url = `${baseUrl}/api/diagnostico/smoke?mode=${encodeURIComponent(mode)}`
+const url = `${baseUrl}/api/diagnostico-smoke?mode=${encodeURIComponent(mode)}`
 
 const response = await fetch(url, {
   method: 'POST',
