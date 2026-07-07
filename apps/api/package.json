@@ -3,6 +3,13 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "exports": {
+    "./diagnostico": "./src/diagnostico.ts",
+    "./diagnostico/smoke": "./src/diagnostico/smoke.ts",
+    "./cron/retry-sheets": "./src/cron/retry-sheets.ts",
+    "./console/auth": "./src/console/auth.ts",
+    "./console/diagnosticos": "./src/console/diagnosticos.ts"
+  },
   "scripts": {
     "lint": "eslint ."
   },
@@ -11,13 +18,13 @@
     "@dupply/diagnostico": "workspace:*",
     "@dupply/types": "workspace:*",
     "@vercel/functions": "^3.7.5",
+    "@vercel/node": "^5.8.22",
     "drizzle-orm": "^0.44.5",
     "jose": "^6.1.0"
   },
   "devDependencies": {
     "@dupply/config": "workspace:*",
     "@eslint/js": "^9.39.1",
-    "@vercel/node": "^5.8.22",
     "eslint": "^9.39.1",
     "globals": "^16.5.0",
     "typescript": "~5.9.3",

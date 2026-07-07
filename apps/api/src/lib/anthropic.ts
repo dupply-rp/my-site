@@ -13,9 +13,10 @@ function cleanReportHtml(raw: string): string {
   return raw.replace(/```html?/gi, '').replace(/```/g, '').trim()
 }
 
-// Edge Runtime da Vercel limita a resposta a ~25s. Haiku entrega relatório completo dentro do prazo.
-const EDGE_MODEL = 'claude-haiku-4-5-20251001'
+// Node.js na Vercel permite até 60s — mais margem para o relatório com IA.
+const REPORT_MODEL = 'claude-haiku-4-5-20251001'
 const MAX_OUTPUT_TOKENS = 1800
+const REQUEST_TIMEOUT_MS = 55_000
 
 async function requestReport(model: string, userContent: string, timeoutMs: number): Promise<string> {
   const controller = new AbortController()
@@ -69,6 +70,6 @@ export async function generateAnthropicReport(
   const scoreLine = meta ? `\nscore: ${meta.score}/100 (${meta.scoreLabel})` : ''
   const userContent = `Gere o relatório com base neste diagnóstico:${scoreLine}\n\n${summary}`
 
-  const model = EDGE_MODEL
-  return requestReport(model, userContent, 22_000)
+  const model = REPORT_MODEL
+  return requestReport(model, userContent, REQUEST_TIMEOUT_MS)
 }

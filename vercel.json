@@ -5,10 +5,17 @@
   "installCommand": "pnpm install",
   "functions": {
     "api/diagnostico.ts": {
+      "maxDuration": 60,
+      "memory": 1024
+    },
+    "api/diagnostico/smoke.ts": {
       "maxDuration": 60
     },
-    "api/**/*.ts": {
+    "api/cron/retry-sheets.ts": {
       "maxDuration": 60
+    },
+    "api/console/*.ts": {
+      "maxDuration": 30
     }
   },
   "crons": [
