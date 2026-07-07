@@ -5,11 +5,9 @@ import { generateAnthropicReport } from './lib/anthropic'
 import { checkDiagnosticoRateLimit, getClientIp } from './lib/rateLimit'
 import { canSendReportEmail, sendReportEmail } from './lib/sendReportEmail'
 import { verifyTurnstileToken } from './lib/turnstile'
-import { asNodeHandler } from './lib/vercelNodeAdapter'
 
 export const config = {
-  runtime: 'nodejs',
-  maxDuration: 60,
+  runtime: 'edge',
 }
 
 function isAnswers(value: unknown): value is Answers {
@@ -26,7 +24,7 @@ function jsonResponse(body: unknown, status = 200, headers?: Record<string, stri
   })
 }
 
-export default asNodeHandler(handleDiagnostico)
+export default handleDiagnostico
 
 async function handleDiagnostico(request: Request) {
   if (request.method !== 'POST') {

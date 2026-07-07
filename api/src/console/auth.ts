@@ -1,27 +1,36 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node'
-
 import { verifyConsolePassword } from '../lib/consoleAuth'
 import { signConsoleToken } from '../lib/consoleSession'
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Método não permitido' })
+export const config = {
+  runtime: 'edge',
+}
+
+export default async function handler(request: Request) {
+  if (request.method !== 'POST') {
+    return Response.json({ error: 'Método não permitido' }, { status: 405 })
   }
 
   if (!process.env.CONSOLE_SECRET) {
-    return res.status(503).json({ error: 'Console não configurado (CONSOLE_SECRET ausente)' })
+    return Response.json({ error: 'Console não configurado (CONSOLE_SECRET ausente)' }, { status: 503 })
   }
 
-  const password = String(req.body?.password ?? '')
+  let body: { password?: string }
+  try {
+    body = (await request.json()) as { password?: string }
+  } catch {
+    return Response.json({ error: 'JSON inválido' }, { status: 400 })
+  }
+
+  const password = String(body.password ?? '')
   if (!verifyConsolePassword(password)) {
-    return res.status(401).json({ error: 'Senha incorreta' })
+    return Response.json({ error: 'Senha incorreta' }, { status: 401 })
   }
 
   const tenantSlug = process.env.DEFAULT_TENANT_SLUG ?? 'dupply'
   const token = await signConsoleToken(tenantSlug)
   if (!token) {
-    return res.status(500).json({ error: 'Não foi possível criar sessão' })
+    return Response.json({ error: 'Não foi possível criar sessão' }, { status: 500 })
   }
 
-  return res.status(200).json({ ok: true, token, tenantSlug })
+  return Response.json({ ok: true, token, tenantSlug })
 }
