@@ -3,20 +3,6 @@
   "devCommand": "pnpm --filter @dupply/web exec vite --host --port $PORT",
   "outputDirectory": "apps/web/dist",
   "installCommand": "pnpm install",
-  "functions": {
-    "api/diagnostico.ts": {
-      "includeFiles": "{api/src/**,packages/diagnostico/src/**,packages/types/src/**,packages/db/src/**}"
-    },
-    "api/diagnostico/smoke.ts": {
-      "includeFiles": "{api/src/**,packages/diagnostico/src/**,packages/types/src/**}"
-    },
-    "api/cron/retry-sheets.ts": {
-      "includeFiles": "api/src/**"
-    },
-    "api/console/*.ts": {
-      "includeFiles": "{api/src/**,packages/db/src/**,packages/types/src/**}"
-    }
-  },
   "crons": [
     {
       "path": "/api/cron/retry-sheets",
