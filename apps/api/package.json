@@ -9,6 +9,7 @@
     "./cron/retry-sheets": "./src/cron/retry-sheets.ts",
     "./console/auth": "./src/console/auth.ts",
     "./console/diagnosticos": "./src/console/diagnosticos.ts",
+    "./health-diagnostico": "./src/health-diagnostico.ts",
     "./lib/anthropic": "./src/lib/anthropic.ts",
     "./lib/rateLimit": "./src/lib/rateLimit.ts",
     "./lib/sendReportEmail": "./src/lib/sendReportEmail.ts",
