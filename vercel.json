@@ -6,7 +6,7 @@
   "functions": {
     "api/health.ts": {
       "maxDuration": 60,
-      "includeFiles": "apps/api/src/**"
+      "includeFiles": "apps/api/src/**,packages/diagnostico/src/**,packages/types/src/**,packages/db/src/**"
     },
     "api/diagnostico/smoke.ts": {
       "maxDuration": 60,
