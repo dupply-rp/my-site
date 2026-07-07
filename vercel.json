@@ -1,11 +1,12 @@
 {
-  "buildCommand": "pnpm build",
+  "buildCommand": "pnpm --filter @dupply/types build && pnpm --filter @dupply/diagnostico build && pnpm build",
   "devCommand": "pnpm --filter @dupply/web exec vite --host --port $PORT",
   "outputDirectory": "apps/web/dist",
   "installCommand": "pnpm install",
   "functions": {
     "api/diagnostico-handler.ts": {
-      "maxDuration": 60
+      "maxDuration": 60,
+      "includeFiles": "apps/api/src/**"
     },
     "api/diagnostico/smoke.ts": {
       "maxDuration": 60

@@ -4,7 +4,16 @@
   "version": "0.0.0",
   "type": "module",
   "exports": {
-    "./diagnostico": "./src/diagnostico.ts",
-    "./console": "./src/console.ts"
+    "./diagnostico": {
+      "types": "./dist/diagnostico.d.ts",
+      "import": "./dist/diagnostico.js"
+    },
+    "./console": {
+      "types": "./dist/console.d.ts",
+      "import": "./dist/console.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json"
   }
 }
