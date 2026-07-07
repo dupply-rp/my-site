@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { calcScore, getScoreInfo } from '@dupply/diagnostico'
+import { calcScore, getScoreInfo } from '../packages/diagnostico/dist/scoring.js'
 
 export const config = {
   maxDuration: 60,
