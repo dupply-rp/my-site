@@ -3,7 +3,7 @@ import { createDb, diagnosticos, diagnosticoRespostas, tenants } from '@dupply/d
 import { eq } from 'drizzle-orm'
 
 import type { Answers } from '@dupply/types/diagnostico'
-import { htmlToPlainText } from './htmlToPlainText'
+import { sanitizeReportHtml } from './htmlToPlainText'
 
 interface SaveDiagnosticoInput {
   answers: Answers
@@ -59,7 +59,7 @@ export async function saveDiagnosticoToDb(input: SaveDiagnosticoInput): Promise<
       maiorDor: asString(answers.maior_dor),
       budget: asString(answers.budget),
       objetivo: contexto.slice(0, 500) || asString(answers.maior_dor),
-      relatorio: htmlToPlainText(reportHtml),
+      relatorio: sanitizeReportHtml(reportHtml),
       aiGenerated,
     })
     .returning({ id: diagnosticos.id })

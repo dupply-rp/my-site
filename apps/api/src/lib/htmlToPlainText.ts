@@ -16,10 +16,15 @@ function decodeHtmlEntities(value: string): string {
     .replace(/&#x([0-9a-f]+);/gi, (_, code) => String.fromCharCode(parseInt(code, 16)))
 }
 
-export function htmlToPlainText(html: string): string {
-  const withoutEmbedded = html
+export function sanitizeReportHtml(html: string): string {
+  return html
     .replace(/<style[\s\S]*?<\/style>/gi, '')
     .replace(/<script[\s\S]*?<\/script>/gi, '')
+    .trim()
+}
+
+export function htmlToPlainText(html: string): string {
+  const withoutEmbedded = sanitizeReportHtml(html)
 
   const withBreaks = withoutEmbedded
     .replace(LINE_BREAK_TAGS, '\n')
