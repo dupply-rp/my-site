@@ -1,6 +1,6 @@
 import { waitUntil } from '@vercel/functions'
-import { buildSummary, buildFallbackReport, calcPillars, calcScore, getScoreInfo } from '@dupply/diagnostico'
-import type { Answers } from '@dupply/types/diagnostico'
+import { buildSummary, buildFallbackReport, calcPillars, calcScore, getScoreInfo } from '../../packages/diagnostico/src/index.ts'
+import type { Answers } from '../../packages/types/src/diagnostico.ts'
 import { generateAnthropicReport } from './lib/anthropic'
 import { checkDiagnosticoRateLimit, getClientIp } from './lib/rateLimit'
 import { canSendReportEmail, sendReportEmail } from './lib/sendReportEmail'
