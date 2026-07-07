@@ -7,7 +7,7 @@ import { canSendReportEmail, sendReportEmail } from './lib/sendReportEmail'
 import { verifyTurnstileToken } from './lib/turnstile'
 
 export const config = {
-  maxDuration: 60,
+  runtime: 'edge',
 }
 
 function isAnswers(value: unknown): value is Answers {
