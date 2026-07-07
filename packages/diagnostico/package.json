@@ -1,0 +1,16 @@
+{
+  "name": "@dupply/diagnostico",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@dupply/types": "workspace:*"
+  },
+  "devDependencies": {
+    "@dupply/config": "workspace:*",
+    "typescript": "~5.9.3"
+  }
+}

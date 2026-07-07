@@ -2,7 +2,9 @@ import type { FormEvent } from 'react'
 import { useState } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
 
-import { getConsoleToken, login } from '../lib/api'
+import { ConsoleApiError, ConsoleClient } from '@dupply/sdk'
+
+const client = new ConsoleClient()
 
 export function LoginPage() {
   const navigate = useNavigate()
@@ -10,7 +12,7 @@ export function LoginPage() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
-  if (getConsoleToken()) {
+  if (ConsoleClient.getStoredToken()) {
     return <Navigate to="/" replace />
   }
 
@@ -20,10 +22,14 @@ export function LoginPage() {
     setLoading(true)
 
     try {
-      await login(password)
+      await client.login(password)
       navigate('/', { replace: true })
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao entrar')
+      if (err instanceof ConsoleApiError) {
+        setError(err.message)
+      } else {
+        setError('Erro ao entrar')
+      }
     } finally {
       setLoading(false)
     }

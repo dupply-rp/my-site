@@ -4,6 +4,8 @@
     { "path": "./apps/web" },
     { "path": "./apps/console" },
     { "path": "./packages/types" },
+    { "path": "./packages/diagnostico" },
+    { "path": "./packages/sdk" },
     { "path": "./packages/ui" },
     { "path": "./packages/db" },
     { "path": "./apps/api" }

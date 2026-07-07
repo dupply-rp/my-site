@@ -103,3 +103,8 @@ button {
   padding: 10px 12px;
   font-size: 0.92rem;
 }
+
+.page-loading {
+  padding: 48px 0;
+  color: var(--muted);
+}

@@ -1,13 +1,17 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
-import { Layout } from '../components/Layout'
-import type { DiagnosticoListItem } from '../lib/api'
 import {
-  fetchDiagnosticos,
-  formatDate,
+  ConsoleApiError,
+  ConsoleClient,
+  formatDiagnosticoDate,
   scoreBadgeClass,
-} from '../lib/api'
+  type DiagnosticoListItem,
+} from '@dupply/sdk'
+
+import { AppShell } from '../components/AppShell'
+
+const client = new ConsoleClient(ConsoleClient.getStoredToken())
 
 export function DiagnosticoListPage() {
   const [items, setItems] = useState<DiagnosticoListItem[]>([])
@@ -15,15 +19,22 @@ export function DiagnosticoListPage() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    fetchDiagnosticos()
+    client
+      .listDiagnosticos()
       .then(setItems)
-      .catch((err) => setError(err instanceof Error ? err.message : 'Erro ao carregar'))
+      .catch((err) => {
+        setError(err instanceof ConsoleApiError ? err.message : 'Erro ao carregar')
+      })
       .finally(() => setLoading(false))
   }, [])
 
+  const subtitle = useMemo(() => {
+    if (loading) return 'Carregando registros…'
+    return `${items.length} diagnóstico(s) no banco`
+  }, [items.length, loading])
+
   return (
-    <Layout title="Diagnósticos" subtitle="Leads e respostas salvos no Postgres">
-      {loading ? <p className="muted">Carregando…</p> : null}
+    <AppShell title="Diagnósticos" subtitle={subtitle}>
       {error ? <p className="error">{error}</p> : null}
 
       {!loading && !error && items.length === 0 ? (
@@ -51,7 +62,7 @@ export function DiagnosticoListPage() {
             <tbody>
               {items.map((item) => (
                 <tr key={item.id}>
-                  <td>{formatDate(item.createdAt)}</td>
+                  <td>{formatDiagnosticoDate(item.createdAt)}</td>
                   <td>
                     <strong>{item.empresa}</strong>
                     <div className="muted table-sub">{item.porte ?? '—'}</div>
@@ -122,6 +133,6 @@ export function DiagnosticoListPage() {
           white-space: nowrap;
         }
       `}</style>
-    </Layout>
+    </AppShell>
   )
 }

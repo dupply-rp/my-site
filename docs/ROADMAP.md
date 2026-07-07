@@ -1,8 +1,8 @@
 # Roadmap — Plataforma Dupply
 
-Evolução da arquitetura em fases. A **Fase 0** está em implementação nesta branch.
+Evolução da arquitetura em fases.
 
-## Fase 0 — Monorepo com fronteiras claras ✅ (em andamento)
+## Fase 0 — Monorepo com fronteiras claras ✅ (concluída)
 
 **Objetivo:** reorganizar o código sem mudar comportamento.
 
@@ -14,28 +14,33 @@ Evolução da arquitetura em fases. A **Fase 0** está em implementação nesta 
 - [x] `packages/ui` — scaffold do design system
 - [x] `packages/config` — tsconfig e eslint compartilhados
 
-**Comandos:**
-
-```bash
-pnpm install
-pnpm dev          # frontend (apps/web)
-pnpm dev:api      # frontend + API local (vercel dev)
-pnpm build        # build de produção
-```
-
 ---
 
-## Fase 1 — Fundações da plataforma SaaS
+## Fase 1 — Fundações da plataforma SaaS ✅ (concluída)
 
 **Objetivo:** sair do Google Sheets e preparar multi-tenancy.
 
-- [ ] **TODO:** Postgres (Supabase/Neon/Vercel Postgres) + ORM (Drizzle ou Prisma)
-- [ ] **TODO:** Schema multi-tenant (`tenant_id` em todas as tabelas)
-- [ ] **TODO:** Autenticação (Clerk, Auth.js ou Supabase Auth)
-- [ ] **TODO:** Migrar dados do diagnóstico do Google Sheets para o banco
-- [ ] **TODO:** Criar `apps/console` — shell da área logada (layout, navegação, módulos lazy)
-- [ ] **TODO:** Extrair lógica duplicada (scoring, questions, buildSummary) para `packages/diagnostico` ou similar
-- [ ] **TODO:** SDK tipado da API em `packages/sdk`
+- [x] Postgres (Neon via Vercel Marketplace) + ORM (Drizzle)
+- [x] Schema multi-tenant (`tenants` + `tenant_id` em diagnósticos)
+- [x] Autenticação do console (JWT com `CONSOLE_SECRET` + filtro por tenant)
+- [x] Script de migração Sheets → banco (`pnpm db:import-sheets`)
+- [x] `apps/console` — shell com navegação e módulo de diagnósticos
+- [x] `packages/diagnostico` — lógica unificada (scoring, questions, buildSummary)
+- [x] `packages/sdk` — client tipado da API do console
+- [x] Banco como fonte principal (planilha opcional via `ENABLE_GOOGLE_SHEETS=true`)
+
+**Comandos:**
+
+```bash
+pnpm db:push
+pnpm db:studio
+pnpm db:import-sheets ./diagnosticos.csv
+pnpm dev:local          # API + console
+```
+
+**Produção:** configure `CONSOLE_SECRET` e `DATABASE_URL` na Vercel.
+
+**Próximo passo natural (Fase 2):** Clerk para clientes externos, Stripe, CRM.
 
 ---
 
@@ -47,6 +52,7 @@ pnpm build        # build de produção
 - [ ] **TODO:** Módulo CRM / gestão de clientes no `apps/console`
 - [ ] **TODO:** Painel admin interno (`apps/admin`) para gestão dos seus clientes
 - [ ] **TODO:** Unificar `@dupply/ui` com componentes reais (Button, Input, Layout, etc.)
+- [ ] **TODO:** Clerk (ou Auth.js) para login de clientes com organizações = tenants
 
 ---
 
@@ -66,34 +72,28 @@ pnpm build        # build de produção
 
 **Objetivo:** micro-frontend / microserviço apenas quando houver gatilho concreto.
 
-Gatilhos para considerar split:
-- Times separados bloqueando deploy uns dos outros
-- Cadência de deploy independente por produto
-- Gargalo de escala isolado em um domínio
-
 - [ ] **TODO:** Avaliar Module Federation (Vite) para produtos com deploy independente
 - [ ] **TODO:** Extrair domínios críticos (ex.: WhatsApp) para serviço dedicado
 - [ ] **TODO:** Observabilidade centralizada (logs, métricas, tracing)
 
 ---
 
-## Estrutura alvo
+## Estrutura atual
 
 ```
 apps/
-  web/       → dupply.com.br (marketing + ferramentas públicas)
-  console/   → SaaS multi-produto (Fase 1+)
-  api/       → backend serverless
-  admin/     → painel interno Dupply (Fase 2+)
+  web/       → dupply.com.br (marketing + diagnóstico público)
+  console/   → console interno (/console)
+  api/       → backend serverless (código-fonte)
 
 packages/
-  types/     → contratos compartilhados
-  ui/        → design system
-  config/    → eslint + tsconfig
-  sdk/       → client tipado da API (Fase 1+)
-  db/        → schema + migrations (Fase 1+)
+  types/        → contratos compartilhados
+  diagnostico/  → lógica do quiz
+  sdk/          → client tipado da API
+  db/           → schema + Drizzle
+  ui/           → design system (scaffold)
+  config/       → eslint + tsconfig
 
 api/         → wrappers Vercel (rotas /api/*)
-analytics/   → scripts Google Sheets / docs
-scripts/     → smoke tests e automações
+scripts/     → smoke tests, import Sheets
 ```

@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "exports": {
-    "./diagnostico": "./src/diagnostico.ts"
+    "./diagnostico": "./src/diagnostico.ts",
+    "./console": "./src/console.ts"
   }
 }

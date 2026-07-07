@@ -1,4 +1,4 @@
-import type { FlatQuestion, QuestionSection } from './types'
+import type { FlatQuestion, QuestionSection } from '@dupply/types/diagnostico'
 
 export const questionSections: QuestionSection[] = [
   {
@@ -27,7 +27,7 @@ export const questionSections: QuestionSection[] = [
           {
             id: 'telefone',
             label: 'Telefone / WhatsApp',
-            placeholder: '(77) 98814-2278',
+            placeholder: '(77) 99999-9999',
             inputType: 'tel',
             required: true,
           },
