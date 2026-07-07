@@ -7,7 +7,7 @@
     "api/health.ts": {
       "maxDuration": 10
     },
-    "api/diagnostico/index.ts": {
+    "api/diagnostico-handler.ts": {
       "maxDuration": 60,
       "includeFiles": "apps/api/src/**"
     },
@@ -31,6 +31,10 @@
     }
   ],
   "rewrites": [
+    {
+      "source": "/api/diagnostico",
+      "destination": "/api/diagnostico-handler"
+    },
     {
       "source": "/console",
       "destination": "/console/index.html"

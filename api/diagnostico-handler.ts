@@ -1,10 +1,10 @@
 import { waitUntil } from '@vercel/functions'
 import { buildSummary, buildFallbackReport, calcPillars, calcScore, getScoreInfo } from '@dupply/diagnostico'
 import type { Answers } from '@dupply/types/diagnostico'
-import { generateAnthropicReport } from '../../apps/api/src/lib/anthropic'
-import { checkDiagnosticoRateLimit, getClientIp } from '../../apps/api/src/lib/rateLimit'
-import { canSendReportEmail, sendReportEmail } from '../../apps/api/src/lib/sendReportEmail'
-import { verifyTurnstileToken } from '../../apps/api/src/lib/turnstile'
+import { generateAnthropicReport } from '../apps/api/src/lib/anthropic'
+import { checkDiagnosticoRateLimit, getClientIp } from '../apps/api/src/lib/rateLimit'
+import { canSendReportEmail, sendReportEmail } from '../apps/api/src/lib/sendReportEmail'
+import { verifyTurnstileToken } from '../apps/api/src/lib/turnstile'
 
 export const config = {
   runtime: 'edge',
@@ -105,9 +105,9 @@ export default async function handler(request: Request) {
   const sheetsEnabled = process.env.ENABLE_GOOGLE_SHEETS === 'true'
 
   if (sheetsEnabled) {
-    const { saveToGoogleSheets } = await import('../../apps/api/src/lib/googleSheets')
-    const { enqueueSheetRetry } = await import('../../apps/api/src/lib/retryQueue')
-    const { buildSheetPayload } = await import('../../apps/api/src/lib/sheetPayload')
+    const { saveToGoogleSheets } = await import('../apps/api/src/lib/googleSheets')
+    const { enqueueSheetRetry } = await import('../apps/api/src/lib/retryQueue')
+    const { buildSheetPayload } = await import('../apps/api/src/lib/sheetPayload')
 
     const sheetPayload = buildSheetPayload({
       answers,
@@ -128,7 +128,7 @@ export default async function handler(request: Request) {
   }
 
   waitUntil(
-    import('../../apps/api/src/lib/saveDiagnostico')
+    import('../apps/api/src/lib/saveDiagnostico')
       .then(({ saveDiagnosticoToDb }) =>
         saveDiagnosticoToDb({
           answers,
