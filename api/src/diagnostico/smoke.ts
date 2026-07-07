@@ -1,4 +1,4 @@
-import { buildSummary, buildFallbackReport, calcPillars, calcScore, getScoreInfo } from '@dupply/diagnostico'
+import { buildSummary, buildFallbackReport, calcPillars, calcScore, getScoreInfo } from '../../../packages/diagnostico/src/index.ts'
 import { generateAnthropicReport } from '../lib/anthropic'
 import { saveToGoogleSheets } from '../lib/googleSheets'
 import { isRetryQueueEnabled, enqueueSheetRetry } from '../lib/retryQueue'

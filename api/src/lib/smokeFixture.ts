@@ -1,4 +1,4 @@
-import type { Answers } from '@dupply/types/diagnostico'
+import type { Answers } from '../../../packages/types/src/diagnostico.ts'
 
 export function createSmokeAnswers(): Answers {
   const stamp = new Date().toISOString().replace(/[:.]/g, '-')
