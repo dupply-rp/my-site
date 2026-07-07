@@ -26,7 +26,3 @@ dist-ssr
 *.sw?
 .vercel
 .env*
-
-# Bundles gerados por pnpm build:api
-api/diagnostico-handler.bundle.js
-api/console/diagnosticos.bundle.js
