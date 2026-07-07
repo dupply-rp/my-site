@@ -1,3 +1,5 @@
+import { verifyConsoleToken } from './consoleSession'
+
 function getBearerToken(header: string | undefined): string | null {
   if (!header?.startsWith('Bearer ')) return null
   return header.slice('Bearer '.length).trim() || null
@@ -18,16 +20,11 @@ export async function verifyConsoleAuthFromToken(
   const token = getBearerToken(authHeader ?? undefined)
   if (!token) return null
 
+  const session = await verifyConsoleToken(token)
+  if (session) return session
+
   if (token === secret) {
     return { tenantSlug: process.env.DEFAULT_TENANT_SLUG ?? 'dupply' }
-  }
-
-  try {
-    const { verifyConsoleToken } = await import('./consoleSession')
-    const session = await verifyConsoleToken(token)
-    if (session) return session
-  } catch {
-    // JWT opcional — token legado (secret) já validado acima
   }
 
   return null
