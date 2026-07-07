@@ -14,7 +14,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const { handleDiagnosticoPost } = await import('@dupply/api/health-diagnostico')
+    const { handleDiagnosticoPost } = await import('../apps/api/src/health-diagnostico.js')
     return handleDiagnosticoPost(req, res)
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Erro interno'
