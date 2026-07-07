@@ -1,7 +1,7 @@
 import { processRetryQueue } from '../lib/retryQueue'
 
 export const config = {
-  maxDuration: 60,
+  runtime: 'edge',
 }
 
 function jsonResponse(body: unknown, status = 200) {
