@@ -1,1 +1,1 @@
-export { default } from '../../apps/api/src/console/diagnosticos'
+export { default } from '../src/console/diagnosticos'
