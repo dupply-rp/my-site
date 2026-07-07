@@ -119,7 +119,7 @@ export function DiagnosticoDetailPage() {
           <section className="card detail-card detail-full report-printable">
             <div className="report-header">
               <h2>Relatório</h2>
-              <button type="button" className="btn-print" onClick={() => window.print()}>
+              <button type="button" className="btn btn-secondary" onClick={() => window.print()}>
                 Imprimir relatório
               </button>
             </div>
@@ -231,19 +231,6 @@ export function DiagnosticoDetailPage() {
           margin: 0;
         }
 
-        .btn-print {
-          border: 1px solid var(--line);
-          background: #fff;
-          border-radius: 8px;
-          padding: 10px 16px;
-          font-weight: 600;
-          color: var(--ink);
-        }
-
-        .btn-print:hover {
-          background: var(--surface-2);
-        }
-
         .report-text {
           margin: 0;
           white-space: pre-wrap;
@@ -295,7 +282,7 @@ export function DiagnosticoDetailPage() {
           .app-shell-sidebar,
           .app-shell-logout,
           .back-row,
-          .btn-print,
+          .report-header .btn,
           .detail-card:not(.report-printable) {
             display: none !important;
           }
