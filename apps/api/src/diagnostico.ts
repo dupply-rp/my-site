@@ -2,13 +2,14 @@ import { waitUntil } from '@vercel/functions'
 import { buildSummary, buildFallbackReport, calcPillars, calcScore, getScoreInfo } from '@dupply/diagnostico'
 import type { Answers } from '@dupply/types/diagnostico'
 import { generateAnthropicReport } from './lib/anthropic'
-import { saveDiagnosticoToDb } from './lib/saveDiagnostico'
 import { checkDiagnosticoRateLimit, getClientIp } from './lib/rateLimit'
 import { canSendReportEmail, sendReportEmail } from './lib/sendReportEmail'
 import { verifyTurnstileToken } from './lib/turnstile'
+import { asNodeHandler } from './lib/vercelNodeAdapter'
 
 export const config = {
-  runtime: 'edge',
+  runtime: 'nodejs',
+  maxDuration: 60,
 }
 
 function isAnswers(value: unknown): value is Answers {
@@ -25,7 +26,9 @@ function jsonResponse(body: unknown, status = 200, headers?: Record<string, stri
   })
 }
 
-export default async function handler(request: Request) {
+export default asNodeHandler(handleDiagnostico)
+
+async function handleDiagnostico(request: Request) {
   if (request.method !== 'POST') {
     return jsonResponse({ error: 'Método não permitido' }, 405)
   }
@@ -128,16 +131,20 @@ export default async function handler(request: Request) {
   }
 
   waitUntil(
-    saveDiagnosticoToDb({
-      answers,
-      score,
-      scoreLabel: scoreInfo.label,
-      reportHtml,
-      aiGenerated,
-    }).catch((error) => {
-      const message = error instanceof Error ? error.message : 'Erro ao salvar no banco'
-      console.error('[diagnostico] Postgres:', message)
-    }),
+    import('./lib/saveDiagnostico')
+      .then(({ saveDiagnosticoToDb }) =>
+        saveDiagnosticoToDb({
+          answers,
+          score,
+          scoreLabel: scoreInfo.label,
+          reportHtml,
+          aiGenerated,
+        }),
+      )
+      .catch((error) => {
+        const message = error instanceof Error ? error.message : 'Erro ao salvar no banco'
+        console.error('[diagnostico] Postgres:', message)
+      }),
   )
 
   const recipientEmail = String(answers.email ?? '').trim()
