@@ -4,6 +4,9 @@
   "outputDirectory": "apps/web/dist",
   "installCommand": "pnpm install",
   "functions": {
+    "api/health.ts": {
+      "maxDuration": 60
+    },
     "api/diagnostico/smoke.ts": {
       "maxDuration": 60,
       "includeFiles": "apps/api/src/**"
