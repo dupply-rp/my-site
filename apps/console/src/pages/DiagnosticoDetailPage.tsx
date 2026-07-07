@@ -10,6 +10,7 @@ import {
 } from '@dupply/sdk'
 
 import { AppShell } from '../components/AppShell'
+import { prepareReportForDisplay } from '../lib/formatReport'
 
 const client = new ConsoleClient(ConsoleClient.getStoredToken())
 
@@ -49,6 +50,8 @@ export function DiagnosticoDetailPage() {
       </AppShell>
     )
   }
+
+  const preparedReport = data.relatorio ? prepareReportForDisplay(data.relatorio) : null
 
   return (
     <AppShell title={data.empresa} subtitle={formatDiagnosticoDate(data.createdAt)}>
@@ -112,10 +115,22 @@ export function DiagnosticoDetailPage() {
           </div>
         </section>
 
-        {data.relatorio ? (
-          <section className="card detail-card detail-full">
-            <h2>Relatório</h2>
-            <pre className="report-text">{data.relatorio}</pre>
+        {preparedReport ? (
+          <section className="card detail-card detail-full report-printable">
+            <div className="report-header">
+              <h2>Relatório</h2>
+              <button type="button" className="btn-print" onClick={() => window.print()}>
+                Imprimir relatório
+              </button>
+            </div>
+            {preparedReport.mode === 'html' ? (
+              <div
+                className="report-formatted"
+                dangerouslySetInnerHTML={{ __html: preparedReport.content }}
+              />
+            ) : (
+              <div className="report-text">{preparedReport.content}</div>
+            )}
           </section>
         ) : null}
       </div>
@@ -203,11 +218,62 @@ export function DiagnosticoDetailPage() {
           grid-column: 1 / -1;
         }
 
+        .report-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 16px;
+          flex-wrap: wrap;
+          margin-bottom: 16px;
+        }
+
+        .report-header h2 {
+          margin: 0;
+        }
+
+        .btn-print {
+          border: 1px solid var(--line);
+          background: #fff;
+          border-radius: 8px;
+          padding: 10px 16px;
+          font-weight: 600;
+          color: var(--ink);
+        }
+
+        .btn-print:hover {
+          background: var(--surface-2);
+        }
+
         .report-text {
           margin: 0;
           white-space: pre-wrap;
           font-family: inherit;
           line-height: 1.6;
+        }
+
+        .report-formatted {
+          line-height: 1.65;
+          color: var(--ink);
+        }
+
+        .report-formatted h2,
+        .report-formatted h3 {
+          margin: 1.25em 0 0.5em;
+          font-size: 1.05rem;
+        }
+
+        .report-formatted h2:first-child,
+        .report-formatted h3:first-child {
+          margin-top: 0;
+        }
+
+        .report-formatted p {
+          margin: 0 0 0.75em;
+        }
+
+        .report-formatted ul {
+          margin: 0 0 1em;
+          padding-left: 1.25em;
         }
 
         .back-row {
@@ -222,6 +288,31 @@ export function DiagnosticoDetailPage() {
         @media (max-width: 720px) {
           .meta-list {
             grid-template-columns: 1fr;
+          }
+        }
+
+        @media print {
+          .app-shell-sidebar,
+          .app-shell-logout,
+          .back-row,
+          .btn-print,
+          .detail-card:not(.report-printable) {
+            display: none !important;
+          }
+
+          .app-shell {
+            display: block;
+          }
+
+          .app-shell-header,
+          .app-shell-content {
+            padding: 0;
+          }
+
+          .report-printable {
+            border: 0;
+            box-shadow: none;
+            padding: 0;
           }
         }
       `}</style>
