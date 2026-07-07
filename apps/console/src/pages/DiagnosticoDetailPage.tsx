@@ -59,29 +59,14 @@ export function DiagnosticoDetailPage() {
     window.print()
   }
 
-  const printButton = showPrint ? (
-    <button type="button" className="detail-print-btn" onClick={handlePrint}>
-      Imprimir relatório
-    </button>
-  ) : null
-
   return (
-    <AppShell
-      title={data.empresa}
-      subtitle={formatDiagnosticoDate(data.createdAt)}
-      actions={printButton}
-    >
-      {showPrint ? (
-        <div className="detail-toolbar no-print" aria-label="Ações do relatório">
-          {printButton}
-        </div>
-      ) : null}
+    <AppShell title={data.empresa} subtitle={formatDiagnosticoDate(data.createdAt)}>
       <div className="detail-grid">
         <section className="card detail-card">
-          <div className="summary-header-row no-print">
+          <div className="summary-header-row">
             <h2>Resumo</h2>
             {showPrint ? (
-              <button type="button" className="detail-print-btn" onClick={handlePrint}>
+              <button type="button" className="detail-print-btn no-print" onClick={handlePrint}>
                 Imprimir relatório
               </button>
             ) : null}
@@ -145,12 +130,7 @@ export function DiagnosticoDetailPage() {
 
         {preparedReport ? (
           <section className="card detail-card detail-full report-printable">
-            <div className="report-title-row no-print">
-              <h2>Relatório</h2>
-              <button type="button" className="detail-print-btn" onClick={handlePrint}>
-                Imprimir relatório
-              </button>
-            </div>
+            <h2>Relatório</h2>
             {preparedReport.mode === 'html' ? (
               <div
                 className="report-formatted"
@@ -163,27 +143,11 @@ export function DiagnosticoDetailPage() {
         ) : null}
       </div>
 
-      <div className="back-row no-print">
-        {showPrint ? (
-          <button type="button" className="detail-print-btn" onClick={handlePrint}>
-            Imprimir relatório
-          </button>
-        ) : null}
+      <p className="back-row">
         <Link to="/">← Voltar para a lista</Link>
-      </div>
+      </p>
 
       <style>{`
-        .detail-toolbar {
-          position: sticky;
-          top: 0;
-          z-index: 20;
-          margin: 0 0 20px;
-          padding: 12px 0;
-          background: rgba(247, 248, 251, 0.96);
-          backdrop-filter: blur(8px);
-          border-bottom: 1px solid var(--line);
-        }
-
         .detail-print-btn {
           display: inline-flex;
           align-items: center;
@@ -203,19 +167,6 @@ export function DiagnosticoDetailPage() {
         .detail-print-btn:hover {
           transform: translateY(-1px);
           border-color: rgba(7, 24, 255, 0.25);
-        }
-
-        .report-title-row {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 16px;
-          flex-wrap: wrap;
-          margin-bottom: 16px;
-        }
-
-        .report-title-row h2 {
-          margin: 0;
         }
 
         .summary-header-row {
@@ -381,8 +332,6 @@ export function DiagnosticoDetailPage() {
         @media print {
           .app-shell-sidebar,
           .app-shell-logout,
-          .app-shell-actions,
-          .detail-toolbar,
           .no-print {
             display: none !important;
           }
