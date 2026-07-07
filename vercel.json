@@ -1,8 +1,8 @@
 {
-  "buildCommand": "node scripts/bundle-diagnostico-handler.mjs && node scripts/bundle-console-diagnosticos.mjs && pnpm build",
+  "buildCommand": "pnpm build:vercel",
   "devCommand": "pnpm --filter @dupply/web exec vite --host --port $PORT",
   "outputDirectory": "apps/web/dist",
-  "installCommand": "pnpm install && pnpm --filter @dupply/types build && pnpm --filter @dupply/diagnostico build && node scripts/bundle-diagnostico-handler.mjs && node scripts/bundle-console-diagnosticos.mjs",
+  "installCommand": "pnpm install",
   "functions": {
     "api/diagnostico-handler.ts": {
       "maxDuration": 60,
