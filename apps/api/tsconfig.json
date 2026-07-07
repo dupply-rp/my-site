@@ -1,4 +1,4 @@
 {
   "extends": "@dupply/config/tsconfig/node.json",
-  "include": ["../../api/src/**/*.ts"]
+  "include": ["src/**/*.ts"]
 }
