@@ -1,8 +1,8 @@
-import { buildAnswerRows } from '@dupply/diagnostico'
-import { createDb, diagnosticos, diagnosticoRespostas, tenants } from '@dupply/db'
+import { buildAnswerRows } from '../../../packages/diagnostico/src/index.ts'
+import { createDb, diagnosticos, diagnosticoRespostas, tenants } from '../../../packages/db/src/index.ts'
 import { eq } from 'drizzle-orm'
 
-import type { Answers } from '@dupply/types/diagnostico'
+import type { Answers } from '../../../packages/types/src/diagnostico.ts'
 import { htmlToPlainText } from '../htmlToPlainText'
 
 interface SaveDiagnosticoInput {
