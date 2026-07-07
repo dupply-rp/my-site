@@ -1,1 +1,1 @@
-export { default } from '@dupply/api/console/auth'
+export { default } from '../../apps/api/src/console/auth'
