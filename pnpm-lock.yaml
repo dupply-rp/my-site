@@ -45,6 +45,9 @@ importers:
       drizzle-orm:
         specifier: ^0.44.5
         version: 0.44.7(@neondatabase/serverless@1.1.0)
+      esbuild:
+        specifier: ^0.28.1
+        version: 0.28.1
       eslint:
         specifier: ^9.39.1
         version: 9.39.4
