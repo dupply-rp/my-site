@@ -5,6 +5,13 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**"]
     },
+    "@dupply/diagnostico#build": {
+      "dependsOn": ["@dupply/types#build"],
+      "outputs": ["dist/**"]
+    },
+    "@dupply/types#build": {
+      "outputs": ["dist/**"]
+    },
     "@dupply/console#build": {
       "dependsOn": ["@dupply/web#build", "^build"],
       "outputs": ["dist/**"]
