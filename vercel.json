@@ -6,7 +6,7 @@
   "functions": {
     "api/diagnostico-handler.ts": {
       "maxDuration": 60,
-      "includeFiles": "apps/api/src/**"
+      "includeFiles": "apps/api/src/**,packages/diagnostico/src/**,packages/types/src/**"
     },
     "api/diagnostico/smoke.ts": {
       "maxDuration": 60
