@@ -3,8 +3,17 @@ interface TurnstileVerifyResponse {
   'error-codes'?: string[]
 }
 
+function isConfiguredSecret(value: string | undefined): boolean {
+  const secret = value?.trim()
+  if (!secret) return false
+  const lower = secret.toLowerCase()
+  if (lower === 'seu-secret-turnstile') return false
+  if (/^(seu-|your-|xxx|changeme)/i.test(secret)) return false
+  return true
+}
+
 export function isTurnstileEnabled(): boolean {
-  return Boolean(process.env.TURNSTILE_SECRET_KEY?.trim())
+  return isConfiguredSecret(process.env.TURNSTILE_SECRET_KEY)
 }
 
 export async function verifyTurnstileToken(
@@ -13,7 +22,7 @@ export async function verifyTurnstileToken(
 ): Promise<{ ok: boolean; error?: string }> {
   const secret = process.env.TURNSTILE_SECRET_KEY?.trim()
 
-  if (!secret) {
+  if (!isConfiguredSecret(secret)) {
     console.warn('[turnstile] TURNSTILE_SECRET_KEY não configurada — verificação desativada')
     return { ok: true }
   }
