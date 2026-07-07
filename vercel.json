@@ -5,7 +5,8 @@
   "installCommand": "pnpm install",
   "functions": {
     "api/diagnostico-handler.ts": {
-      "maxDuration": 60
+      "maxDuration": 60,
+      "includeFiles": "apps/api/src/**"
     },
     "api/diagnostico/smoke.ts": {
       "maxDuration": 60
