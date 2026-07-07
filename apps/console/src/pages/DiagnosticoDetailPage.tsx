@@ -53,9 +53,14 @@ export function DiagnosticoDetailPage() {
 
   const hasReport = Boolean(data.relatorio?.trim())
   const preparedReport = hasReport ? prepareReportForDisplay(data.relatorio!) : null
+  const showPrint = hasReport || data.aiGenerated
 
-  const printButton = hasReport ? (
-    <button type="button" className="btn btn-secondary" onClick={() => window.print()}>
+  function handlePrint() {
+    window.print()
+  }
+
+  const printButton = showPrint ? (
+    <button type="button" className="detail-print-btn" onClick={handlePrint}>
       Imprimir relatório
     </button>
   ) : null
@@ -66,9 +71,21 @@ export function DiagnosticoDetailPage() {
       subtitle={formatDiagnosticoDate(data.createdAt)}
       actions={printButton}
     >
+      {showPrint ? (
+        <div className="detail-toolbar no-print" aria-label="Ações do relatório">
+          {printButton}
+        </div>
+      ) : null}
       <div className="detail-grid">
         <section className="card detail-card">
-          <h2>Resumo</h2>
+          <div className="summary-header-row no-print">
+            <h2>Resumo</h2>
+            {showPrint ? (
+              <button type="button" className="detail-print-btn" onClick={handlePrint}>
+                Imprimir relatório
+              </button>
+            ) : null}
+          </div>
           <div className="summary-row">
             <span className={`badge ${scoreBadgeClass(data.scoreLabel)}`}>
               {data.score} · {data.scoreLabel}
@@ -128,7 +145,12 @@ export function DiagnosticoDetailPage() {
 
         {preparedReport ? (
           <section className="card detail-card detail-full report-printable">
-            <h2>Relatório</h2>
+            <div className="report-title-row no-print">
+              <h2>Relatório</h2>
+              <button type="button" className="detail-print-btn" onClick={handlePrint}>
+                Imprimir relatório
+              </button>
+            </div>
             {preparedReport.mode === 'html' ? (
               <div
                 className="report-formatted"
@@ -141,9 +163,9 @@ export function DiagnosticoDetailPage() {
         ) : null}
       </div>
 
-      <div className="back-row">
-        {hasReport ? (
-          <button type="button" className="btn btn-secondary" onClick={() => window.print()}>
+      <div className="back-row no-print">
+        {showPrint ? (
+          <button type="button" className="detail-print-btn" onClick={handlePrint}>
             Imprimir relatório
           </button>
         ) : null}
@@ -151,6 +173,82 @@ export function DiagnosticoDetailPage() {
       </div>
 
       <style>{`
+        .detail-toolbar {
+          position: sticky;
+          top: 0;
+          z-index: 20;
+          margin: 0 0 20px;
+          padding: 12px 0;
+          background: rgba(247, 248, 251, 0.96);
+          backdrop-filter: blur(8px);
+          border-bottom: 1px solid var(--line);
+        }
+
+        .detail-print-btn {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 48px;
+          padding: 0 20px;
+          border: 1px solid var(--line);
+          border-radius: var(--radius);
+          background: #fff;
+          font-size: 15px;
+          font-weight: 600;
+          color: var(--ink);
+          box-shadow: 0 12px 30px rgba(20, 31, 48, 0.08);
+          cursor: pointer;
+        }
+
+        .detail-print-btn:hover {
+          transform: translateY(-1px);
+          border-color: rgba(7, 24, 255, 0.25);
+        }
+
+        .report-title-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 16px;
+          flex-wrap: wrap;
+          margin-bottom: 16px;
+        }
+
+        .report-title-row h2 {
+          margin: 0;
+        }
+
+        .summary-header-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 16px;
+          flex-wrap: wrap;
+          margin-bottom: 16px;
+        }
+
+        .summary-header-row h2 {
+          margin: 0;
+        }
+
+        .detail-card h2 {
+          margin: 0 0 16px;
+          font-size: 1.1rem;
+        }
+
+        .summary-header-row + .summary-row {
+          margin-top: 0;
+        }
+
+        .detail-card {
+          padding: 24px;
+        }
+
+        .detail-card > h2 {
+          margin: 0 0 16px;
+          font-size: 1.1rem;
+        }
+
         .detail-grid {
           display: grid;
           gap: 20px;
@@ -284,8 +382,8 @@ export function DiagnosticoDetailPage() {
           .app-shell-sidebar,
           .app-shell-logout,
           .app-shell-actions,
-          .back-row,
-          .detail-card:not(.report-printable) {
+          .detail-toolbar,
+          .no-print {
             display: none !important;
           }
 
@@ -298,10 +396,11 @@ export function DiagnosticoDetailPage() {
             padding: 0;
           }
 
+          .detail-card,
           .report-printable {
             border: 0;
             box-shadow: none;
-            padding: 0;
+            break-inside: avoid;
           }
         }
       `}</style>
