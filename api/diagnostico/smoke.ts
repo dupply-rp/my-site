@@ -1,4 +1,4 @@
-export { default } from '../../apps/api/src/diagnostico/smoke'
+export { default } from '@dupply/api/diagnostico/smoke'
 
 export const config = {
   maxDuration: 60,

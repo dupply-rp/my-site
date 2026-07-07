@@ -20,6 +20,7 @@
     "db:import-sheets": "dotenv -e .env.local -- node scripts/import-sheets-csv.mjs"
   },
   "dependencies": {
+    "@dupply/api": "workspace:*",
     "@dupply/diagnostico": "workspace:*",
     "@dupply/db": "workspace:*",
     "@dupply/types": "workspace:*",

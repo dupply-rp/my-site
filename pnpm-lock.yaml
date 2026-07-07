@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@dupply/api':
+        specifier: workspace:*
+        version: link:apps/api
       '@dupply/db':
         specifier: workspace:*
         version: link:packages/db
