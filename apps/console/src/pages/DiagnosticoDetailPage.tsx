@@ -51,10 +51,21 @@ export function DiagnosticoDetailPage() {
     )
   }
 
-  const preparedReport = data.relatorio ? prepareReportForDisplay(data.relatorio) : null
+  const hasReport = Boolean(data.relatorio?.trim())
+  const preparedReport = hasReport ? prepareReportForDisplay(data.relatorio!) : null
+
+  const printButton = hasReport ? (
+    <button type="button" className="btn btn-secondary" onClick={() => window.print()}>
+      Imprimir relatório
+    </button>
+  ) : null
 
   return (
-    <AppShell title={data.empresa} subtitle={formatDiagnosticoDate(data.createdAt)}>
+    <AppShell
+      title={data.empresa}
+      subtitle={formatDiagnosticoDate(data.createdAt)}
+      actions={printButton}
+    >
       <div className="detail-grid">
         <section className="card detail-card">
           <h2>Resumo</h2>
@@ -117,12 +128,7 @@ export function DiagnosticoDetailPage() {
 
         {preparedReport ? (
           <section className="card detail-card detail-full report-printable">
-            <div className="report-header">
-              <h2>Relatório</h2>
-              <button type="button" className="btn btn-secondary" onClick={() => window.print()}>
-                Imprimir relatório
-              </button>
-            </div>
+            <h2>Relatório</h2>
             {preparedReport.mode === 'html' ? (
               <div
                 className="report-formatted"
@@ -135,9 +141,14 @@ export function DiagnosticoDetailPage() {
         ) : null}
       </div>
 
-      <p className="back-row">
+      <div className="back-row">
+        {hasReport ? (
+          <button type="button" className="btn btn-secondary" onClick={() => window.print()}>
+            Imprimir relatório
+          </button>
+        ) : null}
         <Link to="/">← Voltar para a lista</Link>
-      </p>
+      </div>
 
       <style>{`
         .detail-grid {
@@ -218,19 +229,6 @@ export function DiagnosticoDetailPage() {
           grid-column: 1 / -1;
         }
 
-        .report-header {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 16px;
-          flex-wrap: wrap;
-          margin-bottom: 16px;
-        }
-
-        .report-header h2 {
-          margin: 0;
-        }
-
         .report-text {
           margin: 0;
           white-space: pre-wrap;
@@ -265,6 +263,10 @@ export function DiagnosticoDetailPage() {
 
         .back-row {
           margin-top: 20px;
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          flex-wrap: wrap;
         }
 
         .back-row a {
@@ -281,8 +283,8 @@ export function DiagnosticoDetailPage() {
         @media print {
           .app-shell-sidebar,
           .app-shell-logout,
+          .app-shell-actions,
           .back-row,
-          .report-header .btn,
           .detail-card:not(.report-printable) {
             display: none !important;
           }
