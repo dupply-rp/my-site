@@ -2,7 +2,7 @@ import { verifyConsoleAuthFromToken } from '../lib/consoleAuth'
 import { getDiagnosticoById, listDiagnosticos } from '../lib/consoleQueries'
 
 export const config = {
-  runtime: 'edge',
+  maxDuration: 30,
 }
 
 export default async function handler(request: Request) {

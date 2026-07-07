@@ -6,7 +6,7 @@ import { createSmokeAnswers } from '../lib/smokeFixture'
 import { buildSheetPayload } from '../lib/sheetPayload'
 
 export const config = {
-  runtime: 'edge',
+  maxDuration: 60,
 }
 
 function jsonResponse(body: unknown, status = 200) {
