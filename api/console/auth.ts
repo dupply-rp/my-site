@@ -1,1 +1,1 @@
-export { default } from '../src/console/auth'
+export { default, config } from '../src/console/auth'

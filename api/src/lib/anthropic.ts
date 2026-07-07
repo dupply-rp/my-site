@@ -13,10 +13,10 @@ function cleanReportHtml(raw: string): string {
   return raw.replace(/```html?/gi, '').replace(/```/g, '').trim()
 }
 
-// Node.js na Vercel permite até 60s — mais margem para o relatório com IA.
+// Edge Runtime da Vercel limita a resposta a ~25s. Haiku entrega relatório completo dentro do prazo.
 const REPORT_MODEL = 'claude-haiku-4-5-20251001'
 const MAX_OUTPUT_TOKENS = 1800
-const REQUEST_TIMEOUT_MS = 55_000
+const REQUEST_TIMEOUT_MS = 22_000
 
 async function requestReport(model: string, userContent: string, timeoutMs: number): Promise<string> {
   const controller = new AbortController()

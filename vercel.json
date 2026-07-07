@@ -5,21 +5,16 @@
   "installCommand": "pnpm install",
   "functions": {
     "api/diagnostico.ts": {
-      "maxDuration": 60,
-      "memory": 1024,
-      "includeFiles": "api/src/**"
+      "includeFiles": "{api/src/**,packages/diagnostico/src/**,packages/types/src/**,packages/db/src/**}"
     },
     "api/diagnostico/smoke.ts": {
-      "maxDuration": 60,
-      "includeFiles": "api/src/**"
+      "includeFiles": "{api/src/**,packages/diagnostico/src/**,packages/types/src/**}"
     },
     "api/cron/retry-sheets.ts": {
-      "maxDuration": 60,
       "includeFiles": "api/src/**"
     },
     "api/console/*.ts": {
-      "maxDuration": 30,
-      "includeFiles": "api/src/**"
+      "includeFiles": "{api/src/**,packages/db/src/**,packages/types/src/**}"
     }
   },
   "crons": [
