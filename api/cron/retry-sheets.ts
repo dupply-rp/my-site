@@ -1,1 +1,1 @@
-export { default, config } from '@dupply/api/cron/retry-sheets'
+export { default, config } from '../../apps/api/src/cron/retry-sheets'

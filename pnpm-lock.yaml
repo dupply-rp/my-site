@@ -7,10 +7,23 @@ settings:
 importers:
 
   .:
-    devDependencies:
-      '@dupply/api':
+    dependencies:
+      '@dupply/db':
         specifier: workspace:*
-        version: link:apps/api
+        version: link:packages/db
+      '@dupply/diagnostico':
+        specifier: workspace:*
+        version: link:packages/diagnostico
+      '@dupply/types':
+        specifier: workspace:*
+        version: link:packages/types
+      '@vercel/functions':
+        specifier: ^3.7.5
+        version: 3.7.5
+      jose:
+        specifier: ^6.1.0
+        version: 6.2.3
+    devDependencies:
       '@eslint/js':
         specifier: ^9.39.1
         version: 9.39.4

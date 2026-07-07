@@ -1,1 +1,1 @@
-export { default } from '@dupply/api/console/diagnosticos'
+export { default } from '../../apps/api/src/console/diagnosticos'

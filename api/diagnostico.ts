@@ -1,1 +1,1 @@
-export { default, config } from '@dupply/api/diagnostico'
+export { default, config } from '../apps/api/src/diagnostico'
