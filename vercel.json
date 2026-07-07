@@ -3,11 +3,6 @@
   "devCommand": "pnpm --filter @dupply/web exec vite --host --port $PORT",
   "outputDirectory": "apps/web/dist",
   "installCommand": "pnpm install",
-  "functions": {
-    "api/health.ts": {
-      "maxDuration": 60
-    }
-  },
   "crons": [
     {
       "path": "/api/cron/retry-sheets",
