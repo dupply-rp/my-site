@@ -17,7 +17,11 @@ function decodeHtmlEntities(value: string): string {
 }
 
 export function htmlToPlainText(html: string): string {
-  const withBreaks = html
+  const withoutEmbedded = html
+    .replace(/<style[\s\S]*?<\/style>/gi, '')
+    .replace(/<script[\s\S]*?<\/script>/gi, '')
+
+  const withBreaks = withoutEmbedded
     .replace(LINE_BREAK_TAGS, '\n')
     .replace(HORIZONTAL_RULE, '\n---\n')
     .replace(LIST_ITEM_OPEN, '\n• ')
