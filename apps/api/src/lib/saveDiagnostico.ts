@@ -3,7 +3,7 @@ import { createDb, diagnosticos, diagnosticoRespostas, tenants } from '@dupply/d
 import { eq } from 'drizzle-orm'
 
 import type { Answers } from '@dupply/types/diagnostico'
-import { htmlToPlainText } from '../htmlToPlainText'
+import { htmlToPlainText } from './htmlToPlainText'
 
 interface SaveDiagnosticoInput {
   answers: Answers
