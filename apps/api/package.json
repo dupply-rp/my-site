@@ -8,7 +8,15 @@
     "./diagnostico/smoke": "./src/diagnostico/smoke.ts",
     "./cron/retry-sheets": "./src/cron/retry-sheets.ts",
     "./console/auth": "./src/console/auth.ts",
-    "./console/diagnosticos": "./src/console/diagnosticos.ts"
+    "./console/diagnosticos": "./src/console/diagnosticos.ts",
+    "./lib/anthropic": "./src/lib/anthropic.ts",
+    "./lib/rateLimit": "./src/lib/rateLimit.ts",
+    "./lib/sendReportEmail": "./src/lib/sendReportEmail.ts",
+    "./lib/turnstile": "./src/lib/turnstile.ts",
+    "./lib/googleSheets": "./src/lib/googleSheets.ts",
+    "./lib/retryQueue": "./src/lib/retryQueue.ts",
+    "./lib/sheetPayload": "./src/lib/sheetPayload.ts",
+    "./lib/saveDiagnostico": "./src/lib/saveDiagnostico.ts"
   },
   "scripts": {
     "lint": "eslint ."
