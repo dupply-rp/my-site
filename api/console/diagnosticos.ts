@@ -1,1 +1,1 @@
-export { default, config } from '../src/console/diagnosticos'
+export { default, config } from '../../apps/api/src/console/diagnosticos'

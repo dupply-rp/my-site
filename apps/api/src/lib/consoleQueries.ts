@@ -1,4 +1,4 @@
-import { createDb, diagnosticoRespostas, diagnosticos, tenants } from '../../../packages/db/src/index.ts'
+import { createDb, diagnosticoRespostas, diagnosticos, tenants } from '@dupply/db'
 import { and, desc, eq } from 'drizzle-orm'
 
 export interface DiagnosticoListItem {

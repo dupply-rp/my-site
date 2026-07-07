@@ -4,14 +4,14 @@
   "version": "0.0.0",
   "type": "module",
   "exports": {
-    "./diagnostico": "../../api/src/diagnostico.ts",
-    "./diagnostico/smoke": "../../api/src/diagnostico/smoke.ts",
-    "./cron/retry-sheets": "../../api/src/cron/retry-sheets.ts",
-    "./console/auth": "../../api/src/console/auth.ts",
-    "./console/diagnosticos": "../../api/src/console/diagnosticos.ts"
+    "./diagnostico": "./src/diagnostico.ts",
+    "./diagnostico/smoke": "./src/diagnostico/smoke.ts",
+    "./cron/retry-sheets": "./src/cron/retry-sheets.ts",
+    "./console/auth": "./src/console/auth.ts",
+    "./console/diagnosticos": "./src/console/diagnosticos.ts"
   },
   "scripts": {
-    "lint": "eslint ../../api"
+    "lint": "eslint ."
   },
   "dependencies": {
     "@dupply/db": "workspace:*",

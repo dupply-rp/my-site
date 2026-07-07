@@ -1,5 +1,4 @@
 import { verifyConsolePassword } from '../lib/consoleAuth'
-import { signConsoleToken } from '../lib/consoleSession'
 
 export const config = {
   runtime: 'edge',
@@ -27,10 +26,5 @@ export default async function handler(request: Request) {
   }
 
   const tenantSlug = process.env.DEFAULT_TENANT_SLUG ?? 'dupply'
-  const token = await signConsoleToken(tenantSlug)
-  if (!token) {
-    return Response.json({ error: 'Não foi possível criar sessão' }, { status: 500 })
-  }
-
-  return Response.json({ ok: true, token, tenantSlug })
+  return Response.json({ ok: true, token: process.env.CONSOLE_SECRET, tenantSlug })
 }
