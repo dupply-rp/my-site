@@ -14,7 +14,7 @@
     },
     "@dupply/console#build": {
       "dependsOn": ["@dupply/web#build", "^build"],
-      "outputs": ["dist/**"]
+      "outputs": ["dist/**", "../web/dist/console/**"]
     },
     "lint": {
       "dependsOn": ["^build"]
