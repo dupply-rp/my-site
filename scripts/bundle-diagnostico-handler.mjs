@@ -6,11 +6,11 @@ await esbuild.build({
   bundle: true,
   platform: 'node',
   target: 'node20',
-  outfile: 'api/diagnostico-handler.js',
+  outfile: 'api/diagnostico-handler.bundle.js',
   format: 'esm',
   packages: 'bundle',
   external: ['@vercel/node', '@vercel/functions'],
   logLevel: 'info',
 })
 
-console.log('Bundled api/diagnostico-handler.js')
+console.log('Bundled api/diagnostico-handler.bundle.js')

@@ -27,6 +27,6 @@ dist-ssr
 .vercel
 .env*
 
-# API bundles gerados no build da Vercel
-api/diagnostico-handler.js
-api/console/diagnosticos.js
+# Bundles gerados por pnpm build:api
+api/diagnostico-handler.bundle.js
+api/console/diagnosticos.bundle.js

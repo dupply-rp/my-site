@@ -6,11 +6,11 @@ await esbuild.build({
   bundle: true,
   platform: 'node',
   target: 'node20',
-  outfile: 'api/console/diagnosticos.js',
+  outfile: 'api/console/diagnosticos.bundle.js',
   format: 'esm',
   packages: 'bundle',
   external: ['@vercel/node'],
   logLevel: 'info',
 })
 
-console.log('Bundled api/console/diagnosticos.js')
+console.log('Bundled api/console/diagnosticos.bundle.js')

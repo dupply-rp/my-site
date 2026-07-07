@@ -11,6 +11,7 @@
     "dev:api": "dotenv -e .env.local -- pnpm exec vercel dev --listen 3000",
     "dev:local": "concurrently --names api,console -c blue,magenta \"pnpm dev:api\" \"pnpm dev:console\"",
     "build": "turbo build",
+    "build:api": "pnpm --filter @dupply/types build && pnpm --filter @dupply/diagnostico build && node scripts/bundle-diagnostico-handler.mjs && node scripts/bundle-console-diagnosticos.mjs",
     "lint": "turbo lint",
     "preview": "pnpm --filter @dupply/web preview",
     "test:diagnostico:prod": "node scripts/smoke-diagnostico.mjs",

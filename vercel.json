@@ -1,11 +1,12 @@
 {
-  "buildCommand": "pnpm --filter @dupply/types build && pnpm --filter @dupply/diagnostico build && node scripts/bundle-diagnostico-handler.mjs && node scripts/bundle-console-diagnosticos.mjs && pnpm build",
+  "buildCommand": "node scripts/bundle-diagnostico-handler.mjs && node scripts/bundle-console-diagnosticos.mjs && pnpm build",
   "devCommand": "pnpm --filter @dupply/web exec vite --host --port $PORT",
   "outputDirectory": "apps/web/dist",
-  "installCommand": "pnpm install",
+  "installCommand": "pnpm install && pnpm --filter @dupply/types build && pnpm --filter @dupply/diagnostico build && node scripts/bundle-diagnostico-handler.mjs && node scripts/bundle-console-diagnosticos.mjs",
   "functions": {
-    "api/diagnostico-handler.js": {
-      "maxDuration": 60
+    "api/diagnostico-handler.ts": {
+      "maxDuration": 60,
+      "includeFiles": "api/diagnostico-handler.bundle.js"
     },
     "api/diagnostico/smoke.ts": {
       "maxDuration": 60
@@ -14,8 +15,9 @@
       "maxDuration": 60,
       "includeFiles": "apps/api/src/**"
     },
-    "api/console/diagnosticos.js": {
-      "maxDuration": 30
+    "api/console/diagnosticos.ts": {
+      "maxDuration": 30,
+      "includeFiles": "api/console/diagnosticos.bundle.js"
     },
     "api/console/auth.ts": {
       "maxDuration": 30
