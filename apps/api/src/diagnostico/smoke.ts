@@ -1,6 +1,4 @@
-import { buildSummary } from '../lib/diagnostico/buildSummary'
-import { buildFallbackReport } from '../lib/diagnostico/fallbackReport'
-import { calcPillars, calcScore, getScoreInfo } from '../lib/diagnostico/scoring'
+import { buildSummary, buildFallbackReport, calcPillars, calcScore, getScoreInfo } from '@dupply/diagnostico'
 import { generateAnthropicReport } from '../lib/anthropic'
 import { saveToGoogleSheets } from '../lib/googleSheets'
 import { isRetryQueueEnabled, enqueueSheetRetry } from '../lib/retryQueue'
@@ -42,7 +40,7 @@ export default async function handler(request: Request) {
   const mode = url.searchParams.get('mode') ?? 'full'
 
   const answers = createSmokeAnswers()
-  const summary = buildSummary(answers)
+  const summary = buildSummary(answers, { mode: 'api' })
   const score = calcScore(answers)
   const scoreInfo = getScoreInfo(score)
   const pillars = calcPillars(answers)

@@ -1,13 +1,8 @@
 import { waitUntil } from '@vercel/functions'
-import { buildSummary } from './lib/diagnostico/buildSummary'
-import { buildFallbackReport } from './lib/diagnostico/fallbackReport'
-import { calcPillars, calcScore, getScoreInfo } from './lib/diagnostico/scoring'
-import type { Answers } from './lib/diagnostico/types'
+import { buildSummary, buildFallbackReport, calcPillars, calcScore, getScoreInfo } from '@dupply/diagnostico'
+import type { Answers } from '@dupply/types/diagnostico'
 import { generateAnthropicReport } from './lib/anthropic'
-import { saveToGoogleSheets } from './lib/googleSheets'
-import { enqueueSheetRetry } from './lib/retryQueue'
 import { saveDiagnosticoToDb } from './lib/saveDiagnostico'
-import { buildSheetPayload } from './lib/sheetPayload'
 import { checkDiagnosticoRateLimit, getClientIp } from './lib/rateLimit'
 import { canSendReportEmail, sendReportEmail } from './lib/sendReportEmail'
 import { verifyTurnstileToken } from './lib/turnstile'
@@ -87,7 +82,7 @@ export default async function handler(request: Request) {
     return jsonResponse({ error: 'Nome da empresa é obrigatório' }, 400)
   }
 
-  const summary = buildSummary(answers)
+  const summary = buildSummary(answers, { mode: 'api' })
   const score = calcScore(answers)
   const scoreInfo = getScoreInfo(score)
   const pillars = calcPillars(answers)
@@ -107,22 +102,30 @@ export default async function handler(request: Request) {
     reportHtml = buildFallbackReport(answers, scoreInfo)
   }
 
-  const sheetPayload = buildSheetPayload({
-    answers,
-    score,
-    scoreLabel: scoreInfo.label,
-    reportHtml,
-  })
+  const sheetsEnabled = process.env.ENABLE_GOOGLE_SHEETS === 'true'
 
-  waitUntil(
-    saveToGoogleSheets({ answers, score, scoreLabel: scoreInfo.label, reportHtml }).catch(
-      async (error) => {
-        const message = error instanceof Error ? error.message : 'Erro ao salvar na planilha'
-        console.error('[diagnostico] Google Sheets:', message)
-        await enqueueSheetRetry(sheetPayload, message)
-      },
-    ),
-  )
+  if (sheetsEnabled) {
+    const { saveToGoogleSheets } = await import('./lib/googleSheets')
+    const { enqueueSheetRetry } = await import('./lib/retryQueue')
+    const { buildSheetPayload } = await import('./lib/sheetPayload')
+
+    const sheetPayload = buildSheetPayload({
+      answers,
+      score,
+      scoreLabel: scoreInfo.label,
+      reportHtml,
+    })
+
+    waitUntil(
+      saveToGoogleSheets({ answers, score, scoreLabel: scoreInfo.label, reportHtml }).catch(
+        async (error) => {
+          const message = error instanceof Error ? error.message : 'Erro ao salvar na planilha'
+          console.error('[diagnostico] Google Sheets:', message)
+          await enqueueSheetRetry(sheetPayload, message)
+        },
+      ),
+    )
+  }
 
   waitUntil(
     saveDiagnosticoToDb({
@@ -162,7 +165,8 @@ export default async function handler(request: Request) {
     scoreInfo,
     pillars,
     aiGenerated,
-    sheetPending: true,
+    dbPending: true,
+    sheetPending: sheetsEnabled,
     emailDispatched,
     emailTo: emailDispatched ? recipientEmail : undefined,
   })

@@ -1,9 +1,9 @@
 import { Navigate, Outlet } from 'react-router-dom'
 
-import { getConsoleToken } from '../lib/api'
+import { ConsoleClient } from '@dupply/sdk'
 
 export function ProtectedRoute() {
-  if (!getConsoleToken()) {
+  if (!ConsoleClient.getStoredToken()) {
     return <Navigate to="/login" replace />
   }
 

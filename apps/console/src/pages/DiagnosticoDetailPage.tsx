@@ -1,13 +1,17 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
-import { Layout } from '../components/Layout'
-import type { DiagnosticoDetail } from '../lib/api'
 import {
-  fetchDiagnosticoById,
-  formatDate,
+  ConsoleApiError,
+  ConsoleClient,
+  formatDiagnosticoDate,
   scoreBadgeClass,
-} from '../lib/api'
+  type DiagnosticoDetail,
+} from '@dupply/sdk'
+
+import { AppShell } from '../components/AppShell'
+
+const client = new ConsoleClient(ConsoleClient.getStoredToken())
 
 export function DiagnosticoDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -18,33 +22,36 @@ export function DiagnosticoDetailPage() {
   useEffect(() => {
     if (!id) return
 
-    fetchDiagnosticoById(id)
+    client
+      .getDiagnostico(id)
       .then(setData)
-      .catch((err) => setError(err instanceof Error ? err.message : 'Erro ao carregar'))
+      .catch((err) => {
+        setError(err instanceof ConsoleApiError ? err.message : 'Erro ao carregar')
+      })
       .finally(() => setLoading(false))
   }, [id])
 
   if (loading) {
     return (
-      <Layout title="Carregando…" backTo="/">
-        <p className="muted">Buscando diagnóstico…</p>
-      </Layout>
+      <AppShell title="Carregando…" subtitle="Buscando diagnóstico">
+        <p className="muted">Aguarde…</p>
+      </AppShell>
     )
   }
 
   if (error || !data) {
     return (
-      <Layout title="Erro" backTo="/">
+      <AppShell title="Erro" subtitle="Não foi possível carregar">
         <p className="error">{error ?? 'Diagnóstico não encontrado'}</p>
         <p>
           <Link to="/">Voltar para a lista</Link>
         </p>
-      </Layout>
+      </AppShell>
     )
   }
 
   return (
-    <Layout title={data.empresa} subtitle={formatDate(data.createdAt)} backTo="/">
+    <AppShell title={data.empresa} subtitle={formatDiagnosticoDate(data.createdAt)}>
       <div className="detail-grid">
         <section className="card detail-card">
           <h2>Resumo</h2>
@@ -113,6 +120,10 @@ export function DiagnosticoDetailPage() {
         ) : null}
       </div>
 
+      <p className="back-row">
+        <Link to="/">← Voltar para a lista</Link>
+      </p>
+
       <style>{`
         .detail-grid {
           display: grid;
@@ -141,10 +152,6 @@ export function DiagnosticoDetailPage() {
           grid-template-columns: repeat(2, minmax(0, 1fr));
           gap: 14px 20px;
           margin: 0;
-        }
-
-        .meta-list > div {
-          min-width: 0;
         }
 
         .meta-full {
@@ -201,7 +208,15 @@ export function DiagnosticoDetailPage() {
           white-space: pre-wrap;
           font-family: inherit;
           line-height: 1.6;
-          color: var(--ink);
+        }
+
+        .back-row {
+          margin-top: 20px;
+        }
+
+        .back-row a {
+          color: var(--blue);
+          font-weight: 600;
         }
 
         @media (max-width: 720px) {
@@ -210,6 +225,6 @@ export function DiagnosticoDetailPage() {
           }
         }
       `}</style>
-    </Layout>
+    </AppShell>
   )
 }

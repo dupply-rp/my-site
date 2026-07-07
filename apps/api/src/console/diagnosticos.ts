@@ -8,8 +8,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: 'Método não permitido' })
   }
 
-  const authHeader = req.headers.authorization
-  if (!verifyConsoleAuthFromToken(authHeader)) {
+  const auth = await verifyConsoleAuthFromToken(req.headers.authorization)
+  if (!auth) {
     return res.status(401).json({ error: 'Não autorizado' })
   }
 
@@ -17,7 +17,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     if (id) {
-      const diagnostico = await getDiagnosticoById(id)
+      const diagnostico = await getDiagnosticoById(auth.tenantSlug, id)
       if (!diagnostico) {
         return res.status(404).json({ error: 'Diagnóstico não encontrado' })
       }
@@ -25,8 +25,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     const limit = Math.min(Number(req.query.limit ?? 100) || 100, 200)
-    const items = await listDiagnosticos(limit)
-    return res.status(200).json({ items, total: items.length })
+    const items = await listDiagnosticos(auth.tenantSlug, limit)
+    return res.status(200).json({ items, total: items.length, tenantSlug: auth.tenantSlug })
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Erro ao consultar banco'
     console.error('[console/diagnosticos]', message)

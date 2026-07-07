@@ -11,6 +11,9 @@ importers:
       '@eslint/js':
         specifier: ^9.39.1
         version: 9.39.4
+      '@neondatabase/serverless':
+        specifier: ^1.0.1
+        version: 1.1.0
       '@vercel/node':
         specifier: ^5.8.22
         version: 5.8.22(rollup@4.62.2)
@@ -20,6 +23,9 @@ importers:
       dotenv-cli:
         specifier: ^10.0.0
         version: 10.0.0
+      drizzle-orm:
+        specifier: ^0.44.5
+        version: 0.44.7(@neondatabase/serverless@1.1.0)
       eslint:
         specifier: ^9.39.1
         version: 9.39.4
@@ -50,6 +56,9 @@ importers:
       '@dupply/db':
         specifier: workspace:*
         version: link:../../packages/db
+      '@dupply/diagnostico':
+        specifier: workspace:*
+        version: link:../../packages/diagnostico
       '@dupply/types':
         specifier: workspace:*
         version: link:../../packages/types
@@ -59,6 +68,9 @@ importers:
       drizzle-orm:
         specifier: ^0.44.5
         version: 0.44.7(@neondatabase/serverless@1.1.0)
+      jose:
+        specifier: ^6.1.0
+        version: 6.2.3
     devDependencies:
       '@dupply/config':
         specifier: workspace:*
@@ -84,6 +96,9 @@ importers:
 
   apps/console:
     dependencies:
+      '@dupply/sdk':
+        specifier: workspace:*
+        version: link:../../packages/sdk
       react:
         specifier: ^19.2.0
         version: 19.2.7
@@ -136,6 +151,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@dupply/diagnostico':
+        specifier: workspace:*
+        version: link:../../packages/diagnostico
       '@dupply/types':
         specifier: workspace:*
         version: link:../../packages/types
@@ -225,6 +243,32 @@ importers:
       drizzle-kit:
         specifier: ^0.31.4
         version: 0.31.10
+      typescript:
+        specifier: ~5.9.3
+        version: 5.9.3
+
+  packages/diagnostico:
+    dependencies:
+      '@dupply/types':
+        specifier: workspace:*
+        version: link:../types
+    devDependencies:
+      '@dupply/config':
+        specifier: workspace:*
+        version: link:../config
+      typescript:
+        specifier: ~5.9.3
+        version: 5.9.3
+
+  packages/sdk:
+    dependencies:
+      '@dupply/types':
+        specifier: workspace:*
+        version: link:../types
+    devDependencies:
+      '@dupply/config':
+        specifier: workspace:*
+        version: link:../config
       typescript:
         specifier: ~5.9.3
         version: 5.9.3

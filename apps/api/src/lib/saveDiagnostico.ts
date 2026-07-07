@@ -1,8 +1,8 @@
+import { buildAnswerRows } from '@dupply/diagnostico'
 import { createDb, diagnosticos, diagnosticoRespostas, tenants } from '@dupply/db'
 import { eq } from 'drizzle-orm'
 
-import { allQuestions } from './diagnostico/questions'
-import type { Answers } from './diagnostico/types'
+import type { Answers } from '@dupply/types/diagnostico'
 import { htmlToPlainText } from '../htmlToPlainText'
 
 interface SaveDiagnosticoInput {
@@ -13,50 +13,13 @@ interface SaveDiagnosticoInput {
   aiGenerated: boolean
 }
 
-interface AnswerRow {
-  perguntaId: string
-  perguntaTexto: string
-  resposta: string
-}
-
 function asString(value: unknown): string {
   if (value == null) return ''
   if (Array.isArray(value)) return value.join(', ')
   return String(value)
 }
 
-function buildAnswerRows(answers: Answers): AnswerRow[] {
-  const rows: AnswerRow[] = []
-
-  for (const question of allQuestions) {
-    if (question.type === 'contact') {
-      for (const field of question.fields) {
-        const answer = answers[field.id]
-        if (!answer || (Array.isArray(answer) && answer.length === 0)) continue
-
-        rows.push({
-          perguntaId: field.id,
-          perguntaTexto: field.label,
-          resposta: asString(answer),
-        })
-      }
-      continue
-    }
-
-    const answer = answers[question.id]
-    if (!answer || (Array.isArray(answer) && answer.length === 0)) continue
-
-    rows.push({
-      perguntaId: question.id,
-      perguntaTexto: question.text,
-      resposta: asString(answer),
-    })
-  }
-
-  return rows
-}
-
-async function getDefaultTenantId(db: NonNullable<ReturnType<typeof createDb>>): Promise<string> {
+export async function getDefaultTenantId(db: NonNullable<ReturnType<typeof createDb>>): Promise<string> {
   const slug = process.env.DEFAULT_TENANT_SLUG ?? 'dupply'
 
   const existing = await db.select({ id: tenants.id }).from(tenants).where(eq(tenants.slug, slug)).limit(1)

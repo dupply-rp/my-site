@@ -1,4 +1,4 @@
-import type { Answers, Pillar, ScoreInfo } from './types'
+import type { Answers, Pillar, ScoreInfo } from '@dupply/types/diagnostico'
 
 export function calcScore(answers: Answers): number {
   let score = 0

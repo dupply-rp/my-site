@@ -1,5 +1,5 @@
-import { createDb, diagnosticoRespostas, diagnosticos } from '@dupply/db'
-import { desc, eq } from 'drizzle-orm'
+import { createDb, diagnosticoRespostas, diagnosticos, tenants } from '@dupply/db'
+import { and, desc, eq } from 'drizzle-orm'
 
 export interface DiagnosticoListItem {
   id: string
@@ -34,10 +34,19 @@ function requireDb() {
   return db
 }
 
-export async function listDiagnosticos(limit = 100): Promise<DiagnosticoListItem[]> {
+async function getTenantIdBySlug(slug: string): Promise<string | null> {
   const db = requireDb()
+  const [row] = await db.select({ id: tenants.id }).from(tenants).where(eq(tenants.slug, slug)).limit(1)
+  return row?.id ?? null
+}
 
-  return db
+export async function listDiagnosticos(tenantSlug: string, limit = 100): Promise<DiagnosticoListItem[]> {
+  const db = requireDb()
+  const tenantId = await getTenantIdBySlug(tenantSlug)
+
+  const conditions = tenantId ? eq(diagnosticos.tenantId, tenantId) : undefined
+
+  const query = db
     .select({
       id: diagnosticos.id,
       createdAt: diagnosticos.createdAt,
@@ -53,12 +62,26 @@ export async function listDiagnosticos(limit = 100): Promise<DiagnosticoListItem
     .from(diagnosticos)
     .orderBy(desc(diagnosticos.createdAt))
     .limit(limit)
+
+  if (conditions) {
+    return query.where(conditions)
+  }
+
+  return query
 }
 
-export async function getDiagnosticoById(id: string): Promise<DiagnosticoDetail | null> {
+export async function getDiagnosticoById(
+  tenantSlug: string,
+  id: string,
+): Promise<DiagnosticoDetail | null> {
   const db = requireDb()
+  const tenantId = await getTenantIdBySlug(tenantSlug)
 
-  const [row] = await db.select().from(diagnosticos).where(eq(diagnosticos.id, id)).limit(1)
+  const conditions = tenantId
+    ? and(eq(diagnosticos.id, id), eq(diagnosticos.tenantId, tenantId))
+    : eq(diagnosticos.id, id)
+
+  const [row] = await db.select().from(diagnosticos).where(conditions).limit(1)
   if (!row) return null
 
   const respostas = await db

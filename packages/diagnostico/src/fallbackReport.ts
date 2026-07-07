@@ -1,4 +1,4 @@
-import type { Answers, ScoreInfo } from './types'
+import type { Answers, ScoreInfo } from '@dupply/types/diagnostico'
 
 export function buildFallbackReport(answers: Answers, scoreInfo: ScoreInfo): string {
   const empresa = String(answers.nome || 'sua empresa')

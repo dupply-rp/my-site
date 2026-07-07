@@ -8,9 +8,11 @@
   },
   "dependencies": {
     "@dupply/db": "workspace:*",
+    "@dupply/diagnostico": "workspace:*",
     "@dupply/types": "workspace:*",
     "@vercel/functions": "^3.7.5",
-    "drizzle-orm": "^0.44.5"
+    "drizzle-orm": "^0.44.5",
+    "jose": "^6.1.0"
   },
   "devDependencies": {
     "@dupply/config": "workspace:*",
