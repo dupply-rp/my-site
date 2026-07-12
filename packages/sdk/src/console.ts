@@ -2,11 +2,15 @@ import type {
   ConsoleAuthResponse,
   ConsoleDiagnosticoResponse,
   ConsoleDiagnosticosResponse,
+  ConsoleNotifyEmailDeleteResponse,
+  ConsoleNotifyEmailResponse,
+  ConsoleNotifyEmailsResponse,
   DiagnosticoDetail,
   DiagnosticoListItem,
+  NotifyEmailItem,
 } from '@dupply/types/console'
 
-export type { DiagnosticoDetail, DiagnosticoListItem }
+export type { DiagnosticoDetail, DiagnosticoListItem, NotifyEmailItem }
 
 const STORAGE_KEY = 'dupply-console-token'
 
@@ -75,14 +79,39 @@ export class ConsoleClient {
     return data.diagnostico
   }
 
-  private async apiFetch<T>(path: string): Promise<T> {
+  async listNotifyEmails(): Promise<NotifyEmailItem[]> {
+    const data = await this.apiFetch<ConsoleNotifyEmailsResponse>('/api/console/notify-emails')
+    return data.items
+  }
+
+  async addNotifyEmail(email: string, label?: string): Promise<NotifyEmailItem> {
+    const data = await this.apiFetch<ConsoleNotifyEmailResponse>('/api/console/notify-emails', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, label: label?.trim() || undefined }),
+    })
+    return data.item
+  }
+
+  async removeNotifyEmail(id: string): Promise<void> {
+    await this.apiFetch<ConsoleNotifyEmailDeleteResponse>(
+      `/api/console/notify-emails?id=${encodeURIComponent(id)}`,
+      { method: 'DELETE' },
+    )
+  }
+
+  private async apiFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
     const token = this.token ?? ConsoleClient.getStoredToken()
     if (!token) throw new ConsoleApiError('Sessão expirada', 401)
 
     let response: Response
     try {
       response = await fetch(`${this.baseUrl}${path}`, {
-        headers: { Authorization: `Bearer ${token}` },
+        ...init,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          ...(init.headers ?? {}),
+        },
         signal: AbortSignal.timeout(15_000),
       })
     } catch {

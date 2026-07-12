@@ -1,4 +1,4 @@
-import { boolean, integer, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
+import { boolean, integer, pgTable, text, timestamp, uniqueIndex, uuid } from 'drizzle-orm/pg-core'
 
 export const tenants = pgTable('tenants', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -27,6 +27,20 @@ export const diagnosticos = pgTable('diagnosticos', {
   relatorioInterno: text('relatorio_interno'),
   aiGenerated: boolean('ai_generated').default(false).notNull(),
 })
+
+export const notifyEmails = pgTable(
+  'notify_emails',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    tenantId: uuid('tenant_id')
+      .references(() => tenants.id, { onDelete: 'cascade' })
+      .notNull(),
+    email: text('email').notNull(),
+    label: text('label'),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => [uniqueIndex('notify_emails_tenant_email_idx').on(table.tenantId, table.email)],
+)
 
 export const diagnosticoRespostas = pgTable('diagnostico_respostas', {
   id: uuid('id').primaryKey().defaultRandom(),

@@ -1,3 +1,5 @@
+import { resolveNotifyEmailAddresses } from './notifyEmailQueries'
+
 interface SendReportEmailParams {
   to: string
   companyName: string
@@ -14,24 +16,14 @@ interface LeadNotificationParams {
   aiGenerated: boolean
 }
 
-const DEFAULT_NOTIFY_EMAILS = ['ricardo.lima@dupply.com.br', 'ricardosllacerda@gmail.com']
-
-function isValidEmail(value: string): boolean {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())
-}
-
 function asString(value: unknown): string {
   if (value == null) return ''
   if (Array.isArray(value)) return value.join(', ')
   return String(value)
 }
 
-function getNotifyEmails(): string[] {
-  const raw = process.env.DIAGNOSTICO_NOTIFY_EMAILS?.trim()
-  const list = raw
-    ? raw.split(',').map((email) => email.trim()).filter(Boolean)
-    : DEFAULT_NOTIFY_EMAILS
-  return list.filter(isValidEmail)
+function isValidEmail(value: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())
 }
 
 async function postResendEmail(input: {
@@ -128,7 +120,7 @@ export function canSendReportEmail(to: string): boolean {
 }
 
 export async function sendLeadNotificationEmail(params: LeadNotificationParams): Promise<void> {
-  const recipients = getNotifyEmails()
+  const recipients = await resolveNotifyEmailAddresses()
   if (recipients.length === 0) {
     throw new Error('Nenhum e-mail de notificação configurado')
   }

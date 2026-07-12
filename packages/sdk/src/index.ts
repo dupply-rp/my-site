@@ -5,4 +5,5 @@ export {
   scoreBadgeClass,
   type DiagnosticoDetail,
   type DiagnosticoListItem,
+  type NotifyEmailItem,
 } from './console'
