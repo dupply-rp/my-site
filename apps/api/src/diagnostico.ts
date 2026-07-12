@@ -3,7 +3,7 @@ import { buildSummary, buildFallbackReport, calcPillars, calcScore, getScoreInfo
 import type { Answers } from '@dupply/types/diagnostico'
 import { generateAnthropicReport } from './lib/anthropic'
 import { checkDiagnosticoRateLimit, getClientIp } from './lib/rateLimit'
-import { canSendReportEmail, sendReportEmail } from './lib/sendReportEmail'
+import { scheduleDiagnosticoEmails } from './lib/scheduleDiagnosticoEmails'
 import { resolveDiagnosticoReports } from './lib/splitReport'
 import { verifyTurnstileToken } from './lib/turnstile'
 
@@ -160,24 +160,13 @@ async function handleDiagnostico(request: Request) {
       }),
   )
 
-  const recipientEmail = String(answers.email ?? '').trim()
-  const emailDispatched = canSendReportEmail(recipientEmail)
-
-  if (emailDispatched) {
-    waitUntil(
-      sendReportEmail({
-        to: recipientEmail,
-        companyName: String(answers.nome ?? 'Sua empresa'),
-        score,
-        scoreLabel: scoreInfo.label,
-        reportHtml: reports.clientHtml,
-        aiGenerated,
-      }).catch((error) => {
-        const message = error instanceof Error ? error.message : 'Erro ao enviar e-mail'
-        console.error('[diagnostico] E-mail:', error)
-      }),
-    )
-  }
+  const { emailDispatched, emailTo } = scheduleDiagnosticoEmails(waitUntil, {
+    answers,
+    reportClientHtml: reports.clientHtml,
+    score,
+    scoreLabel: scoreInfo.label,
+    aiGenerated,
+  })
 
   return jsonResponse({
     reportHtml: reports.clientHtml,
@@ -188,6 +177,6 @@ async function handleDiagnostico(request: Request) {
     dbPending: true,
     sheetPending: sheetsEnabled,
     emailDispatched,
-    emailTo: emailDispatched ? recipientEmail : undefined,
+    emailTo,
   })
 }
