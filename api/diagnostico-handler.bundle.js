@@ -14827,13 +14827,16 @@ function isResendConfigured() {
 }
 function mapEmailErrorForClient(error) {
   const message = error instanceof Error ? error.message : "";
-  if (!isResendConfigured() || message.includes("RESEND") || message.includes("REPORT_EMAIL_FROM")) {
+  if (!isResendConfigured() || message.includes("RESEND_NOT_CONFIGURED") || message.includes("REPORT_EMAIL_FROM")) {
+    return "Envio por e-mail indispon\xEDvel no momento. Fale conosco pelo WhatsApp.";
+  }
+  if (message.includes("not verified") || message.includes("validation_error") || message.includes("(403)")) {
     return "Envio por e-mail indispon\xEDvel no momento. Fale conosco pelo WhatsApp.";
   }
   if (message.includes("Nenhum e-mail de notifica\xE7\xE3o")) {
     return "Envio por e-mail indispon\xEDvel no momento. Fale conosco pelo WhatsApp.";
   }
-  return message || "N\xE3o foi poss\xEDvel enviar sua solicita\xE7\xE3o agora.";
+  return "N\xE3o foi poss\xEDvel enviar sua solicita\xE7\xE3o agora. Fale conosco pelo WhatsApp.";
 }
 async function postResendEmail(input) {
   const apiKey = process.env.RESEND_API_KEY;
@@ -14856,6 +14859,7 @@ async function postResendEmail(input) {
   });
   if (!response.ok) {
     const body = await response.text();
+    console.error("[resend]", response.status, body.slice(0, 500));
     throw new Error(`Resend falhou (${response.status}): ${body.slice(0, 300)}`);
   }
 }
