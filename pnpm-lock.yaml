@@ -118,6 +118,9 @@ importers:
 
   apps/console:
     dependencies:
+      '@dupply/diagnostico':
+        specifier: workspace:*
+        version: link:../../packages/diagnostico
       '@dupply/sdk':
         specifier: workspace:*
         version: link:../../packages/sdk
