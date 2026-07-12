@@ -14822,11 +14822,24 @@ function asString2(value) {
 function isValidEmail2(value) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
 }
+function isResendConfigured() {
+  return Boolean(process.env.RESEND_API_KEY?.trim() && process.env.REPORT_EMAIL_FROM?.trim());
+}
+function mapEmailErrorForClient(error) {
+  const message = error instanceof Error ? error.message : "";
+  if (!isResendConfigured() || message.includes("RESEND") || message.includes("REPORT_EMAIL_FROM")) {
+    return "Envio por e-mail indispon\xEDvel no momento. Fale conosco pelo WhatsApp.";
+  }
+  if (message.includes("Nenhum e-mail de notifica\xE7\xE3o")) {
+    return "Envio por e-mail indispon\xEDvel no momento. Fale conosco pelo WhatsApp.";
+  }
+  return message || "N\xE3o foi poss\xEDvel enviar sua solicita\xE7\xE3o agora.";
+}
 async function postResendEmail(input) {
   const apiKey = process.env.RESEND_API_KEY;
   const from = process.env.REPORT_EMAIL_FROM;
   if (!apiKey || !from) {
-    throw new Error("RESEND_API_KEY ou REPORT_EMAIL_FROM n\xE3o configurados");
+    throw new Error("RESEND_NOT_CONFIGURED");
   }
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
@@ -14968,13 +14981,13 @@ async function sendReportEmail(params) {
 function isValidEmail3(value) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
 }
-function isResendConfigured() {
-  return Boolean(process.env.RESEND_API_KEY && process.env.REPORT_EMAIL_FROM);
+function isResendConfigured2() {
+  return Boolean(process.env.RESEND_API_KEY?.trim() && process.env.REPORT_EMAIL_FROM?.trim());
 }
 function scheduleDiagnosticoEmails(waitUntil2, input) {
   const recipientEmail = String(input.answers.email ?? "").trim();
   const hasValidClientEmail = isValidEmail3(recipientEmail);
-  if (!isResendConfigured()) {
+  if (!isResendConfigured2()) {
     if (hasValidClientEmail) {
       console.warn("[diagnostico] E-mail n\xE3o enviado \u2014 configure RESEND_API_KEY e REPORT_EMAIL_FROM");
     }
@@ -15082,9 +15095,9 @@ async function handleSolicitarContato(req, res) {
     });
     return res.status(200).json({ ok: true });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Erro ao solicitar contato";
-    console.error("[solicitar-contato]", message);
-    return res.status(500).json({ error: message });
+    const internal = error instanceof Error ? error.message : "Erro ao solicitar contato";
+    console.error("[solicitar-contato]", internal);
+    return res.status(503).json({ error: mapEmailErrorForClient(error) });
   }
 }
 

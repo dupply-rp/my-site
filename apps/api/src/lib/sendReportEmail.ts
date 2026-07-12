@@ -35,6 +35,21 @@ function isValidEmail(value: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())
 }
 
+function isResendConfigured(): boolean {
+  return Boolean(process.env.RESEND_API_KEY?.trim() && process.env.REPORT_EMAIL_FROM?.trim())
+}
+
+export function mapEmailErrorForClient(error: unknown): string {
+  const message = error instanceof Error ? error.message : ''
+  if (!isResendConfigured() || message.includes('RESEND') || message.includes('REPORT_EMAIL_FROM')) {
+    return 'Envio por e-mail indisponível no momento. Fale conosco pelo WhatsApp.'
+  }
+  if (message.includes('Nenhum e-mail de notificação')) {
+    return 'Envio por e-mail indisponível no momento. Fale conosco pelo WhatsApp.'
+  }
+  return message || 'Não foi possível enviar sua solicitação agora.'
+}
+
 async function postResendEmail(input: {
   to: string[]
   subject: string
@@ -44,7 +59,7 @@ async function postResendEmail(input: {
   const from = process.env.REPORT_EMAIL_FROM
 
   if (!apiKey || !from) {
-    throw new Error('RESEND_API_KEY ou REPORT_EMAIL_FROM não configurados')
+    throw new Error('RESEND_NOT_CONFIGURED')
   }
 
   const response = await fetch('https://api.resend.com/emails', {
@@ -125,7 +140,7 @@ function escapeHtml(value: string): string {
 }
 
 export function canSendReportEmail(to: string): boolean {
-  return Boolean(process.env.RESEND_API_KEY && process.env.REPORT_EMAIL_FROM && isValidEmail(to))
+  return isResendConfigured() && isValidEmail(to)
 }
 
 export async function sendLeadNotificationEmail(params: LeadNotificationParams): Promise<void> {
