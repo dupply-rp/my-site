@@ -16,7 +16,7 @@ function isValidEmail(value: string): boolean {
 }
 
 function isResendConfigured(): boolean {
-  return Boolean(process.env.RESEND_API_KEY && process.env.REPORT_EMAIL_FROM)
+  return Boolean(process.env.RESEND_API_KEY?.trim() && process.env.REPORT_EMAIL_FROM?.trim())
 }
 
 export function scheduleDiagnosticoEmails(

@@ -200,7 +200,7 @@ export function ReportScreen({ answers, report, onRestart }: ReportScreenProps) 
           <h3 className="diag-cta-title">Quer implementar IA de verdade na sua empresa?</h3>
           <p className="diag-cta-sub">
             Fale agora com um especialista ou peça para a Dupply entrar em contato. WhatsApp{' '}
-            <strong>{WHATSAPP_PHONE}</strong> — resposta em horário comercial.
+            <strong>{WHATSAPP_PHONE}</strong>.
           </p>
 
           <div className="diag-cta-primary-row">
