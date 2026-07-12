@@ -98,6 +98,21 @@ async function handler(req: VercelRequest, res: VercelResponse) {
 
   const sheetsEnabled = process.env.ENABLE_GOOGLE_SHEETS === 'true'
 
+  let diagnosticoId: string | null = null
+  try {
+    const { saveDiagnosticoToDb } = await import('./lib/saveDiagnostico')
+    diagnosticoId = await saveDiagnosticoToDb({
+      answers,
+      score,
+      scoreLabel: scoreInfo.label,
+      reportClientHtml: reports.clientHtml,
+      reportInternalHtml: reports.internalHtml,
+      aiGenerated,
+    })
+  } catch (error) {
+    console.error('[diagnostico] Postgres:', error instanceof Error ? error.message : error)
+  }
+
   if (sheetsEnabled) {
     const { saveToGoogleSheets } = await import('./lib/googleSheets')
     const { enqueueSheetRetry } = await import('./lib/retryQueue')
@@ -123,29 +138,13 @@ async function handler(req: VercelRequest, res: VercelResponse) {
     )
   }
 
-  waitUntil(
-    import('./lib/saveDiagnostico')
-      .then(({ saveDiagnosticoToDb }) =>
-        saveDiagnosticoToDb({
-          answers,
-          score,
-          scoreLabel: scoreInfo.label,
-          reportClientHtml: reports.clientHtml,
-          reportInternalHtml: reports.internalHtml,
-          aiGenerated,
-        }),
-      )
-      .catch((error) => {
-        console.error('[diagnostico] Postgres:', error instanceof Error ? error.message : error)
-      }),
-  )
-
   const { emailDispatched, emailTo } = scheduleDiagnosticoEmails(waitUntil, {
     answers,
     reportClientHtml: reports.clientHtml,
     score,
     scoreLabel: scoreInfo.label,
     aiGenerated,
+    diagnosticoId,
   })
 
   return res.status(200).json({
@@ -154,7 +153,8 @@ async function handler(req: VercelRequest, res: VercelResponse) {
     scoreInfo,
     pillars,
     aiGenerated,
-    dbPending: true,
+    dbPending: !diagnosticoId,
+    diagnosticoId,
     sheetPending: sheetsEnabled,
     emailDispatched,
     emailTo,

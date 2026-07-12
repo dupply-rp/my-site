@@ -8,6 +8,7 @@ interface ScheduleDiagnosticoEmailsInput {
   score: number
   scoreLabel: string
   aiGenerated: boolean
+  diagnosticoId?: string | null
 }
 
 function isValidEmail(value: string): boolean {
@@ -29,7 +30,11 @@ export function scheduleDiagnosticoEmails(
     if (hasValidClientEmail) {
       console.warn('[diagnostico] E-mail não enviado — configure RESEND_API_KEY e REPORT_EMAIL_FROM')
     }
-    return { emailDispatched: false, emailTo: hasValidClientEmail ? recipientEmail : undefined }
+    console.warn('[diagnostico] Notificação interna não enviada — Resend não configurado')
+    return {
+      emailDispatched: false,
+      emailTo: hasValidClientEmail ? recipientEmail : undefined,
+    }
   }
 
   const emailTasks: Promise<unknown>[] = [
@@ -38,10 +43,11 @@ export function scheduleDiagnosticoEmails(
       score: input.score,
       scoreLabel: input.scoreLabel,
       aiGenerated: input.aiGenerated,
+      diagnosticoId: input.diagnosticoId,
     }).catch((error) => {
-      const message = error instanceof Error ? error.message : 'Erro ao notificar equipe'
-      console.error('[diagnostico] E-mail interno:', message)
-    }),
+        const message = error instanceof Error ? error.message : 'Erro ao notificar equipe'
+        console.error('[diagnostico] E-mail interno:', message)
+      }),
   ]
 
   if (hasValidClientEmail) {

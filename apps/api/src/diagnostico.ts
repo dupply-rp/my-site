@@ -116,6 +116,22 @@ async function handleDiagnostico(request: Request) {
 
   const sheetsEnabled = process.env.ENABLE_GOOGLE_SHEETS === 'true'
 
+  let diagnosticoId: string | null = null
+  try {
+    const { saveDiagnosticoToDb } = await import('./lib/saveDiagnostico')
+    diagnosticoId = await saveDiagnosticoToDb({
+      answers,
+      score,
+      scoreLabel: scoreInfo.label,
+      reportClientHtml: reports.clientHtml,
+      reportInternalHtml: reports.internalHtml,
+      aiGenerated,
+    })
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Erro ao salvar no banco'
+    console.error('[diagnostico] Postgres:', message)
+  }
+
   if (sheetsEnabled) {
     const { saveToGoogleSheets } = await import('./lib/googleSheets')
     const { enqueueSheetRetry } = await import('./lib/retryQueue')
@@ -142,30 +158,13 @@ async function handleDiagnostico(request: Request) {
     )
   }
 
-  waitUntil(
-    import('./lib/saveDiagnostico')
-      .then(({ saveDiagnosticoToDb }) =>
-        saveDiagnosticoToDb({
-          answers,
-          score,
-          scoreLabel: scoreInfo.label,
-          reportClientHtml: reports.clientHtml,
-          reportInternalHtml: reports.internalHtml,
-          aiGenerated,
-        }),
-      )
-      .catch((error) => {
-        const message = error instanceof Error ? error.message : 'Erro ao salvar no banco'
-        console.error('[diagnostico] Postgres:', message)
-      }),
-  )
-
   const { emailDispatched, emailTo } = scheduleDiagnosticoEmails(waitUntil, {
     answers,
     reportClientHtml: reports.clientHtml,
     score,
     scoreLabel: scoreInfo.label,
     aiGenerated,
+    diagnosticoId,
   })
 
   return jsonResponse({
@@ -174,7 +173,8 @@ async function handleDiagnostico(request: Request) {
     scoreInfo,
     pillars,
     aiGenerated,
-    dbPending: true,
+    dbPending: !diagnosticoId,
+    diagnosticoId,
     sheetPending: sheetsEnabled,
     emailDispatched,
     emailTo,

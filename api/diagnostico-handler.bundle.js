@@ -368,6 +368,71 @@ var init_fallbackReport = __esm({
   }
 });
 
+// packages/diagnostico/dist/reportSections.js
+function normalizeSectionTitle(title) {
+  return title.replace(/<[^>]+>/g, "").replace(/[\u{1F300}-\u{1FAFF}\u2600-\u26FF]/gu, "").trim();
+}
+function splitHtmlByH2Sections(html) {
+  const sections = [];
+  const parts = html.split(/(?=<h2\b)/i);
+  for (const part of parts) {
+    const trimmed = part.trim();
+    if (!trimmed)
+      continue;
+    const match = trimmed.match(/^<h2[^>]*>([\s\S]*?)<\/h2>/i);
+    if (!match) {
+      if (sections.length === 0) {
+        sections.push({ title: "", body: trimmed });
+      } else {
+        sections[sections.length - 1].body += trimmed;
+      }
+      continue;
+    }
+    sections.push({
+      title: normalizeSectionTitle(match[1]),
+      body: trimmed
+    });
+  }
+  return sections;
+}
+function isInternalSectionTitle(title) {
+  const normalized = normalizeSectionTitle(title);
+  return INTERNAL_SECTION_PATTERNS.some((pattern) => pattern.test(normalized));
+}
+function extractInternalSectionsHtml(html) {
+  const trimmed = html.trim();
+  if (!trimmed)
+    return "";
+  const internalMatch = trimmed.match(INTERNAL_BLOCK);
+  if (internalMatch?.[1]?.trim()) {
+    return internalMatch[1].trim();
+  }
+  const sections = splitHtmlByH2Sections(trimmed);
+  const internalParts = sections.filter((section) => section.title && isInternalSectionTitle(section.title)).map((section) => section.body);
+  return internalParts.join('\n<div class="section-divider"></div>\n').trim();
+}
+function stripInternalSectionsFromClientHtml(html) {
+  const trimmed = html.trim();
+  if (!trimmed)
+    return "";
+  const clientMatch = trimmed.match(CLIENT_BLOCK);
+  if (clientMatch?.[1]?.trim()) {
+    const sections2 = splitHtmlByH2Sections(clientMatch[1].trim());
+    return sections2.filter((section) => !section.title || !isInternalSectionTitle(section.title)).map((section) => section.body).join("\n").trim();
+  }
+  const sections = splitHtmlByH2Sections(trimmed);
+  return sections.filter((section) => !section.title || !isInternalSectionTitle(section.title)).map((section) => section.body).join("\n").trim();
+}
+var CLIENT_BLOCK, INTERNAL_BLOCK, INTERNAL_SECTION_PATTERNS;
+var init_reportSections = __esm({
+  "packages/diagnostico/dist/reportSections.js"() {
+    "use strict";
+    CLIENT_BLOCK = /<!--\s*DUPPLY_CLIENT\s*-->([\s\S]*?)<!--\s*\/DUPPLY_CLIENT\s*-->/i;
+    INTERNAL_BLOCK = /<!--\s*DUPPLY_INTERNAL\s*-->([\s\S]*?)<!--\s*\/DUPPLY_INTERNAL\s*-->/i;
+    INTERNAL_SECTION_PATTERNS = [/ferramentas\s+recomendadas/i, /roadmap\s+de\s+90/i];
+  }
+});
+
 // packages/diagnostico/dist/randomTestAnswers.js
 var init_randomTestAnswers = __esm({
   "packages/diagnostico/dist/randomTestAnswers.js"() {
@@ -482,6 +547,7 @@ var init_dist = __esm({
     "use strict";
     init_buildSummary();
     init_fallbackReport();
+    init_reportSections();
     init_randomTestAnswers();
     init_questions();
     init_scoring();
@@ -14199,7 +14265,7 @@ function joinReportParts(clientHtml, internalHtml) {
 ${internal}
 </div>`;
 }
-function splitHtmlByH2Sections(html) {
+function splitHtmlByH2Sections2(html) {
   const sections = [];
   const parts = html.split(/(?=<h2\b)/i);
   for (const part of parts) {
@@ -14214,23 +14280,18 @@ function splitHtmlByH2Sections(html) {
       }
       continue;
     }
-    sections.push({
-      title: match[1].replace(/<[^>]+>/g, "").trim(),
-      body: trimmed
-    });
+    const title = match[1].replace(/<[^>]+>/g, "").trim();
+    sections.push({ title, body: trimmed });
   }
   return sections;
 }
-function isInternalSectionTitle(title) {
-  return INTERNAL_SECTION_PATTERNS.some((pattern) => pattern.test(title));
-}
 function splitBySectionHeaders(html) {
-  const sections = splitHtmlByH2Sections(html);
+  const sections = splitHtmlByH2Sections2(html);
   const clientParts = [];
   const internalParts = [];
   for (const section of sections) {
-    if (!section.title || isInternalSectionTitle(section.title)) {
-      if (section.body.trim()) internalParts.push(section.body);
+    if (section.title && isInternalSectionTitle(section.title)) {
+      internalParts.push(section.body);
     } else {
       clientParts.push(section.body);
     }
@@ -14243,18 +14304,13 @@ function splitBySectionHeaders(html) {
     fullHtml: joinReportParts(clientHtml, internalHtml)
   };
 }
-function stripInternalSectionsFromClient(html) {
-  const sections = splitHtmlByH2Sections(html);
-  const kept = sections.filter((section) => !section.title || !isInternalSectionTitle(section.title));
-  return kept.map((section) => section.body).join("\n").trim();
-}
 function splitReportHtml(raw) {
   const sanitized = sanitizeReportHtml(raw);
-  const clientMatch = sanitized.match(CLIENT_BLOCK);
-  const internalMatch = sanitized.match(INTERNAL_BLOCK);
-  if (clientMatch) {
-    const clientHtml = stripInternalSectionsFromClient(clientMatch[1].trim());
-    const internalHtml = internalMatch?.[1]?.trim() ?? "";
+  const clientMatch = sanitized.match(CLIENT_BLOCK2);
+  const internalMatch = sanitized.match(INTERNAL_BLOCK2);
+  if (clientMatch || internalMatch) {
+    const clientHtml = clientMatch ? stripInternalSectionsFromClientHtml(clientMatch[1].trim()) : stripInternalSectionsFromClientHtml(sanitized);
+    const internalHtml = internalMatch?.[1]?.trim() ?? extractInternalSectionsHtml(sanitized);
     return {
       clientHtml,
       internalHtml,
@@ -14274,32 +14330,49 @@ function resolveDiagnosticoReports(rawHtml, options) {
   }
   return splitReportHtml(rawHtml);
 }
-var CLIENT_BLOCK, INTERNAL_BLOCK, INTERNAL_SECTION_PATTERNS;
+var CLIENT_BLOCK2, INTERNAL_BLOCK2;
 var init_splitReport = __esm({
   "apps/api/src/lib/splitReport.ts"() {
     "use strict";
     init_dist();
     init_htmlToPlainText();
-    CLIENT_BLOCK = /<!--\s*DUPPLY_CLIENT\s*-->([\s\S]*?)<!--\s*\/DUPPLY_CLIENT\s*-->/i;
-    INTERNAL_BLOCK = /<!--\s*DUPPLY_INTERNAL\s*-->([\s\S]*?)<!--\s*\/DUPPLY_INTERNAL\s*-->/i;
-    INTERNAL_SECTION_PATTERNS = [/ferramentas\s+recomendadas/i, /roadmap\s+de\s+90/i];
+    CLIENT_BLOCK2 = /<!--\s*DUPPLY_CLIENT\s*-->([\s\S]*?)<!--\s*\/DUPPLY_CLIENT\s*-->/i;
+    INTERNAL_BLOCK2 = /<!--\s*DUPPLY_INTERNAL\s*-->([\s\S]*?)<!--\s*\/DUPPLY_INTERNAL\s*-->/i;
   }
 });
 
-// apps/api/src/lib/sheetPayload.ts
-var sheetPayload_exports = {};
-__export(sheetPayload_exports, {
-  buildSheetPayload: () => buildSheetPayload
+// apps/api/src/lib/saveDiagnostico.ts
+var saveDiagnostico_exports = {};
+__export(saveDiagnostico_exports, {
+  getDefaultTenantId: () => getDefaultTenantId,
+  saveDiagnosticoToDb: () => saveDiagnosticoToDb
 });
 function asString3(value) {
   if (value == null) return "";
   if (Array.isArray(value)) return value.join(", ");
   return String(value);
 }
-function buildSheetPayload(input) {
-  const { answers, score, scoreLabel, reportHtml } = input;
-  const payload = {
-    timestamp: (/* @__PURE__ */ new Date()).toISOString(),
+async function getDefaultTenantId(db) {
+  const slug = process.env.DEFAULT_TENANT_SLUG ?? "dupply";
+  const existing = await db.select({ id: tenants.id }).from(tenants).where(eq(tenants.slug, slug)).limit(1);
+  if (existing[0]) return existing[0].id;
+  const [created] = await db.insert(tenants).values({ name: "Dupply", slug }).returning({ id: tenants.id });
+  return created.id;
+}
+async function saveDiagnosticoToDb(input) {
+  const db = createDb();
+  if (!db) {
+    console.warn("DATABASE_URL n\xE3o configurada \u2014 diagn\xF3stico n\xE3o salvo no banco");
+    return null;
+  }
+  const { answers, score, scoreLabel, reportClientHtml, reportInternalHtml, aiGenerated } = input;
+  const tenantId = await getDefaultTenantId(db);
+  const contexto = asString3(answers.contexto_negocio).trim();
+  const clientHtml = sanitizeReportHtml(reportClientHtml);
+  const internalHtml = sanitizeReportHtml(reportInternalHtml);
+  const fullHtml = joinReportParts(clientHtml, internalHtml);
+  const [diagnostico] = await db.insert(diagnosticos).values({
+    tenantId,
     empresa: asString3(answers.nome),
     email: asString3(answers.email),
     telefone: asString3(answers.telefone),
@@ -14310,7 +14383,61 @@ function buildSheetPayload(input) {
     scoreLabel,
     maiorDor: asString3(answers.maior_dor),
     budget: asString3(answers.budget),
-    objetivo: asString3(answers.contexto_negocio).slice(0, 200) || asString3(answers.maior_dor),
+    objetivo: contexto.slice(0, 500) || asString3(answers.maior_dor),
+    relatorio: fullHtml,
+    relatorioCliente: clientHtml,
+    relatorioInterno: internalHtml || null,
+    aiGenerated
+  }).returning({ id: diagnosticos.id });
+  const answerRows = buildAnswerRows(answers);
+  if (answerRows.length > 0) {
+    await db.insert(diagnosticoRespostas).values(
+      answerRows.map((row) => ({
+        diagnosticoId: diagnostico.id,
+        perguntaId: row.perguntaId,
+        perguntaTexto: row.perguntaTexto,
+        resposta: row.resposta
+      }))
+    );
+  }
+  return diagnostico.id;
+}
+var init_saveDiagnostico = __esm({
+  "apps/api/src/lib/saveDiagnostico.ts"() {
+    "use strict";
+    init_dist();
+    init_src();
+    init_drizzle_orm();
+    init_htmlToPlainText();
+    init_splitReport();
+  }
+});
+
+// apps/api/src/lib/sheetPayload.ts
+var sheetPayload_exports = {};
+__export(sheetPayload_exports, {
+  buildSheetPayload: () => buildSheetPayload
+});
+function asString4(value) {
+  if (value == null) return "";
+  if (Array.isArray(value)) return value.join(", ");
+  return String(value);
+}
+function buildSheetPayload(input) {
+  const { answers, score, scoreLabel, reportHtml } = input;
+  const payload = {
+    timestamp: (/* @__PURE__ */ new Date()).toISOString(),
+    empresa: asString4(answers.nome),
+    email: asString4(answers.email),
+    telefone: asString4(answers.telefone),
+    setor: asString4(answers.setor),
+    porte: asString4(answers.porte),
+    faturamento: asString4(answers.faturamento),
+    score,
+    scoreLabel,
+    maiorDor: asString4(answers.maior_dor),
+    budget: asString4(answers.budget),
+    objetivo: asString4(answers.contexto_negocio).slice(0, 200) || asString4(answers.maior_dor),
     respostas: answers,
     relatorio: htmlToPlainText(reportHtml).slice(0, 8e3)
   };
@@ -14465,78 +14592,6 @@ var init_retryQueue = __esm({
     QUEUE_KEY = "diagnostico:sheet-retry";
     MAX_ATTEMPTS = 8;
     BASE_DELAY_MS = 6e4;
-  }
-});
-
-// apps/api/src/lib/saveDiagnostico.ts
-var saveDiagnostico_exports = {};
-__export(saveDiagnostico_exports, {
-  getDefaultTenantId: () => getDefaultTenantId,
-  saveDiagnosticoToDb: () => saveDiagnosticoToDb
-});
-function asString4(value) {
-  if (value == null) return "";
-  if (Array.isArray(value)) return value.join(", ");
-  return String(value);
-}
-async function getDefaultTenantId(db) {
-  const slug = process.env.DEFAULT_TENANT_SLUG ?? "dupply";
-  const existing = await db.select({ id: tenants.id }).from(tenants).where(eq(tenants.slug, slug)).limit(1);
-  if (existing[0]) return existing[0].id;
-  const [created] = await db.insert(tenants).values({ name: "Dupply", slug }).returning({ id: tenants.id });
-  return created.id;
-}
-async function saveDiagnosticoToDb(input) {
-  const db = createDb();
-  if (!db) {
-    console.warn("DATABASE_URL n\xE3o configurada \u2014 diagn\xF3stico n\xE3o salvo no banco");
-    return null;
-  }
-  const { answers, score, scoreLabel, reportClientHtml, reportInternalHtml, aiGenerated } = input;
-  const tenantId = await getDefaultTenantId(db);
-  const contexto = asString4(answers.contexto_negocio).trim();
-  const clientHtml = sanitizeReportHtml(reportClientHtml);
-  const internalHtml = sanitizeReportHtml(reportInternalHtml);
-  const fullHtml = joinReportParts(clientHtml, internalHtml);
-  const [diagnostico] = await db.insert(diagnosticos).values({
-    tenantId,
-    empresa: asString4(answers.nome),
-    email: asString4(answers.email),
-    telefone: asString4(answers.telefone),
-    setor: asString4(answers.setor),
-    porte: asString4(answers.porte),
-    faturamento: asString4(answers.faturamento),
-    score,
-    scoreLabel,
-    maiorDor: asString4(answers.maior_dor),
-    budget: asString4(answers.budget),
-    objetivo: contexto.slice(0, 500) || asString4(answers.maior_dor),
-    relatorio: fullHtml,
-    relatorioCliente: clientHtml,
-    relatorioInterno: internalHtml || null,
-    aiGenerated
-  }).returning({ id: diagnosticos.id });
-  const answerRows = buildAnswerRows(answers);
-  if (answerRows.length > 0) {
-    await db.insert(diagnosticoRespostas).values(
-      answerRows.map((row) => ({
-        diagnosticoId: diagnostico.id,
-        perguntaId: row.perguntaId,
-        perguntaTexto: row.perguntaTexto,
-        resposta: row.resposta
-      }))
-    );
-  }
-  return diagnostico.id;
-}
-var init_saveDiagnostico = __esm({
-  "apps/api/src/lib/saveDiagnostico.ts"() {
-    "use strict";
-    init_dist();
-    init_src();
-    init_drizzle_orm();
-    init_htmlToPlainText();
-    init_splitReport();
   }
 });
 
@@ -14842,7 +14897,7 @@ function escapeHtml(value) {
 async function sendLeadNotificationEmail(params) {
   const recipients = await resolveNotifyEmailAddresses();
   if (recipients.length === 0) {
-    throw new Error("Nenhum e-mail de notifica\xE7\xE3o configurado");
+    throw new Error("Nenhum e-mail de notifica\xE7\xE3o configurado \u2014 cadastre em dupply.com.br/console/emails");
   }
   const empresa = asString2(params.answers.nome) || "\u2014";
   const email = asString2(params.answers.email) || "\u2014";
@@ -14851,6 +14906,7 @@ async function sendLeadNotificationEmail(params) {
   const maiorDor = asString2(params.answers.maior_dor) || "\u2014";
   const contexto = asString2(params.answers.contexto_negocio).trim();
   const isTest = empresa.toUpperCase().startsWith("TC_");
+  const consoleLink = params.diagnosticoId ? `https://www.dupply.com.br/console/diagnosticos/${params.diagnosticoId}` : "https://www.dupply.com.br/console";
   const html = `<!DOCTYPE html>
 <html lang="pt-BR">
 <head><meta charset="utf-8" /></head>
@@ -14863,7 +14919,7 @@ async function sendLeadNotificationEmail(params) {
   <p><strong>Maior dor:</strong> ${escapeHtml(maiorDor)}</p>
   ${contexto ? `<p><strong>Contexto:</strong> ${escapeHtml(contexto.slice(0, 500))}${contexto.length > 500 ? "\u2026" : ""}</p>` : ""}
   <p><strong>Relat\xF3rio IA:</strong> ${params.aiGenerated ? "Sim" : "Fallback"}</p>
-  <p>Consulte o console interno em <strong>dupply.com.br/console</strong> para o relat\xF3rio completo.</p>
+  <p><a href="${consoleLink}"><strong>Abrir no console</strong></a> \u2014 relat\xF3rio cliente + Ferramentas e Roadmap (uso interno).</p>
 </body>
 </html>`;
   await postResendEmail({
@@ -14898,14 +14954,19 @@ function scheduleDiagnosticoEmails(waitUntil2, input) {
     if (hasValidClientEmail) {
       console.warn("[diagnostico] E-mail n\xE3o enviado \u2014 configure RESEND_API_KEY e REPORT_EMAIL_FROM");
     }
-    return { emailDispatched: false, emailTo: hasValidClientEmail ? recipientEmail : void 0 };
+    console.warn("[diagnostico] Notifica\xE7\xE3o interna n\xE3o enviada \u2014 Resend n\xE3o configurado");
+    return {
+      emailDispatched: false,
+      emailTo: hasValidClientEmail ? recipientEmail : void 0
+    };
   }
   const emailTasks = [
     sendLeadNotificationEmail({
       answers: input.answers,
       score: input.score,
       scoreLabel: input.scoreLabel,
-      aiGenerated: input.aiGenerated
+      aiGenerated: input.aiGenerated,
+      diagnosticoId: input.diagnosticoId
     }).catch((error) => {
       const message = error instanceof Error ? error.message : "Erro ao notificar equipe";
       console.error("[diagnostico] E-mail interno:", message);
@@ -15034,6 +15095,20 @@ async function handler(req, res) {
   }
   const reports = resolveDiagnosticoReports(rawReportHtml, { aiGenerated, answers, scoreInfo });
   const sheetsEnabled = process.env.ENABLE_GOOGLE_SHEETS === "true";
+  let diagnosticoId = null;
+  try {
+    const { saveDiagnosticoToDb: saveDiagnosticoToDb2 } = await Promise.resolve().then(() => (init_saveDiagnostico(), saveDiagnostico_exports));
+    diagnosticoId = await saveDiagnosticoToDb2({
+      answers,
+      score,
+      scoreLabel: scoreInfo.label,
+      reportClientHtml: reports.clientHtml,
+      reportInternalHtml: reports.internalHtml,
+      aiGenerated
+    });
+  } catch (error) {
+    console.error("[diagnostico] Postgres:", error instanceof Error ? error.message : error);
+  }
   if (sheetsEnabled) {
     const { saveToGoogleSheets: saveToGoogleSheets2 } = await Promise.resolve().then(() => (init_googleSheets(), googleSheets_exports));
     const { enqueueSheetRetry: enqueueSheetRetry2 } = await Promise.resolve().then(() => (init_retryQueue(), retryQueue_exports));
@@ -15056,26 +15131,13 @@ async function handler(req, res) {
       })
     );
   }
-  waitUntil(
-    Promise.resolve().then(() => (init_saveDiagnostico(), saveDiagnostico_exports)).then(
-      ({ saveDiagnosticoToDb: saveDiagnosticoToDb2 }) => saveDiagnosticoToDb2({
-        answers,
-        score,
-        scoreLabel: scoreInfo.label,
-        reportClientHtml: reports.clientHtml,
-        reportInternalHtml: reports.internalHtml,
-        aiGenerated
-      })
-    ).catch((error) => {
-      console.error("[diagnostico] Postgres:", error instanceof Error ? error.message : error);
-    })
-  );
   const { emailDispatched, emailTo } = scheduleDiagnosticoEmails(waitUntil, {
     answers,
     reportClientHtml: reports.clientHtml,
     score,
     scoreLabel: scoreInfo.label,
-    aiGenerated
+    aiGenerated,
+    diagnosticoId
   });
   return res.status(200).json({
     reportHtml: reports.clientHtml,
@@ -15083,7 +15145,8 @@ async function handler(req, res) {
     scoreInfo,
     pillars,
     aiGenerated,
-    dbPending: true,
+    dbPending: !diagnosticoId,
+    diagnosticoId,
     sheetPending: sheetsEnabled,
     emailDispatched,
     emailTo
