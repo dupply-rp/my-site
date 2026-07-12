@@ -14928,6 +14928,30 @@ async function sendLeadNotificationEmail(params) {
     html
   });
 }
+async function sendContactRequestEmail(params) {
+  const recipients = await resolveNotifyEmailAddresses();
+  if (recipients.length === 0) {
+    throw new Error("Nenhum e-mail de notifica\xE7\xE3o configurado");
+  }
+  const scoreLine = params.score != null && params.scoreLabel ? `<p><strong>Score do diagn\xF3stico:</strong> ${params.score}/100 \xB7 ${escapeHtml(params.scoreLabel)}</p>` : "";
+  const html = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head><meta charset="utf-8" /></head>
+<body style="font-family:system-ui,sans-serif;color:#10151d;line-height:1.55;">
+  <h2>Solicita\xE7\xE3o de contato \u2014 ${escapeHtml(params.empresa)}</h2>
+  <p>O lead pediu para a <strong>Dupply entrar em contato</strong> ap\xF3s o diagn\xF3stico.</p>
+  ${scoreLine}
+  <p><strong>E-mail:</strong> ${escapeHtml(params.email ?? "\u2014")}</p>
+  <p><strong>Telefone:</strong> ${escapeHtml(params.telefone ?? "\u2014")}</p>
+  <p>Responda o quanto antes pelo console: <a href="https://www.dupply.com.br/console">dupply.com.br/console</a></p>
+</body>
+</html>`;
+  await postResendEmail({
+    to: recipients,
+    subject: `Contato solicitado \u2014 ${params.empresa} | Dupply`,
+    html
+  });
+}
 async function sendReportEmail(params) {
   const to = params.to.trim();
   if (!isValidEmail2(to)) {
@@ -15027,7 +15051,48 @@ async function verifyTurnstileToken(token, remoteIp) {
   return { ok: true };
 }
 
+// apps/api/src/solicitar-contato.ts
+function isValidEmail4(value) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+}
+async function handleSolicitarContato(req, res) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "M\xE9todo n\xE3o permitido" });
+  }
+  const body = req.body ?? {};
+  const empresa = String(body.empresa ?? "").trim();
+  const email = String(body.email ?? "").trim();
+  const telefone = String(body.telefone ?? "").trim();
+  if (!empresa) {
+    return res.status(400).json({ error: "Empresa \xE9 obrigat\xF3ria" });
+  }
+  if (!email && !telefone) {
+    return res.status(400).json({ error: "Informe e-mail ou telefone para contato" });
+  }
+  if (email && !isValidEmail4(email)) {
+    return res.status(400).json({ error: "E-mail inv\xE1lido" });
+  }
+  try {
+    await sendContactRequestEmail({
+      empresa,
+      email: email || void 0,
+      telefone: telefone || void 0,
+      score: typeof body.score === "number" ? body.score : void 0,
+      scoreLabel: body.scoreLabel?.trim() || void 0
+    });
+    return res.status(200).json({ ok: true });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Erro ao solicitar contato";
+    console.error("[solicitar-contato]", message);
+    return res.status(500).json({ error: message });
+  }
+}
+
 // apps/api/src/diagnostico-handler.entry.ts
+function isSolicitarContatoRoute(req) {
+  const url = req.url ?? "";
+  return url.includes("/solicitar-contato");
+}
 function isAnswers(value) {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
@@ -15042,6 +15107,9 @@ function getClientIp(req) {
   return "unknown";
 }
 async function handler(req, res) {
+  if (isSolicitarContatoRoute(req)) {
+    return handleSolicitarContato(req, res);
+  }
   if (req.method !== "POST") {
     return res.status(405).json({ error: "M\xE9todo n\xE3o permitido" });
   }
