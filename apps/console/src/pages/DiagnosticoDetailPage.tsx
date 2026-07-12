@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
+import { splitReportForDisplay, stripInternalSectionsFromClientHtml } from '@dupply/diagnostico'
+
 import {
   ConsoleApiError,
   ConsoleClient,
@@ -53,15 +55,23 @@ export function DiagnosticoDetailPage() {
 
   const legacyReport = !data.relatorioCliente && !data.relatorioInterno ? data.relatorio : null
 
-  const clientPrepared = data.relatorioCliente?.trim()
-    ? prepareReportForDisplay(data.relatorioCliente)
-    : legacyReport
-      ? prepareReportForDisplay(legacyReport)
-      : null
+  const splitFromLegacy = legacyReport ? splitReportForDisplay(legacyReport) : null
 
-  const internalPrepared = data.relatorioInterno?.trim()
-    ? prepareReportForDisplay(data.relatorioInterno)
+  const clientSource =
+    data.relatorioCliente?.trim() ||
+    splitFromLegacy?.clientHtml ||
+    (legacyReport && !splitFromLegacy?.internalHtml ? legacyReport : '')
+
+  const internalSource =
+    data.relatorioInterno?.trim() ||
+    splitFromLegacy?.internalHtml ||
+    (data.relatorioCliente?.trim() ? splitReportForDisplay(data.relatorioCliente).internalHtml : '')
+
+  const clientPrepared = clientSource
+    ? prepareReportForDisplay(stripInternalSectionsFromClientHtml(clientSource) || clientSource)
     : null
+
+  const internalPrepared = internalSource ? prepareReportForDisplay(internalSource) : null
 
   const showPrint = Boolean(clientPrepared || internalPrepared || data.aiGenerated)
 

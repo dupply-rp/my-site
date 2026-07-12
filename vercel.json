@@ -22,6 +22,9 @@
     },
     "api/console/auth.ts": {
       "maxDuration": 30
+    },
+    "api/solicitar-contato.ts": {
+      "maxDuration": 30
     }
   },
   "crons": [

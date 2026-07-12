@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import dupplyLogoTransparent from '../../../assets/dupply-logo-transparent.png'
-import { WHATSAPP_URL } from '../../../constants/links'
+import { WHATSAPP_PHONE, WHATSAPP_URL } from '../../../constants/links'
+import { solicitarContatoDupply } from '../solicitarContato'
 import type { Answers, DiagnosticoReport } from '../types'
 
 interface ReportScreenProps {
@@ -8,6 +9,8 @@ interface ReportScreenProps {
   report: DiagnosticoReport
   onRestart: () => void
 }
+
+type ContactStatus = 'idle' | 'loading' | 'success' | 'error'
 
 export function ReportScreen({ answers, report, onRestart }: ReportScreenProps) {
   const {
@@ -24,8 +27,13 @@ export function ReportScreen({ answers, report, onRestart }: ReportScreenProps) 
   const [displayScore, setDisplayScore] = useState(0)
   const [ringOffset, setRingOffset] = useState(408)
   const [pillarWidths, setPillarWidths] = useState<number[]>(pillars.map(() => 0))
+  const [contactStatus, setContactStatus] = useState<ContactStatus>('idle')
+  const [contactError, setContactError] = useState<string | null>(null)
 
   const circumference = 2 * Math.PI * 65
+  const contactEmail = String(answers.email ?? '').trim()
+  const contactPhone = String(answers.telefone ?? '').trim()
+  const canRequestContact = Boolean(contactEmail || contactPhone)
 
   useEffect(() => {
     const timeout = window.setTimeout(() => {
@@ -47,6 +55,27 @@ export function ReportScreen({ answers, report, onRestart }: ReportScreenProps) 
 
     return () => window.clearTimeout(timeout)
   }, [circumference, pillars, score])
+
+  async function handleRequestContact() {
+    if (!canRequestContact || contactStatus === 'loading' || contactStatus === 'success') return
+
+    setContactStatus('loading')
+    setContactError(null)
+
+    try {
+      await solicitarContatoDupply({
+        empresa: company,
+        email: contactEmail || undefined,
+        telefone: contactPhone || undefined,
+        score,
+        scoreLabel: scoreInfo.label,
+      })
+      setContactStatus('success')
+    } catch (error) {
+      setContactStatus('error')
+      setContactError(error instanceof Error ? error.message : 'Erro ao solicitar contato')
+    }
+  }
 
   const subtitle = [answers.setor, answers.porte, company].filter(Boolean).join(' · ')
 
@@ -167,15 +196,45 @@ export function ReportScreen({ answers, report, onRestart }: ReportScreenProps) 
         </section>
 
         <aside className="diag-report-cta">
-          <h3 className="diag-cta-title">Pronto para dar o próximo passo?</h3>
+          <p className="diag-cta-eyebrow">Próximo passo com a Dupply</p>
+          <h3 className="diag-cta-title">Quer implementar IA de verdade na sua empresa?</h3>
           <p className="diag-cta-sub">
-            A Dupply ajuda empresas como a sua a implementar IA de forma prática, com resultados mensuráveis desde a
-            primeira semana.
+            Fale agora com um especialista ou peça para a Dupply entrar em contato. WhatsApp{' '}
+            <strong>{WHATSAPP_PHONE}</strong> — resposta em horário comercial.
           </p>
-          <div className="diag-cta-buttons">
-            <a className="btn btn-primary" href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
-              Falar com a Dupply
+
+          <div className="diag-cta-primary-row">
+            <a className="btn btn-primary diag-cta-btn-main" href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
+              Falar com a Dupply no WhatsApp
             </a>
+            {canRequestContact ? (
+              <button
+                type="button"
+                className="btn diag-cta-btn-contact"
+                onClick={() => void handleRequestContact()}
+                disabled={contactStatus === 'loading' || contactStatus === 'success'}
+              >
+                {contactStatus === 'loading'
+                  ? 'Enviando solicitação…'
+                  : contactStatus === 'success'
+                    ? 'Solicitação enviada ✓'
+                    : 'Peça para a Dupply entrar em contato'}
+              </button>
+            ) : (
+              <p className="diag-cta-contact-hint">
+                Informe e-mail ou telefone no diagnóstico para solicitar contato por aqui.
+              </p>
+            )}
+          </div>
+
+          {contactStatus === 'success' ? (
+            <p className="diag-cta-success" role="status">
+              Recebemos seu pedido. A equipe Dupply entrará em contato em breve.
+            </p>
+          ) : null}
+          {contactError ? <p className="diag-cta-error">{contactError}</p> : null}
+
+          <div className="diag-cta-buttons">
             <button type="button" className="btn btn-secondary" onClick={() => window.print()}>
               Imprimir relatório
             </button>

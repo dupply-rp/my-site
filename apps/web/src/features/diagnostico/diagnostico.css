@@ -969,26 +969,91 @@
 
 .diag-report-cta {
   margin-top: 40px;
-  padding: 32px;
-  border: 1.5px solid rgba(7, 24, 255, 0.18);
-  border-radius: 20px;
-  background: var(--diag-blue-soft);
+  padding: 36px 28px;
+  border: 2px solid rgba(7, 24, 255, 0.28);
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(7, 24, 255, 0.12) 0%, rgba(7, 24, 255, 0.04) 100%);
   text-align: center;
+  box-shadow: 0 24px 60px rgba(7, 24, 255, 0.12);
+}
+
+.diag-cta-eyebrow {
+  margin: 0 0 10px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--diag-blue);
 }
 
 .diag-cta-title {
-  margin: 0 0 8px;
-  font-size: 22px;
+  margin: 0 0 10px;
+  font-size: clamp(24px, 4vw, 30px);
   font-weight: 800;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
 }
 
 .diag-cta-sub {
-  max-width: 480px;
-  margin: 0 auto 24px;
+  max-width: 560px;
+  margin: 0 auto 28px;
   color: var(--diag-muted);
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.7;
+}
+
+.diag-cta-primary-row {
+  display: grid;
+  gap: 12px;
+  max-width: 520px;
+  margin: 0 auto 20px;
+}
+
+.diag-cta-btn-main {
+  min-height: 56px;
+  font-size: 16px;
+  font-weight: 700;
+  box-shadow: 0 16px 40px rgba(7, 24, 255, 0.28);
+}
+
+.diag-cta-btn-contact {
+  min-height: 56px;
+  padding: 0 24px;
+  border: 2px solid rgba(7, 24, 255, 0.35);
+  border-radius: var(--diag-radius);
+  background: #fff;
+  color: var(--diag-blue);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.diag-cta-btn-contact:hover:not(:disabled) {
+  background: rgba(7, 24, 255, 0.06);
+  transform: translateY(-1px);
+}
+
+.diag-cta-btn-contact:disabled {
+  opacity: 0.72;
+  cursor: default;
+}
+
+.diag-cta-contact-hint {
+  margin: 0;
+  font-size: 14px;
+  color: var(--diag-muted);
+}
+
+.diag-cta-success {
+  margin: 0 0 16px;
+  color: #067647;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.diag-cta-error {
+  margin: 0 0 16px;
+  color: #b42318;
+  font-size: 14px;
 }
 
 .diag-cta-buttons {
@@ -996,6 +1061,8 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: 10px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(7, 24, 255, 0.12);
 }
 
 @media (max-width: 720px) {

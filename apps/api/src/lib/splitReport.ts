@@ -1,4 +1,9 @@
-import { buildFallbackReports } from '@dupply/diagnostico'
+import {
+  buildFallbackReports,
+  extractInternalSectionsHtml,
+  isInternalSectionTitle,
+  stripInternalSectionsFromClientHtml,
+} from '@dupply/diagnostico'
 import type { Answers, ScoreInfo } from '@dupply/types/diagnostico'
 
 import { sanitizeReportHtml } from './htmlToPlainText'
@@ -13,8 +18,6 @@ const CLIENT_BLOCK =
   /<!--\s*DUPPLY_CLIENT\s*-->([\s\S]*?)<!--\s*\/DUPPLY_CLIENT\s*-->/i
 const INTERNAL_BLOCK =
   /<!--\s*DUPPLY_INTERNAL\s*-->([\s\S]*?)<!--\s*\/DUPPLY_INTERNAL\s*-->/i
-
-const INTERNAL_SECTION_PATTERNS = [/ferramentas\s+recomendadas/i, /roadmap\s+de\s+90/i]
 
 export function joinReportParts(clientHtml: string, internalHtml: string): string {
   const client = clientHtml.trim()
@@ -42,17 +45,11 @@ function splitHtmlByH2Sections(html: string): Array<{ title: string; body: strin
       continue
     }
 
-    sections.push({
-      title: match[1].replace(/<[^>]+>/g, '').trim(),
-      body: trimmed,
-    })
+    const title = match[1].replace(/<[^>]+>/g, '').trim()
+    sections.push({ title, body: trimmed })
   }
 
   return sections
-}
-
-function isInternalSectionTitle(title: string): boolean {
-  return INTERNAL_SECTION_PATTERNS.some((pattern) => pattern.test(title))
 }
 
 function splitBySectionHeaders(html: string): DiagnosticoReports {
@@ -61,8 +58,8 @@ function splitBySectionHeaders(html: string): DiagnosticoReports {
   const internalParts: string[] = []
 
   for (const section of sections) {
-    if (!section.title || isInternalSectionTitle(section.title)) {
-      if (section.body.trim()) internalParts.push(section.body)
+    if (section.title && isInternalSectionTitle(section.title)) {
+      internalParts.push(section.body)
     } else {
       clientParts.push(section.body)
     }
@@ -78,20 +75,17 @@ function splitBySectionHeaders(html: string): DiagnosticoReports {
   }
 }
 
-function stripInternalSectionsFromClient(html: string): string {
-  const sections = splitHtmlByH2Sections(html)
-  const kept = sections.filter((section) => !section.title || !isInternalSectionTitle(section.title))
-  return kept.map((section) => section.body).join('\n').trim()
-}
-
 export function splitReportHtml(raw: string): DiagnosticoReports {
   const sanitized = sanitizeReportHtml(raw)
   const clientMatch = sanitized.match(CLIENT_BLOCK)
   const internalMatch = sanitized.match(INTERNAL_BLOCK)
 
-  if (clientMatch) {
-    const clientHtml = stripInternalSectionsFromClient(clientMatch[1].trim())
-    const internalHtml = internalMatch?.[1]?.trim() ?? ''
+  if (clientMatch || internalMatch) {
+    const clientHtml = clientMatch
+      ? stripInternalSectionsFromClientHtml(clientMatch[1].trim())
+      : stripInternalSectionsFromClientHtml(sanitized)
+    const internalHtml =
+      internalMatch?.[1]?.trim() ?? extractInternalSectionsHtml(sanitized)
     return {
       clientHtml,
       internalHtml,

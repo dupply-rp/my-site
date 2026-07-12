@@ -14,6 +14,15 @@ interface LeadNotificationParams {
   score: number
   scoreLabel: string
   aiGenerated: boolean
+  diagnosticoId?: string | null
+}
+
+interface ContactRequestParams {
+  empresa: string
+  email?: string
+  telefone?: string
+  score?: number
+  scoreLabel?: string
 }
 
 function asString(value: unknown): string {
@@ -122,7 +131,7 @@ export function canSendReportEmail(to: string): boolean {
 export async function sendLeadNotificationEmail(params: LeadNotificationParams): Promise<void> {
   const recipients = await resolveNotifyEmailAddresses()
   if (recipients.length === 0) {
-    throw new Error('Nenhum e-mail de notificação configurado')
+    throw new Error('Nenhum e-mail de notificação configurado — cadastre em dupply.com.br/console/emails')
   }
 
   const empresa = asString(params.answers.nome) || '—'
@@ -132,6 +141,9 @@ export async function sendLeadNotificationEmail(params: LeadNotificationParams):
   const maiorDor = asString(params.answers.maior_dor) || '—'
   const contexto = asString(params.answers.contexto_negocio).trim()
   const isTest = empresa.toUpperCase().startsWith('TC_')
+  const consoleLink = params.diagnosticoId
+    ? `https://www.dupply.com.br/console/diagnosticos/${params.diagnosticoId}`
+    : 'https://www.dupply.com.br/console'
 
   const html = `<!DOCTYPE html>
 <html lang="pt-BR">
@@ -145,13 +157,44 @@ export async function sendLeadNotificationEmail(params: LeadNotificationParams):
   <p><strong>Maior dor:</strong> ${escapeHtml(maiorDor)}</p>
   ${contexto ? `<p><strong>Contexto:</strong> ${escapeHtml(contexto.slice(0, 500))}${contexto.length > 500 ? '…' : ''}</p>` : ''}
   <p><strong>Relatório IA:</strong> ${params.aiGenerated ? 'Sim' : 'Fallback'}</p>
-  <p>Consulte o console interno em <strong>dupply.com.br/console</strong> para o relatório completo.</p>
+  <p><a href="${consoleLink}"><strong>Abrir no console</strong></a> — relatório cliente + Ferramentas e Roadmap (uso interno).</p>
 </body>
 </html>`
 
   await postResendEmail({
     to: recipients,
     subject: `Novo diagnóstico — ${empresa} | Dupply`,
+    html,
+  })
+}
+
+export async function sendContactRequestEmail(params: ContactRequestParams): Promise<void> {
+  const recipients = await resolveNotifyEmailAddresses()
+  if (recipients.length === 0) {
+    throw new Error('Nenhum e-mail de notificação configurado')
+  }
+
+  const scoreLine =
+    params.score != null && params.scoreLabel
+      ? `<p><strong>Score do diagnóstico:</strong> ${params.score}/100 · ${escapeHtml(params.scoreLabel)}</p>`
+      : ''
+
+  const html = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head><meta charset="utf-8" /></head>
+<body style="font-family:system-ui,sans-serif;color:#10151d;line-height:1.55;">
+  <h2>Solicitação de contato — ${escapeHtml(params.empresa)}</h2>
+  <p>O lead pediu para a <strong>Dupply entrar em contato</strong> após o diagnóstico.</p>
+  ${scoreLine}
+  <p><strong>E-mail:</strong> ${escapeHtml(params.email ?? '—')}</p>
+  <p><strong>Telefone:</strong> ${escapeHtml(params.telefone ?? '—')}</p>
+  <p>Responda o quanto antes pelo console: <a href="https://www.dupply.com.br/console">dupply.com.br/console</a></p>
+</body>
+</html>`
+
+  await postResendEmail({
+    to: recipients,
+    subject: `Contato solicitado — ${params.empresa} | Dupply`,
     html,
   })
 }
