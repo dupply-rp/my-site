@@ -4,12 +4,14 @@ import { eq } from 'drizzle-orm'
 
 import type { Answers } from '@dupply/types/diagnostico'
 import { sanitizeReportHtml } from './htmlToPlainText'
+import { joinReportParts } from './splitReport'
 
 interface SaveDiagnosticoInput {
   answers: Answers
   score: number
   scoreLabel: string
-  reportHtml: string
+  reportClientHtml: string
+  reportInternalHtml: string
   aiGenerated: boolean
 }
 
@@ -40,9 +42,13 @@ export async function saveDiagnosticoToDb(input: SaveDiagnosticoInput): Promise<
     return null
   }
 
-  const { answers, score, scoreLabel, reportHtml, aiGenerated } = input
+  const { answers, score, scoreLabel, reportClientHtml, reportInternalHtml, aiGenerated } = input
   const tenantId = await getDefaultTenantId(db)
   const contexto = asString(answers.contexto_negocio).trim()
+
+  const clientHtml = sanitizeReportHtml(reportClientHtml)
+  const internalHtml = sanitizeReportHtml(reportInternalHtml)
+  const fullHtml = joinReportParts(clientHtml, internalHtml)
 
   const [diagnostico] = await db
     .insert(diagnosticos)
@@ -59,7 +65,9 @@ export async function saveDiagnosticoToDb(input: SaveDiagnosticoInput): Promise<
       maiorDor: asString(answers.maior_dor),
       budget: asString(answers.budget),
       objetivo: contexto.slice(0, 500) || asString(answers.maior_dor),
-      relatorio: sanitizeReportHtml(reportHtml),
+      relatorio: fullHtml,
+      relatorioCliente: clientHtml,
+      relatorioInterno: internalHtml || null,
       aiGenerated,
     })
     .returning({ id: diagnosticos.id })
