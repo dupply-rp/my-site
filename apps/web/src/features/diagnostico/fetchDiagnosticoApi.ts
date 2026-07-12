@@ -7,6 +7,7 @@ export type DiagnosticoApiResult =
 export async function fetchDiagnosticoFromApi(
   answers: Answers,
   turnstileToken?: string,
+  options?: { testMode?: boolean },
 ): Promise<DiagnosticoApiResult> {
   try {
     const response = await fetch('/api/diagnostico-handler', {
@@ -16,6 +17,7 @@ export async function fetchDiagnosticoFromApi(
         answers,
         turnstileToken,
         website: '',
+        testMode: options?.testMode === true,
       }),
     })
 

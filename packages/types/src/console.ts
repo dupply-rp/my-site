@@ -45,3 +45,27 @@ export interface ConsoleDiagnosticoResponse {
   diagnostico: DiagnosticoDetail
   error?: string
 }
+
+export interface NotifyEmailItem {
+  id: string
+  email: string
+  label: string | null
+  createdAt: string
+}
+
+export interface ConsoleNotifyEmailsResponse {
+  items: NotifyEmailItem[]
+  total: number
+  tenantSlug?: string
+  error?: string
+}
+
+export interface ConsoleNotifyEmailResponse {
+  item: NotifyEmailItem
+  error?: string
+}
+
+export interface ConsoleNotifyEmailDeleteResponse {
+  ok: boolean
+  error?: string
+}

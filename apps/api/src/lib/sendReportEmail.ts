@@ -1,3 +1,5 @@
+import { resolveNotifyEmailAddresses } from './notifyEmailQueries'
+
 interface SendReportEmailParams {
   to: string
   companyName: string
@@ -7,8 +9,53 @@ interface SendReportEmailParams {
   aiGenerated: boolean
 }
 
+interface LeadNotificationParams {
+  answers: Record<string, unknown>
+  score: number
+  scoreLabel: string
+  aiGenerated: boolean
+}
+
+function asString(value: unknown): string {
+  if (value == null) return ''
+  if (Array.isArray(value)) return value.join(', ')
+  return String(value)
+}
+
 function isValidEmail(value: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())
+}
+
+async function postResendEmail(input: {
+  to: string[]
+  subject: string
+  html: string
+}): Promise<void> {
+  const apiKey = process.env.RESEND_API_KEY
+  const from = process.env.REPORT_EMAIL_FROM
+
+  if (!apiKey || !from) {
+    throw new Error('RESEND_API_KEY ou REPORT_EMAIL_FROM não configurados')
+  }
+
+  const response = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      from,
+      to: input.to,
+      subject: input.subject,
+      html: input.html,
+    }),
+  })
+
+  if (!response.ok) {
+    const body = await response.text()
+    throw new Error(`Resend falhou (${response.status}): ${body.slice(0, 300)}`)
+  }
 }
 
 function buildEmailHtml(params: SendReportEmailParams): string {
@@ -72,35 +119,52 @@ export function canSendReportEmail(to: string): boolean {
   return Boolean(process.env.RESEND_API_KEY && process.env.REPORT_EMAIL_FROM && isValidEmail(to))
 }
 
-export async function sendReportEmail(params: SendReportEmailParams): Promise<void> {
-  const apiKey = process.env.RESEND_API_KEY
-  const from = process.env.REPORT_EMAIL_FROM
-
-  if (!apiKey || !from) {
-    throw new Error('RESEND_API_KEY ou REPORT_EMAIL_FROM não configurados')
+export async function sendLeadNotificationEmail(params: LeadNotificationParams): Promise<void> {
+  const recipients = await resolveNotifyEmailAddresses()
+  if (recipients.length === 0) {
+    throw new Error('Nenhum e-mail de notificação configurado')
   }
 
+  const empresa = asString(params.answers.nome) || '—'
+  const email = asString(params.answers.email) || '—'
+  const telefone = asString(params.answers.telefone) || '—'
+  const setor = asString(params.answers.setor) || '—'
+  const maiorDor = asString(params.answers.maior_dor) || '—'
+  const contexto = asString(params.answers.contexto_negocio).trim()
+  const isTest = empresa.toUpperCase().startsWith('TC_')
+
+  const html = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head><meta charset="utf-8" /></head>
+<body style="font-family:system-ui,sans-serif;color:#10151d;line-height:1.55;">
+  <h2>Novo diagnóstico${isTest ? ' (teste TC_)' : ''} — ${escapeHtml(empresa)}</h2>
+  <p><strong>Score:</strong> ${params.score}/100 · ${escapeHtml(params.scoreLabel)}</p>
+  <p><strong>E-mail:</strong> ${escapeHtml(email)}</p>
+  <p><strong>Telefone:</strong> ${escapeHtml(telefone)}</p>
+  <p><strong>Setor:</strong> ${escapeHtml(setor)}</p>
+  <p><strong>Maior dor:</strong> ${escapeHtml(maiorDor)}</p>
+  ${contexto ? `<p><strong>Contexto:</strong> ${escapeHtml(contexto.slice(0, 500))}${contexto.length > 500 ? '…' : ''}</p>` : ''}
+  <p><strong>Relatório IA:</strong> ${params.aiGenerated ? 'Sim' : 'Fallback'}</p>
+  <p>Consulte o console interno em <strong>dupply.com.br/console</strong> para o relatório completo.</p>
+</body>
+</html>`
+
+  await postResendEmail({
+    to: recipients,
+    subject: `Novo diagnóstico — ${empresa} | Dupply`,
+    html,
+  })
+}
+
+export async function sendReportEmail(params: SendReportEmailParams): Promise<void> {
   const to = params.to.trim()
   if (!isValidEmail(to)) {
     throw new Error('E-mail do destinatário inválido')
   }
 
-  const response = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({
-      from,
-      to: [to],
-      subject: `Seu diagnóstico de IA — ${params.companyName} | Dupply`,
-      html: buildEmailHtml(params),
-    }),
+  await postResendEmail({
+    to: [to],
+    subject: `Seu diagnóstico de IA — ${params.companyName} | Dupply`,
+    html: buildEmailHtml(params),
   })
-
-  if (!response.ok) {
-    const body = await response.text()
-    throw new Error(`Resend falhou (${response.status}): ${body.slice(0, 300)}`)
-  }
 }

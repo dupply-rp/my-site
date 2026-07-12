@@ -18,6 +18,7 @@ export function ReportScreen({ answers, report, onRestart }: ReportScreenProps) 
     aiGenerated = true,
     emailDispatched = false,
     emailTo,
+    testMode = false,
   } = report
   const company = String(answers.nome || 'Sua Empresa')
   const [displayScore, setDisplayScore] = useState(0)
@@ -69,6 +70,12 @@ export function ReportScreen({ answers, report, onRestart }: ReportScreenProps) 
         </div>
 
         <div className="diag-report-header-content">
+          {testMode ? (
+            <p className="diag-test-report-banner" role="status">
+              Modo teste — empresa salva como <strong>{company}</strong> no console (prefixo <code>TC_</code>).
+              Exibindo apenas o relatório <strong>cliente</strong>.
+            </p>
+          ) : null}
           <span className="diag-report-badge">✓ Diagnóstico concluído</span>
           {emailDispatched && emailTo ? (
             <p className="diag-email-notice" role="status">

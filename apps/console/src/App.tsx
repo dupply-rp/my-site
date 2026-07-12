@@ -10,6 +10,9 @@ const DiagnosticoListPage = lazy(() =>
 const DiagnosticoDetailPage = lazy(() =>
   import('./pages/DiagnosticoDetailPage').then((module) => ({ default: module.DiagnosticoDetailPage })),
 )
+const NotifyEmailsPage = lazy(() =>
+  import('./pages/NotifyEmailsPage').then((module) => ({ default: module.NotifyEmailsPage })),
+)
 
 function App() {
   return (
@@ -20,6 +23,7 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<DiagnosticoListPage />} />
             <Route path="/diagnosticos/:id" element={<DiagnosticoDetailPage />} />
+            <Route path="/emails" element={<NotifyEmailsPage />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

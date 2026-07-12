@@ -31,6 +31,10 @@
   ],
   "rewrites": [
     {
+      "source": "/api/console/notify-emails",
+      "destination": "/api/console/diagnosticos"
+    },
+    {
       "source": "/console",
       "destination": "/console/index.html"
     },

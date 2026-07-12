@@ -96,6 +96,7 @@ export interface DiagnosticoReport {
   aiGenerated?: boolean
   emailDispatched?: boolean
   emailTo?: string
+  testMode?: boolean
 }
 
 export interface DiagnosticoApiResponse {

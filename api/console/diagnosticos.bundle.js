@@ -9233,6 +9233,115 @@ var pgTable = (name, columns, extraConfig) => {
   return pgTableWithSchema(name, columns, extraConfig, void 0);
 };
 
+// node_modules/.pnpm/drizzle-orm@0.44.7_@neondatabase+serverless@1.1.0/node_modules/drizzle-orm/pg-core/indexes.js
+var IndexBuilderOn = class {
+  constructor(unique, name) {
+    this.unique = unique;
+    this.name = name;
+  }
+  static [entityKind] = "PgIndexBuilderOn";
+  on(...columns) {
+    return new IndexBuilder(
+      columns.map((it2) => {
+        if (is2(it2, SQL)) {
+          return it2;
+        }
+        it2 = it2;
+        const clonedIndexedColumn = new IndexedColumn(it2.name, !!it2.keyAsName, it2.columnType, it2.indexConfig);
+        it2.indexConfig = JSON.parse(JSON.stringify(it2.defaultConfig));
+        return clonedIndexedColumn;
+      }),
+      this.unique,
+      false,
+      this.name
+    );
+  }
+  onOnly(...columns) {
+    return new IndexBuilder(
+      columns.map((it2) => {
+        if (is2(it2, SQL)) {
+          return it2;
+        }
+        it2 = it2;
+        const clonedIndexedColumn = new IndexedColumn(it2.name, !!it2.keyAsName, it2.columnType, it2.indexConfig);
+        it2.indexConfig = it2.defaultConfig;
+        return clonedIndexedColumn;
+      }),
+      this.unique,
+      true,
+      this.name
+    );
+  }
+  /**
+   * Specify what index method to use. Choices are `btree`, `hash`, `gist`, `spgist`, `gin`, `brin`, or user-installed access methods like `bloom`. The default method is `btree.
+   *
+   * If you have the `pg_vector` extension installed in your database, you can use the `hnsw` and `ivfflat` options, which are predefined types.
+   *
+   * **You can always specify any string you want in the method, in case Drizzle doesn't have it natively in its types**
+   *
+   * @param method The name of the index method to be used
+   * @param columns
+   * @returns
+   */
+  using(method, ...columns) {
+    return new IndexBuilder(
+      columns.map((it2) => {
+        if (is2(it2, SQL)) {
+          return it2;
+        }
+        it2 = it2;
+        const clonedIndexedColumn = new IndexedColumn(it2.name, !!it2.keyAsName, it2.columnType, it2.indexConfig);
+        it2.indexConfig = JSON.parse(JSON.stringify(it2.defaultConfig));
+        return clonedIndexedColumn;
+      }),
+      this.unique,
+      true,
+      this.name,
+      method
+    );
+  }
+};
+var IndexBuilder = class {
+  static [entityKind] = "PgIndexBuilder";
+  /** @internal */
+  config;
+  constructor(columns, unique, only, name, method = "btree") {
+    this.config = {
+      name,
+      columns,
+      unique,
+      only,
+      method
+    };
+  }
+  concurrently() {
+    this.config.concurrently = true;
+    return this;
+  }
+  with(obj) {
+    this.config.with = obj;
+    return this;
+  }
+  where(condition) {
+    this.config.where = condition;
+    return this;
+  }
+  /** @internal */
+  build(table) {
+    return new Index(this.config, table);
+  }
+};
+var Index = class {
+  static [entityKind] = "PgIndex";
+  config;
+  constructor(config, table) {
+    this.config = { ...config, table };
+  }
+};
+function uniqueIndex(name) {
+  return new IndexBuilderOn(true, name);
+}
+
 // node_modules/.pnpm/drizzle-orm@0.44.7_@neondatabase+serverless@1.1.0/node_modules/drizzle-orm/pg-core/primary-keys.js
 var PrimaryKeyBuilder = class {
   static [entityKind] = "PgPrimaryKeyBuilder";
@@ -13245,6 +13354,7 @@ var schema_exports = {};
 __export(schema_exports, {
   diagnosticoRespostas: () => diagnosticoRespostas,
   diagnosticos: () => diagnosticos,
+  notifyEmails: () => notifyEmails,
   tenants: () => tenants
 });
 var tenants = pgTable("tenants", {
@@ -13273,6 +13383,17 @@ var diagnosticos = pgTable("diagnosticos", {
   relatorioInterno: text("relatorio_interno"),
   aiGenerated: boolean("ai_generated").default(false).notNull()
 });
+var notifyEmails = pgTable(
+  "notify_emails",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    tenantId: uuid("tenant_id").references(() => tenants.id, { onDelete: "cascade" }).notNull(),
+    email: text("email").notNull(),
+    label: text("label"),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull()
+  },
+  (table) => [uniqueIndex("notify_emails_tenant_email_idx").on(table.tenantId, table.email)]
+);
 var diagnosticoRespostas = pgTable("diagnostico_respostas", {
   id: uuid("id").primaryKey().defaultRandom(),
   diagnosticoId: uuid("diagnostico_id").references(() => diagnosticos.id, { onDelete: "cascade" }).notNull(),
@@ -13355,8 +13476,101 @@ async function getDiagnosticoById(tenantSlug, id) {
   };
 }
 
+// apps/api/src/lib/notifyEmailQueries.ts
+var DEFAULT_NOTIFY_EMAILS = ["ricardo.lima@dupply.com.br", "ricardosllacerda@gmail.com"];
+function requireDb2() {
+  const db = createDb();
+  if (!db) throw new Error("DATABASE_URL n\xE3o configurada");
+  return db;
+}
+function isValidEmail(value) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+}
+function normalizeEmail(value) {
+  return value.trim().toLowerCase();
+}
+function getEnvNotifyEmails() {
+  const raw = process.env.DIAGNOSTICO_NOTIFY_EMAILS?.trim();
+  const list = raw ? raw.split(",").map((email) => email.trim()).filter(Boolean) : DEFAULT_NOTIFY_EMAILS;
+  return list.filter(isValidEmail).map(normalizeEmail);
+}
+async function getTenantIdBySlug2(slug) {
+  const db = requireDb2();
+  const [row] = await db.select({ id: tenants.id }).from(tenants).where(eq(tenants.slug, slug)).limit(1);
+  return row?.id ?? null;
+}
+async function ensureDefaultNotifyEmails(tenantId) {
+  const db = requireDb2();
+  const existing = await db.select({ id: notifyEmails.id }).from(notifyEmails).where(eq(notifyEmails.tenantId, tenantId)).limit(1);
+  if (existing.length > 0) return;
+  const seeds = getEnvNotifyEmails();
+  if (seeds.length === 0) return;
+  await db.insert(notifyEmails).values(
+    seeds.map((email) => ({
+      tenantId,
+      email,
+      label: "Padr\xE3o"
+    }))
+  );
+}
+async function listNotifyEmails(tenantSlug) {
+  const db = requireDb2();
+  const tenantId = await getTenantIdBySlug2(tenantSlug);
+  if (!tenantId) return [];
+  await ensureDefaultNotifyEmails(tenantId);
+  return db.select({
+    id: notifyEmails.id,
+    email: notifyEmails.email,
+    label: notifyEmails.label,
+    createdAt: notifyEmails.createdAt
+  }).from(notifyEmails).where(eq(notifyEmails.tenantId, tenantId)).orderBy(asc(notifyEmails.createdAt));
+}
+async function addNotifyEmail(tenantSlug, email, label) {
+  const normalized = normalizeEmail(email);
+  if (!isValidEmail(normalized)) {
+    throw new Error("E-mail inv\xE1lido");
+  }
+  const db = requireDb2();
+  const tenantId = await getTenantIdBySlug2(tenantSlug);
+  if (!tenantId) {
+    throw new Error("Tenant n\xE3o encontrado");
+  }
+  const [existing] = await db.select({
+    id: notifyEmails.id,
+    email: notifyEmails.email,
+    label: notifyEmails.label,
+    createdAt: notifyEmails.createdAt
+  }).from(notifyEmails).where(and(eq(notifyEmails.tenantId, tenantId), eq(notifyEmails.email, normalized))).limit(1);
+  if (existing) return existing;
+  const [row] = await db.insert(notifyEmails).values({
+    tenantId,
+    email: normalized,
+    label: label?.trim() || null
+  }).returning({
+    id: notifyEmails.id,
+    email: notifyEmails.email,
+    label: notifyEmails.label,
+    createdAt: notifyEmails.createdAt
+  });
+  if (!row) {
+    throw new Error("N\xE3o foi poss\xEDvel cadastrar o e-mail");
+  }
+  return row;
+}
+async function removeNotifyEmail(tenantSlug, id) {
+  const db = requireDb2();
+  const tenantId = await getTenantIdBySlug2(tenantSlug);
+  if (!tenantId) return false;
+  const deleted = await db.delete(notifyEmails).where(and(eq(notifyEmails.id, id), eq(notifyEmails.tenantId, tenantId))).returning({ id: notifyEmails.id });
+  return deleted.length > 0;
+}
+
 // apps/api/src/console-diagnosticos.entry.ts
-async function handler(req, res) {
+function isNotifyEmailsRoute(req) {
+  const url = req.url ?? "";
+  return url.includes("/notify-emails");
+}
+async function handleDiagnosticos(req, res) {
   if (req.method !== "GET") {
     return res.status(405).json({ error: "M\xE9todo n\xE3o permitido" });
   }
@@ -13382,6 +13596,65 @@ async function handler(req, res) {
     console.error("[console/diagnosticos]", message2);
     return res.status(500).json({ error: message2 });
   }
+}
+async function handleNotifyEmails(req, res) {
+  const auth = await verifyConsoleAuthFromToken(req.headers.authorization);
+  if (!auth) {
+    return res.status(401).json({ error: "N\xE3o autorizado" });
+  }
+  try {
+    if (req.method === "GET") {
+      const items = await listNotifyEmails(auth.tenantSlug);
+      return res.status(200).json({
+        items: items.map((item) => ({
+          id: item.id,
+          email: item.email,
+          label: item.label,
+          createdAt: item.createdAt.toISOString()
+        })),
+        total: items.length,
+        tenantSlug: auth.tenantSlug
+      });
+    }
+    if (req.method === "POST") {
+      const body = req.body ?? {};
+      const email = String(body.email ?? "").trim();
+      if (!email) {
+        return res.status(400).json({ error: "E-mail \xE9 obrigat\xF3rio" });
+      }
+      const item = await addNotifyEmail(auth.tenantSlug, email, body.label);
+      return res.status(201).json({
+        item: {
+          id: item.id,
+          email: item.email,
+          label: item.label,
+          createdAt: item.createdAt.toISOString()
+        }
+      });
+    }
+    if (req.method === "DELETE") {
+      const id = typeof req.query.id === "string" ? req.query.id : "";
+      if (!id) {
+        return res.status(400).json({ error: "ID \xE9 obrigat\xF3rio" });
+      }
+      const removed = await removeNotifyEmail(auth.tenantSlug, id);
+      if (!removed) {
+        return res.status(404).json({ error: "E-mail n\xE3o encontrado" });
+      }
+      return res.status(200).json({ ok: true });
+    }
+    return res.status(405).json({ error: "M\xE9todo n\xE3o permitido" });
+  } catch (error) {
+    const message2 = error instanceof Error ? error.message : "Erro ao gerenciar e-mails";
+    console.error("[console/notify-emails]", message2);
+    return res.status(500).json({ error: message2 });
+  }
+}
+async function handler(req, res) {
+  if (isNotifyEmailsRoute(req)) {
+    return handleNotifyEmails(req, res);
+  }
+  return handleDiagnosticos(req, res);
 }
 export {
   handler as default

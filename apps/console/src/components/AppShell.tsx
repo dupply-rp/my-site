@@ -10,7 +10,10 @@ interface AppShellProps {
   children: ReactNode
 }
 
-const navItems = [{ to: '/', label: 'Diagnósticos', end: true }]
+const navItems = [
+  { to: '/', label: 'Diagnósticos', end: true },
+  { to: '/emails', label: 'E-mails', end: true },
+]
 
 export function AppShell({ title, subtitle, actions, children }: AppShellProps) {
   const navigate = useNavigate()

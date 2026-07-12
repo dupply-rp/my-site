@@ -368,6 +368,14 @@ var init_fallbackReport = __esm({
   }
 });
 
+// packages/diagnostico/dist/randomTestAnswers.js
+var init_randomTestAnswers = __esm({
+  "packages/diagnostico/dist/randomTestAnswers.js"() {
+    "use strict";
+    init_questions();
+  }
+});
+
 // packages/diagnostico/dist/scoring.js
 function calcScore(answers) {
   let score = 0;
@@ -474,6 +482,7 @@ var init_dist = __esm({
     "use strict";
     init_buildSummary();
     init_fallbackReport();
+    init_randomTestAnswers();
     init_questions();
     init_scoring();
   }
@@ -504,310 +513,6 @@ async function upstashCommand(command) {
 var init_upstash = __esm({
   "apps/api/src/lib/upstash.ts"() {
     "use strict";
-  }
-});
-
-// apps/api/src/lib/htmlToPlainText.ts
-function decodeHtmlEntities(value) {
-  return value.replace(/&nbsp;/gi, " ").replace(/&amp;/gi, "&").replace(/&lt;/gi, "<").replace(/&gt;/gi, ">").replace(/&quot;/gi, '"').replace(/&#39;/gi, "'").replace(/&#x27;/gi, "'").replace(/&#(\d+);/g, (_, code) => String.fromCharCode(Number(code))).replace(/&#x([0-9a-f]+);/gi, (_, code) => String.fromCharCode(parseInt(code, 16)));
-}
-function sanitizeReportHtml(html) {
-  return html.replace(/<style[\s\S]*?<\/style>/gi, "").replace(/<script[\s\S]*?<\/script>/gi, "").trim();
-}
-function htmlToPlainText(html) {
-  const withoutEmbedded = sanitizeReportHtml(html);
-  const withBreaks = withoutEmbedded.replace(LINE_BREAK_TAGS, "\n").replace(HORIZONTAL_RULE, "\n---\n").replace(LIST_ITEM_OPEN, "\n\u2022 ").replace(BLOCK_END_TAGS, (tag) => tag.startsWith("</") ? "\n" : "").replace(/<[^>]+>/g, "");
-  return decodeHtmlEntities(withBreaks).replace(/\r\n/g, "\n").replace(/[ \t]+\n/g, "\n").replace(/\n[ \t]+/g, "\n").replace(/\n{3,}/g, "\n\n").trim();
-}
-var BLOCK_END_TAGS, LINE_BREAK_TAGS, LIST_ITEM_OPEN, HORIZONTAL_RULE;
-var init_htmlToPlainText = __esm({
-  "apps/api/src/lib/htmlToPlainText.ts"() {
-    "use strict";
-    BLOCK_END_TAGS = /<\/?(?:p|div|h[1-6]|li|tr|blockquote|section|article)\b[^>]*>/gi;
-    LINE_BREAK_TAGS = /<br\s*\/?>/gi;
-    LIST_ITEM_OPEN = /<li\b[^>]*>/gi;
-    HORIZONTAL_RULE = /<hr\b[^>]*>/gi;
-  }
-});
-
-// apps/api/src/lib/splitReport.ts
-function joinReportParts(clientHtml, internalHtml) {
-  const client = clientHtml.trim();
-  const internal = internalHtml.trim();
-  if (!internal) return client;
-  if (!client) return internal;
-  return `${client}
-<div class="section-divider"></div>
-<div data-dupply-internal="true">
-${internal}
-</div>`;
-}
-function splitHtmlByH2Sections(html) {
-  const sections = [];
-  const parts = html.split(/(?=<h2\b)/i);
-  for (const part of parts) {
-    const trimmed = part.trim();
-    if (!trimmed) continue;
-    const match = trimmed.match(/^<h2[^>]*>([\s\S]*?)<\/h2>/i);
-    if (!match) {
-      if (sections.length === 0) {
-        sections.push({ title: "", body: trimmed });
-      } else {
-        sections[sections.length - 1].body += trimmed;
-      }
-      continue;
-    }
-    sections.push({
-      title: match[1].replace(/<[^>]+>/g, "").trim(),
-      body: trimmed
-    });
-  }
-  return sections;
-}
-function isInternalSectionTitle(title) {
-  return INTERNAL_SECTION_PATTERNS.some((pattern) => pattern.test(title));
-}
-function splitBySectionHeaders(html) {
-  const sections = splitHtmlByH2Sections(html);
-  const clientParts = [];
-  const internalParts = [];
-  for (const section of sections) {
-    if (!section.title || isInternalSectionTitle(section.title)) {
-      if (section.body.trim()) internalParts.push(section.body);
-    } else {
-      clientParts.push(section.body);
-    }
-  }
-  const clientHtml = clientParts.join("\n").trim();
-  const internalHtml = internalParts.join('\n<div class="section-divider"></div>\n').trim();
-  return {
-    clientHtml,
-    internalHtml,
-    fullHtml: joinReportParts(clientHtml, internalHtml)
-  };
-}
-function stripInternalSectionsFromClient(html) {
-  const sections = splitHtmlByH2Sections(html);
-  const kept = sections.filter((section) => !section.title || !isInternalSectionTitle(section.title));
-  return kept.map((section) => section.body).join("\n").trim();
-}
-function splitReportHtml(raw) {
-  const sanitized = sanitizeReportHtml(raw);
-  const clientMatch = sanitized.match(CLIENT_BLOCK);
-  const internalMatch = sanitized.match(INTERNAL_BLOCK);
-  if (clientMatch) {
-    const clientHtml = stripInternalSectionsFromClient(clientMatch[1].trim());
-    const internalHtml = internalMatch?.[1]?.trim() ?? "";
-    return {
-      clientHtml,
-      internalHtml,
-      fullHtml: joinReportParts(clientHtml, internalHtml)
-    };
-  }
-  return splitBySectionHeaders(sanitized);
-}
-function resolveDiagnosticoReports(rawHtml, options) {
-  if (!options.aiGenerated) {
-    const { clientHtml, internalHtml } = buildFallbackReports(options.answers, options.scoreInfo);
-    return {
-      clientHtml,
-      internalHtml,
-      fullHtml: joinReportParts(clientHtml, internalHtml)
-    };
-  }
-  return splitReportHtml(rawHtml);
-}
-var CLIENT_BLOCK, INTERNAL_BLOCK, INTERNAL_SECTION_PATTERNS;
-var init_splitReport = __esm({
-  "apps/api/src/lib/splitReport.ts"() {
-    "use strict";
-    init_dist();
-    init_htmlToPlainText();
-    CLIENT_BLOCK = /<!--\s*DUPPLY_CLIENT\s*-->([\s\S]*?)<!--\s*\/DUPPLY_CLIENT\s*-->/i;
-    INTERNAL_BLOCK = /<!--\s*DUPPLY_INTERNAL\s*-->([\s\S]*?)<!--\s*\/DUPPLY_INTERNAL\s*-->/i;
-    INTERNAL_SECTION_PATTERNS = [/ferramentas\s+recomendadas/i, /roadmap\s+de\s+90/i];
-  }
-});
-
-// apps/api/src/lib/sheetPayload.ts
-var sheetPayload_exports = {};
-__export(sheetPayload_exports, {
-  buildSheetPayload: () => buildSheetPayload
-});
-function asString2(value) {
-  if (value == null) return "";
-  if (Array.isArray(value)) return value.join(", ");
-  return String(value);
-}
-function buildSheetPayload(input) {
-  const { answers, score, scoreLabel, reportHtml } = input;
-  const payload = {
-    timestamp: (/* @__PURE__ */ new Date()).toISOString(),
-    empresa: asString2(answers.nome),
-    email: asString2(answers.email),
-    telefone: asString2(answers.telefone),
-    setor: asString2(answers.setor),
-    porte: asString2(answers.porte),
-    faturamento: asString2(answers.faturamento),
-    score,
-    scoreLabel,
-    maiorDor: asString2(answers.maior_dor),
-    budget: asString2(answers.budget),
-    objetivo: asString2(answers.contexto_negocio).slice(0, 200) || asString2(answers.maior_dor),
-    respostas: answers,
-    relatorio: htmlToPlainText(reportHtml).slice(0, 8e3)
-  };
-  const secret = process.env.DIAGNOSTICO_WEBHOOK_SECRET;
-  if (secret) payload.secret = secret;
-  return payload;
-}
-var init_sheetPayload = __esm({
-  "apps/api/src/lib/sheetPayload.ts"() {
-    "use strict";
-    init_htmlToPlainText();
-  }
-});
-
-// apps/api/src/lib/googleSheets.ts
-var googleSheets_exports = {};
-__export(googleSheets_exports, {
-  postSheetPayload: () => postSheetPayload,
-  saveToGoogleSheets: () => saveToGoogleSheets
-});
-async function postSheetPayload(payload) {
-  const webhookUrl = process.env.GOOGLE_SHEETS_WEBHOOK_URL;
-  if (!webhookUrl) {
-    throw new Error("GOOGLE_SHEETS_WEBHOOK_URL n\xE3o configurada");
-  }
-  const response = await fetch(webhookUrl, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-    redirect: "manual"
-  });
-  let finalResponse = response;
-  if (response.status === 302 || response.status === 301) {
-    const location = response.headers.get("location");
-    if (!location) {
-      throw new Error("Google Sheets webhook: redirect sem Location");
-    }
-    finalResponse = await fetch(location, { method: "GET" });
-  }
-  const body = await finalResponse.text();
-  if (!finalResponse.ok) {
-    throw new Error(`Google Sheets webhook falhou (${finalResponse.status}): ${body.slice(0, 300)}`);
-  }
-  try {
-    const parsed = JSON.parse(body);
-    if (parsed.ok === false) {
-      throw new Error(parsed.error ?? "Google Sheets webhook retornou erro");
-    }
-  } catch (error) {
-    if (error instanceof SyntaxError) {
-      throw new Error(`Google Sheets webhook resposta inv\xE1lida: ${body.slice(0, 300)}`);
-    }
-    throw error;
-  }
-}
-async function saveToGoogleSheets(input) {
-  if (!process.env.GOOGLE_SHEETS_WEBHOOK_URL) {
-    console.warn("GOOGLE_SHEETS_WEBHOOK_URL n\xE3o configurada \u2014 lead n\xE3o salvo");
-    return;
-  }
-  await postSheetPayload(buildSheetPayload(input));
-}
-var init_googleSheets = __esm({
-  "apps/api/src/lib/googleSheets.ts"() {
-    "use strict";
-    init_sheetPayload();
-  }
-});
-
-// apps/api/src/lib/retryQueue.ts
-var retryQueue_exports = {};
-__export(retryQueue_exports, {
-  enqueueSheetRetry: () => enqueueSheetRetry,
-  isRetryQueueEnabled: () => isUpstashEnabled,
-  processRetryQueue: () => processRetryQueue
-});
-function getRetryDelayMs(attempts) {
-  return BASE_DELAY_MS * 2 ** Math.min(attempts, 6);
-}
-async function enqueueSheetRetry(payload, error) {
-  const job = {
-    payload,
-    attempts: 0,
-    lastAttemptAt: 0,
-    createdAt: (/* @__PURE__ */ new Date()).toISOString(),
-    lastError: error
-  };
-  const result = await upstashCommand(["LPUSH", QUEUE_KEY, JSON.stringify(job)]);
-  if (!result) {
-    console.warn("[retry-queue] Upstash n\xE3o configurado \u2014 job n\xE3o enfileirado");
-    return false;
-  }
-  return true;
-}
-async function popJob() {
-  const result = await upstashCommand(["RPOP", QUEUE_KEY]);
-  if (!result?.result) return null;
-  try {
-    return JSON.parse(String(result.result));
-  } catch {
-    return null;
-  }
-}
-async function requeueJob(job) {
-  await upstashCommand(["LPUSH", QUEUE_KEY, JSON.stringify(job)]);
-}
-async function processRetryQueue(limit = 10) {
-  if (!isUpstashEnabled()) {
-    return { processed: 0, succeeded: 0, requeued: 0, dropped: 0 };
-  }
-  let processed = 0;
-  let succeeded = 0;
-  let requeued = 0;
-  let dropped = 0;
-  while (processed < limit) {
-    const job = await popJob();
-    if (!job) break;
-    processed++;
-    const now = Date.now();
-    const delayMs = getRetryDelayMs(job.attempts);
-    if (job.lastAttemptAt > 0 && now - job.lastAttemptAt < delayMs) {
-      await requeueJob(job);
-      requeued++;
-      continue;
-    }
-    try {
-      await postSheetPayload(job.payload);
-      succeeded++;
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Erro desconhecido";
-      job.attempts += 1;
-      job.lastAttemptAt = now;
-      job.lastError = message;
-      if (job.attempts >= MAX_ATTEMPTS) {
-        console.error("[retry-queue] Job descartado ap\xF3s max tentativas:", message);
-        dropped++;
-        continue;
-      }
-      await requeueJob(job);
-      requeued++;
-    }
-  }
-  return { processed, succeeded, requeued, dropped };
-}
-var QUEUE_KEY, MAX_ATTEMPTS, BASE_DELAY_MS;
-var init_retryQueue = __esm({
-  "apps/api/src/lib/retryQueue.ts"() {
-    "use strict";
-    init_googleSheets();
-    init_upstash();
-    init_upstash();
-    QUEUE_KEY = "diagnostico:sheet-retry";
-    MAX_ATTEMPTS = 8;
-    BASE_DELAY_MS = 6e4;
   }
 });
 
@@ -9482,6 +9187,9 @@ var init_columns = __esm({
 });
 
 // node_modules/.pnpm/drizzle-orm@0.44.7_@neondatabase+serverless@1.1.0/node_modules/drizzle-orm/pg-core/indexes.js
+function uniqueIndex(name) {
+  return new IndexBuilderOn(true, name);
+}
 var IndexBuilderOn, IndexBuilder, Index;
 var init_indexes = __esm({
   "node_modules/.pnpm/drizzle-orm@0.44.7_@neondatabase+serverless@1.1.0/node_modules/drizzle-orm/pg-core/indexes.js"() {
@@ -14350,9 +14058,10 @@ var schema_exports = {};
 __export(schema_exports, {
   diagnosticoRespostas: () => diagnosticoRespostas,
   diagnosticos: () => diagnosticos,
+  notifyEmails: () => notifyEmails,
   tenants: () => tenants
 });
-var tenants, diagnosticos, diagnosticoRespostas;
+var tenants, diagnosticos, notifyEmails, diagnosticoRespostas;
 var init_schema2 = __esm({
   "packages/db/src/schema.ts"() {
     "use strict";
@@ -14383,6 +14092,17 @@ var init_schema2 = __esm({
       relatorioInterno: text("relatorio_interno"),
       aiGenerated: boolean("ai_generated").default(false).notNull()
     });
+    notifyEmails = pgTable(
+      "notify_emails",
+      {
+        id: uuid("id").primaryKey().defaultRandom(),
+        tenantId: uuid("tenant_id").references(() => tenants.id, { onDelete: "cascade" }).notNull(),
+        email: text("email").notNull(),
+        label: text("label"),
+        createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull()
+      },
+      (table) => [uniqueIndex("notify_emails_tenant_email_idx").on(table.tenantId, table.email)]
+    );
     diagnosticoRespostas = pgTable("diagnostico_respostas", {
       id: uuid("id").primaryKey().defaultRandom(),
       diagnosticoId: uuid("diagnostico_id").references(() => diagnosticos.id, { onDelete: "cascade" }).notNull(),
@@ -14444,13 +14164,317 @@ var init_drizzle_orm = __esm({
   }
 });
 
+// apps/api/src/lib/htmlToPlainText.ts
+function decodeHtmlEntities(value) {
+  return value.replace(/&nbsp;/gi, " ").replace(/&amp;/gi, "&").replace(/&lt;/gi, "<").replace(/&gt;/gi, ">").replace(/&quot;/gi, '"').replace(/&#39;/gi, "'").replace(/&#x27;/gi, "'").replace(/&#(\d+);/g, (_, code) => String.fromCharCode(Number(code))).replace(/&#x([0-9a-f]+);/gi, (_, code) => String.fromCharCode(parseInt(code, 16)));
+}
+function sanitizeReportHtml(html) {
+  return html.replace(/<style[\s\S]*?<\/style>/gi, "").replace(/<script[\s\S]*?<\/script>/gi, "").trim();
+}
+function htmlToPlainText(html) {
+  const withoutEmbedded = sanitizeReportHtml(html);
+  const withBreaks = withoutEmbedded.replace(LINE_BREAK_TAGS, "\n").replace(HORIZONTAL_RULE, "\n---\n").replace(LIST_ITEM_OPEN, "\n\u2022 ").replace(BLOCK_END_TAGS, (tag) => tag.startsWith("</") ? "\n" : "").replace(/<[^>]+>/g, "");
+  return decodeHtmlEntities(withBreaks).replace(/\r\n/g, "\n").replace(/[ \t]+\n/g, "\n").replace(/\n[ \t]+/g, "\n").replace(/\n{3,}/g, "\n\n").trim();
+}
+var BLOCK_END_TAGS, LINE_BREAK_TAGS, LIST_ITEM_OPEN, HORIZONTAL_RULE;
+var init_htmlToPlainText = __esm({
+  "apps/api/src/lib/htmlToPlainText.ts"() {
+    "use strict";
+    BLOCK_END_TAGS = /<\/?(?:p|div|h[1-6]|li|tr|blockquote|section|article)\b[^>]*>/gi;
+    LINE_BREAK_TAGS = /<br\s*\/?>/gi;
+    LIST_ITEM_OPEN = /<li\b[^>]*>/gi;
+    HORIZONTAL_RULE = /<hr\b[^>]*>/gi;
+  }
+});
+
+// apps/api/src/lib/splitReport.ts
+function joinReportParts(clientHtml, internalHtml) {
+  const client = clientHtml.trim();
+  const internal = internalHtml.trim();
+  if (!internal) return client;
+  if (!client) return internal;
+  return `${client}
+<div class="section-divider"></div>
+<div data-dupply-internal="true">
+${internal}
+</div>`;
+}
+function splitHtmlByH2Sections(html) {
+  const sections = [];
+  const parts = html.split(/(?=<h2\b)/i);
+  for (const part of parts) {
+    const trimmed = part.trim();
+    if (!trimmed) continue;
+    const match = trimmed.match(/^<h2[^>]*>([\s\S]*?)<\/h2>/i);
+    if (!match) {
+      if (sections.length === 0) {
+        sections.push({ title: "", body: trimmed });
+      } else {
+        sections[sections.length - 1].body += trimmed;
+      }
+      continue;
+    }
+    sections.push({
+      title: match[1].replace(/<[^>]+>/g, "").trim(),
+      body: trimmed
+    });
+  }
+  return sections;
+}
+function isInternalSectionTitle(title) {
+  return INTERNAL_SECTION_PATTERNS.some((pattern) => pattern.test(title));
+}
+function splitBySectionHeaders(html) {
+  const sections = splitHtmlByH2Sections(html);
+  const clientParts = [];
+  const internalParts = [];
+  for (const section of sections) {
+    if (!section.title || isInternalSectionTitle(section.title)) {
+      if (section.body.trim()) internalParts.push(section.body);
+    } else {
+      clientParts.push(section.body);
+    }
+  }
+  const clientHtml = clientParts.join("\n").trim();
+  const internalHtml = internalParts.join('\n<div class="section-divider"></div>\n').trim();
+  return {
+    clientHtml,
+    internalHtml,
+    fullHtml: joinReportParts(clientHtml, internalHtml)
+  };
+}
+function stripInternalSectionsFromClient(html) {
+  const sections = splitHtmlByH2Sections(html);
+  const kept = sections.filter((section) => !section.title || !isInternalSectionTitle(section.title));
+  return kept.map((section) => section.body).join("\n").trim();
+}
+function splitReportHtml(raw) {
+  const sanitized = sanitizeReportHtml(raw);
+  const clientMatch = sanitized.match(CLIENT_BLOCK);
+  const internalMatch = sanitized.match(INTERNAL_BLOCK);
+  if (clientMatch) {
+    const clientHtml = stripInternalSectionsFromClient(clientMatch[1].trim());
+    const internalHtml = internalMatch?.[1]?.trim() ?? "";
+    return {
+      clientHtml,
+      internalHtml,
+      fullHtml: joinReportParts(clientHtml, internalHtml)
+    };
+  }
+  return splitBySectionHeaders(sanitized);
+}
+function resolveDiagnosticoReports(rawHtml, options) {
+  if (!options.aiGenerated) {
+    const { clientHtml, internalHtml } = buildFallbackReports(options.answers, options.scoreInfo);
+    return {
+      clientHtml,
+      internalHtml,
+      fullHtml: joinReportParts(clientHtml, internalHtml)
+    };
+  }
+  return splitReportHtml(rawHtml);
+}
+var CLIENT_BLOCK, INTERNAL_BLOCK, INTERNAL_SECTION_PATTERNS;
+var init_splitReport = __esm({
+  "apps/api/src/lib/splitReport.ts"() {
+    "use strict";
+    init_dist();
+    init_htmlToPlainText();
+    CLIENT_BLOCK = /<!--\s*DUPPLY_CLIENT\s*-->([\s\S]*?)<!--\s*\/DUPPLY_CLIENT\s*-->/i;
+    INTERNAL_BLOCK = /<!--\s*DUPPLY_INTERNAL\s*-->([\s\S]*?)<!--\s*\/DUPPLY_INTERNAL\s*-->/i;
+    INTERNAL_SECTION_PATTERNS = [/ferramentas\s+recomendadas/i, /roadmap\s+de\s+90/i];
+  }
+});
+
+// apps/api/src/lib/sheetPayload.ts
+var sheetPayload_exports = {};
+__export(sheetPayload_exports, {
+  buildSheetPayload: () => buildSheetPayload
+});
+function asString3(value) {
+  if (value == null) return "";
+  if (Array.isArray(value)) return value.join(", ");
+  return String(value);
+}
+function buildSheetPayload(input) {
+  const { answers, score, scoreLabel, reportHtml } = input;
+  const payload = {
+    timestamp: (/* @__PURE__ */ new Date()).toISOString(),
+    empresa: asString3(answers.nome),
+    email: asString3(answers.email),
+    telefone: asString3(answers.telefone),
+    setor: asString3(answers.setor),
+    porte: asString3(answers.porte),
+    faturamento: asString3(answers.faturamento),
+    score,
+    scoreLabel,
+    maiorDor: asString3(answers.maior_dor),
+    budget: asString3(answers.budget),
+    objetivo: asString3(answers.contexto_negocio).slice(0, 200) || asString3(answers.maior_dor),
+    respostas: answers,
+    relatorio: htmlToPlainText(reportHtml).slice(0, 8e3)
+  };
+  const secret = process.env.DIAGNOSTICO_WEBHOOK_SECRET;
+  if (secret) payload.secret = secret;
+  return payload;
+}
+var init_sheetPayload = __esm({
+  "apps/api/src/lib/sheetPayload.ts"() {
+    "use strict";
+    init_htmlToPlainText();
+  }
+});
+
+// apps/api/src/lib/googleSheets.ts
+var googleSheets_exports = {};
+__export(googleSheets_exports, {
+  postSheetPayload: () => postSheetPayload,
+  saveToGoogleSheets: () => saveToGoogleSheets
+});
+async function postSheetPayload(payload) {
+  const webhookUrl = process.env.GOOGLE_SHEETS_WEBHOOK_URL;
+  if (!webhookUrl) {
+    throw new Error("GOOGLE_SHEETS_WEBHOOK_URL n\xE3o configurada");
+  }
+  const response = await fetch(webhookUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+    redirect: "manual"
+  });
+  let finalResponse = response;
+  if (response.status === 302 || response.status === 301) {
+    const location = response.headers.get("location");
+    if (!location) {
+      throw new Error("Google Sheets webhook: redirect sem Location");
+    }
+    finalResponse = await fetch(location, { method: "GET" });
+  }
+  const body = await finalResponse.text();
+  if (!finalResponse.ok) {
+    throw new Error(`Google Sheets webhook falhou (${finalResponse.status}): ${body.slice(0, 300)}`);
+  }
+  try {
+    const parsed = JSON.parse(body);
+    if (parsed.ok === false) {
+      throw new Error(parsed.error ?? "Google Sheets webhook retornou erro");
+    }
+  } catch (error) {
+    if (error instanceof SyntaxError) {
+      throw new Error(`Google Sheets webhook resposta inv\xE1lida: ${body.slice(0, 300)}`);
+    }
+    throw error;
+  }
+}
+async function saveToGoogleSheets(input) {
+  if (!process.env.GOOGLE_SHEETS_WEBHOOK_URL) {
+    console.warn("GOOGLE_SHEETS_WEBHOOK_URL n\xE3o configurada \u2014 lead n\xE3o salvo");
+    return;
+  }
+  await postSheetPayload(buildSheetPayload(input));
+}
+var init_googleSheets = __esm({
+  "apps/api/src/lib/googleSheets.ts"() {
+    "use strict";
+    init_sheetPayload();
+  }
+});
+
+// apps/api/src/lib/retryQueue.ts
+var retryQueue_exports = {};
+__export(retryQueue_exports, {
+  enqueueSheetRetry: () => enqueueSheetRetry,
+  isRetryQueueEnabled: () => isUpstashEnabled,
+  processRetryQueue: () => processRetryQueue
+});
+function getRetryDelayMs(attempts) {
+  return BASE_DELAY_MS * 2 ** Math.min(attempts, 6);
+}
+async function enqueueSheetRetry(payload, error) {
+  const job = {
+    payload,
+    attempts: 0,
+    lastAttemptAt: 0,
+    createdAt: (/* @__PURE__ */ new Date()).toISOString(),
+    lastError: error
+  };
+  const result = await upstashCommand(["LPUSH", QUEUE_KEY, JSON.stringify(job)]);
+  if (!result) {
+    console.warn("[retry-queue] Upstash n\xE3o configurado \u2014 job n\xE3o enfileirado");
+    return false;
+  }
+  return true;
+}
+async function popJob() {
+  const result = await upstashCommand(["RPOP", QUEUE_KEY]);
+  if (!result?.result) return null;
+  try {
+    return JSON.parse(String(result.result));
+  } catch {
+    return null;
+  }
+}
+async function requeueJob(job) {
+  await upstashCommand(["LPUSH", QUEUE_KEY, JSON.stringify(job)]);
+}
+async function processRetryQueue(limit = 10) {
+  if (!isUpstashEnabled()) {
+    return { processed: 0, succeeded: 0, requeued: 0, dropped: 0 };
+  }
+  let processed = 0;
+  let succeeded = 0;
+  let requeued = 0;
+  let dropped = 0;
+  while (processed < limit) {
+    const job = await popJob();
+    if (!job) break;
+    processed++;
+    const now = Date.now();
+    const delayMs = getRetryDelayMs(job.attempts);
+    if (job.lastAttemptAt > 0 && now - job.lastAttemptAt < delayMs) {
+      await requeueJob(job);
+      requeued++;
+      continue;
+    }
+    try {
+      await postSheetPayload(job.payload);
+      succeeded++;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Erro desconhecido";
+      job.attempts += 1;
+      job.lastAttemptAt = now;
+      job.lastError = message;
+      if (job.attempts >= MAX_ATTEMPTS) {
+        console.error("[retry-queue] Job descartado ap\xF3s max tentativas:", message);
+        dropped++;
+        continue;
+      }
+      await requeueJob(job);
+      requeued++;
+    }
+  }
+  return { processed, succeeded, requeued, dropped };
+}
+var QUEUE_KEY, MAX_ATTEMPTS, BASE_DELAY_MS;
+var init_retryQueue = __esm({
+  "apps/api/src/lib/retryQueue.ts"() {
+    "use strict";
+    init_googleSheets();
+    init_upstash();
+    init_upstash();
+    QUEUE_KEY = "diagnostico:sheet-retry";
+    MAX_ATTEMPTS = 8;
+    BASE_DELAY_MS = 6e4;
+  }
+});
+
 // apps/api/src/lib/saveDiagnostico.ts
 var saveDiagnostico_exports = {};
 __export(saveDiagnostico_exports, {
   getDefaultTenantId: () => getDefaultTenantId,
   saveDiagnosticoToDb: () => saveDiagnosticoToDb
 });
-function asString3(value) {
+function asString4(value) {
   if (value == null) return "";
   if (Array.isArray(value)) return value.join(", ");
   return String(value);
@@ -14470,23 +14494,23 @@ async function saveDiagnosticoToDb(input) {
   }
   const { answers, score, scoreLabel, reportClientHtml, reportInternalHtml, aiGenerated } = input;
   const tenantId = await getDefaultTenantId(db);
-  const contexto = asString3(answers.contexto_negocio).trim();
+  const contexto = asString4(answers.contexto_negocio).trim();
   const clientHtml = sanitizeReportHtml(reportClientHtml);
   const internalHtml = sanitizeReportHtml(reportInternalHtml);
   const fullHtml = joinReportParts(clientHtml, internalHtml);
   const [diagnostico] = await db.insert(diagnosticos).values({
     tenantId,
-    empresa: asString3(answers.nome),
-    email: asString3(answers.email),
-    telefone: asString3(answers.telefone),
-    setor: asString3(answers.setor),
-    porte: asString3(answers.porte),
-    faturamento: asString3(answers.faturamento),
+    empresa: asString4(answers.nome),
+    email: asString4(answers.email),
+    telefone: asString4(answers.telefone),
+    setor: asString4(answers.setor),
+    porte: asString4(answers.porte),
+    faturamento: asString4(answers.faturamento),
     score,
     scoreLabel,
-    maiorDor: asString3(answers.maior_dor),
-    budget: asString3(answers.budget),
-    objetivo: contexto.slice(0, 500) || asString3(answers.maior_dor),
+    maiorDor: asString4(answers.maior_dor),
+    budget: asString4(answers.budget),
+    objetivo: contexto.slice(0, 500) || asString4(answers.maior_dor),
     relatorio: fullHtml,
     relatorioCliente: clientHtml,
     relatorioInterno: internalHtml || null,
@@ -14670,9 +14694,102 @@ async function checkDiagnosticoRateLimit(ip) {
   return { allowed, limit, remaining, resetInSec, enabled: true };
 }
 
-// apps/api/src/lib/sendReportEmail.ts
+// apps/api/src/lib/notifyEmailQueries.ts
+init_src();
+init_drizzle_orm();
+var DEFAULT_NOTIFY_EMAILS = ["ricardo.lima@dupply.com.br", "ricardosllacerda@gmail.com"];
+function requireDb() {
+  const db = createDb();
+  if (!db) throw new Error("DATABASE_URL n\xE3o configurada");
+  return db;
+}
 function isValidEmail(value) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+}
+function normalizeEmail(value) {
+  return value.trim().toLowerCase();
+}
+function getEnvNotifyEmails() {
+  const raw = process.env.DIAGNOSTICO_NOTIFY_EMAILS?.trim();
+  const list = raw ? raw.split(",").map((email) => email.trim()).filter(Boolean) : DEFAULT_NOTIFY_EMAILS;
+  return list.filter(isValidEmail).map(normalizeEmail);
+}
+async function getTenantIdBySlug(slug) {
+  const db = requireDb();
+  const [row] = await db.select({ id: tenants.id }).from(tenants).where(eq(tenants.slug, slug)).limit(1);
+  return row?.id ?? null;
+}
+async function ensureDefaultNotifyEmails(tenantId) {
+  const db = requireDb();
+  const existing = await db.select({ id: notifyEmails.id }).from(notifyEmails).where(eq(notifyEmails.tenantId, tenantId)).limit(1);
+  if (existing.length > 0) return;
+  const seeds = getEnvNotifyEmails();
+  if (seeds.length === 0) return;
+  await db.insert(notifyEmails).values(
+    seeds.map((email) => ({
+      tenantId,
+      email,
+      label: "Padr\xE3o"
+    }))
+  );
+}
+async function listNotifyEmails(tenantSlug) {
+  const db = requireDb();
+  const tenantId = await getTenantIdBySlug(tenantSlug);
+  if (!tenantId) return [];
+  await ensureDefaultNotifyEmails(tenantId);
+  return db.select({
+    id: notifyEmails.id,
+    email: notifyEmails.email,
+    label: notifyEmails.label,
+    createdAt: notifyEmails.createdAt
+  }).from(notifyEmails).where(eq(notifyEmails.tenantId, tenantId)).orderBy(asc(notifyEmails.createdAt));
+}
+async function resolveNotifyEmailAddresses(tenantSlug) {
+  const slug = tenantSlug ?? process.env.DEFAULT_TENANT_SLUG ?? "dupply";
+  try {
+    const items = await listNotifyEmails(slug);
+    const emails = items.map((item) => item.email).filter(isValidEmail);
+    if (emails.length > 0) return emails;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Erro ao ler e-mails do banco";
+    console.warn("[notify-emails] Fallback para env:", message);
+  }
+  return getEnvNotifyEmails();
+}
+
+// apps/api/src/lib/sendReportEmail.ts
+function asString2(value) {
+  if (value == null) return "";
+  if (Array.isArray(value)) return value.join(", ");
+  return String(value);
+}
+function isValidEmail2(value) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+}
+async function postResendEmail(input) {
+  const apiKey = process.env.RESEND_API_KEY;
+  const from = process.env.REPORT_EMAIL_FROM;
+  if (!apiKey || !from) {
+    throw new Error("RESEND_API_KEY ou REPORT_EMAIL_FROM n\xE3o configurados");
+  }
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`
+    },
+    body: JSON.stringify({
+      from,
+      to: input.to,
+      subject: input.subject,
+      html: input.html
+    })
+  });
+  if (!response.ok) {
+    const body = await response.text();
+    throw new Error(`Resend falhou (${response.status}): ${body.slice(0, 300)}`);
+  }
 }
 function buildEmailHtml(params) {
   const intro = params.aiGenerated ? "Segue a c\xF3pia do seu diagn\xF3stico gratuito de IA, gerado com base nas respostas do question\xE1rio." : "Segue a c\xF3pia do seu diagn\xF3stico gratuito. A an\xE1lise completa com IA n\xE3o p\xF4de ser gerada no momento; o conte\xFAdo abaixo \xE9 um resumo autom\xE1tico com base nas suas respostas.";
@@ -14722,36 +14839,98 @@ function buildEmailHtml(params) {
 function escapeHtml(value) {
   return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
-function canSendReportEmail(to) {
-  return Boolean(process.env.RESEND_API_KEY && process.env.REPORT_EMAIL_FROM && isValidEmail(to));
+async function sendLeadNotificationEmail(params) {
+  const recipients = await resolveNotifyEmailAddresses();
+  if (recipients.length === 0) {
+    throw new Error("Nenhum e-mail de notifica\xE7\xE3o configurado");
+  }
+  const empresa = asString2(params.answers.nome) || "\u2014";
+  const email = asString2(params.answers.email) || "\u2014";
+  const telefone = asString2(params.answers.telefone) || "\u2014";
+  const setor = asString2(params.answers.setor) || "\u2014";
+  const maiorDor = asString2(params.answers.maior_dor) || "\u2014";
+  const contexto = asString2(params.answers.contexto_negocio).trim();
+  const isTest = empresa.toUpperCase().startsWith("TC_");
+  const html = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head><meta charset="utf-8" /></head>
+<body style="font-family:system-ui,sans-serif;color:#10151d;line-height:1.55;">
+  <h2>Novo diagn\xF3stico${isTest ? " (teste TC_)" : ""} \u2014 ${escapeHtml(empresa)}</h2>
+  <p><strong>Score:</strong> ${params.score}/100 \xB7 ${escapeHtml(params.scoreLabel)}</p>
+  <p><strong>E-mail:</strong> ${escapeHtml(email)}</p>
+  <p><strong>Telefone:</strong> ${escapeHtml(telefone)}</p>
+  <p><strong>Setor:</strong> ${escapeHtml(setor)}</p>
+  <p><strong>Maior dor:</strong> ${escapeHtml(maiorDor)}</p>
+  ${contexto ? `<p><strong>Contexto:</strong> ${escapeHtml(contexto.slice(0, 500))}${contexto.length > 500 ? "\u2026" : ""}</p>` : ""}
+  <p><strong>Relat\xF3rio IA:</strong> ${params.aiGenerated ? "Sim" : "Fallback"}</p>
+  <p>Consulte o console interno em <strong>dupply.com.br/console</strong> para o relat\xF3rio completo.</p>
+</body>
+</html>`;
+  await postResendEmail({
+    to: recipients,
+    subject: `Novo diagn\xF3stico \u2014 ${empresa} | Dupply`,
+    html
+  });
 }
 async function sendReportEmail(params) {
-  const apiKey = process.env.RESEND_API_KEY;
-  const from = process.env.REPORT_EMAIL_FROM;
-  if (!apiKey || !from) {
-    throw new Error("RESEND_API_KEY ou REPORT_EMAIL_FROM n\xE3o configurados");
-  }
   const to = params.to.trim();
-  if (!isValidEmail(to)) {
+  if (!isValidEmail2(to)) {
     throw new Error("E-mail do destinat\xE1rio inv\xE1lido");
   }
-  const response = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`
-    },
-    body: JSON.stringify({
-      from,
-      to: [to],
-      subject: `Seu diagn\xF3stico de IA \u2014 ${params.companyName} | Dupply`,
-      html: buildEmailHtml(params)
-    })
+  await postResendEmail({
+    to: [to],
+    subject: `Seu diagn\xF3stico de IA \u2014 ${params.companyName} | Dupply`,
+    html: buildEmailHtml(params)
   });
-  if (!response.ok) {
-    const body = await response.text();
-    throw new Error(`Resend falhou (${response.status}): ${body.slice(0, 300)}`);
+}
+
+// apps/api/src/lib/scheduleDiagnosticoEmails.ts
+function isValidEmail3(value) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+}
+function isResendConfigured() {
+  return Boolean(process.env.RESEND_API_KEY && process.env.REPORT_EMAIL_FROM);
+}
+function scheduleDiagnosticoEmails(waitUntil2, input) {
+  const recipientEmail = String(input.answers.email ?? "").trim();
+  const hasValidClientEmail = isValidEmail3(recipientEmail);
+  if (!isResendConfigured()) {
+    if (hasValidClientEmail) {
+      console.warn("[diagnostico] E-mail n\xE3o enviado \u2014 configure RESEND_API_KEY e REPORT_EMAIL_FROM");
+    }
+    return { emailDispatched: false, emailTo: hasValidClientEmail ? recipientEmail : void 0 };
   }
+  const emailTasks = [
+    sendLeadNotificationEmail({
+      answers: input.answers,
+      score: input.score,
+      scoreLabel: input.scoreLabel,
+      aiGenerated: input.aiGenerated
+    }).catch((error) => {
+      const message = error instanceof Error ? error.message : "Erro ao notificar equipe";
+      console.error("[diagnostico] E-mail interno:", message);
+    })
+  ];
+  if (hasValidClientEmail) {
+    emailTasks.push(
+      sendReportEmail({
+        to: recipientEmail,
+        companyName: String(input.answers.nome ?? "Sua empresa"),
+        score: input.score,
+        scoreLabel: input.scoreLabel,
+        reportHtml: input.reportClientHtml,
+        aiGenerated: input.aiGenerated
+      }).catch((error) => {
+        const message = error instanceof Error ? error.message : "Erro ao enviar e-mail";
+        console.error("[diagnostico] E-mail cliente:", message);
+      })
+    );
+  }
+  waitUntil2(Promise.all(emailTasks));
+  return {
+    emailDispatched: hasValidClientEmail,
+    emailTo: hasValidClientEmail ? recipientEmail : void 0
+  };
 }
 
 // apps/api/src/diagnostico-handler.entry.ts
@@ -14818,7 +14997,7 @@ async function handler(req, res) {
   } catch (error) {
     console.error("[diagnostico] Rate limit:", error instanceof Error ? error.message : error);
   }
-  const { answers, turnstileToken, website } = req.body ?? {};
+  const { answers, turnstileToken, website, testMode } = req.body ?? {};
   if (website?.trim()) {
     return res.status(400).json({ error: "Requisi\xE7\xE3o inv\xE1lida" });
   }
@@ -14831,6 +15010,10 @@ async function handler(req, res) {
   }
   if (!String(answers.nome ?? "").trim()) {
     return res.status(400).json({ error: "Nome da empresa \xE9 obrigat\xF3rio" });
+  }
+  const isTestRun = testMode === true && String(answers.nome ?? "").trim().toUpperCase().startsWith("TC_");
+  if (testMode === true && !isTestRun) {
+    return res.status(400).json({ error: "Modo teste exige nome com prefixo TC_" });
   }
   const summary = buildSummary(answers, { mode: "api" });
   const score = calcScore(answers);
@@ -14887,22 +15070,13 @@ async function handler(req, res) {
       console.error("[diagnostico] Postgres:", error instanceof Error ? error.message : error);
     })
   );
-  const recipientEmail = String(answers.email ?? "").trim();
-  const emailDispatched = canSendReportEmail(recipientEmail);
-  if (emailDispatched) {
-    waitUntil(
-      sendReportEmail({
-        to: recipientEmail,
-        companyName: String(answers.nome ?? "Sua empresa"),
-        score,
-        scoreLabel: scoreInfo.label,
-        reportHtml: reports.clientHtml,
-        aiGenerated
-      }).catch((error) => {
-        console.error("[diagnostico] E-mail:", error instanceof Error ? error.message : error);
-      })
-    );
-  }
+  const { emailDispatched, emailTo } = scheduleDiagnosticoEmails(waitUntil, {
+    answers,
+    reportClientHtml: reports.clientHtml,
+    score,
+    scoreLabel: scoreInfo.label,
+    aiGenerated
+  });
   return res.status(200).json({
     reportHtml: reports.clientHtml,
     score,
@@ -14912,7 +15086,7 @@ async function handler(req, res) {
     dbPending: true,
     sheetPending: sheetsEnabled,
     emailDispatched,
-    emailTo: emailDispatched ? recipientEmail : void 0
+    emailTo
   });
 }
 var diagnostico_handler_entry_default = handler;

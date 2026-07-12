@@ -1219,3 +1219,102 @@
     text-align: center;
   }
 }
+
+/* TC_teste — prévia automatizada do relatório cliente */
+.diag-test-app {
+  min-height: 100vh;
+}
+
+.diag-test-gate {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 96px 24px 80px;
+  text-align: center;
+}
+
+.diag-test-eyebrow {
+  display: inline-flex;
+  margin-bottom: 14px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(124, 58, 237, 0.1);
+  color: #6d28d9;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.diag-test-title {
+  margin: 0 0 12px;
+  font-size: clamp(26px, 5vw, 34px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.diag-test-sub {
+  margin: 0 0 24px;
+  color: var(--diag-muted);
+  font-size: 16px;
+  line-height: 1.65;
+}
+
+.diag-test-preview {
+  margin: 0 0 28px;
+  padding: 18px 20px;
+  border: 1px solid var(--diag-line);
+  border-radius: 14px;
+  background: #fff;
+  text-align: left;
+}
+
+.diag-test-preview-label {
+  margin: 0 0 6px;
+  color: var(--diag-muted);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.diag-test-preview-value {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--diag-ink);
+}
+
+.diag-test-captcha-hint {
+  margin: 0 0 16px;
+  color: var(--diag-muted);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.diag-test-turnstile {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.diag-test-footnote {
+  margin: 20px 0 0;
+  color: var(--diag-muted);
+  font-size: 13px;
+}
+
+.diag-test-report-banner {
+  margin: 0 0 14px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(124, 58, 237, 0.22);
+  background: rgba(124, 58, 237, 0.08);
+  color: #5b21b6;
+  font-size: 13px;
+  line-height: 1.55;
+  text-align: left;
+}
+
+.diag-test-report-banner code {
+  font-size: 0.92em;
+}
