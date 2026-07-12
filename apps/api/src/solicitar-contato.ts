@@ -5,7 +5,7 @@ function isValidEmail(value: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())
 }
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+export async function handleSolicitarContato(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Método não permitido' })
   }
@@ -50,3 +50,5 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(500).json({ error: message })
   }
 }
+
+export default handleSolicitarContato

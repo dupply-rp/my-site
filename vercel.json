@@ -22,9 +22,6 @@
     },
     "api/console/auth.ts": {
       "maxDuration": 30
-    },
-    "api/solicitar-contato.ts": {
-      "maxDuration": 30
     }
   },
   "crons": [
@@ -34,6 +31,10 @@
     }
   ],
   "rewrites": [
+    {
+      "source": "/api/solicitar-contato",
+      "destination": "/api/diagnostico-handler"
+    },
     {
       "source": "/api/console/notify-emails",
       "destination": "/api/console/diagnosticos"

@@ -7,6 +7,12 @@ import { checkDiagnosticoRateLimit } from './lib/rateLimit'
 import { scheduleDiagnosticoEmails } from './lib/scheduleDiagnosticoEmails'
 import { resolveDiagnosticoReports } from './lib/splitReport'
 import { verifyTurnstileToken } from './lib/turnstile'
+import { handleSolicitarContato } from './solicitar-contato'
+
+function isSolicitarContatoRoute(req: VercelRequest): boolean {
+  const url = req.url ?? ''
+  return url.includes('/solicitar-contato')
+}
 
 function isAnswers(value: unknown): value is Answers {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
@@ -24,6 +30,10 @@ function getClientIp(req: VercelRequest): string {
 }
 
 async function handler(req: VercelRequest, res: VercelResponse) {
+  if (isSolicitarContatoRoute(req)) {
+    return handleSolicitarContato(req, res)
+  }
+
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Método não permitido' })
   }
