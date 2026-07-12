@@ -662,19 +662,25 @@ function createSmokeAnswers() {
 
 // apps/api/src/diagnostico-smoke.entry.ts
 function isAuthorized(req) {
-  const secret = process.env.DIAGNOSTICO_TEST_SECRET;
+  const secret = process.env.DIAGNOSTICO_TEST_SECRET?.trim();
   if (!secret) return false;
-  const authHeader = req.headers.authorization;
+  const authHeader = req.headers.authorization?.trim();
   if (authHeader === `Bearer ${secret}`) return true;
-  const querySecret = typeof req.query.secret === "string" ? req.query.secret : void 0;
+  const querySecret = typeof req.query.secret === "string" ? req.query.secret.trim() : void 0;
   return querySecret === secret;
 }
 async function handler(req, res) {
   if (req.method !== "POST" && req.method !== "GET") {
     return res.status(405).json({ error: "M\xE9todo n\xE3o permitido" });
   }
+  const serverSecret = process.env.DIAGNOSTICO_TEST_SECRET?.trim();
+  if (!serverSecret) {
+    return res.status(503).json({
+      error: "DIAGNOSTICO_TEST_SECRET n\xE3o configurado em Production na Vercel"
+    });
+  }
   if (!isAuthorized(req)) {
-    return res.status(401).json({ error: "N\xE3o autorizado \u2014 configure DIAGNOSTICO_TEST_SECRET" });
+    return res.status(401).json({ error: "Token inv\xE1lido \u2014 confira se o valor \xE9 igual ao da Vercel (Production)" });
   }
   const mode = typeof req.query.mode === "string" ? req.query.mode : "full";
   const answers = createSmokeAnswers();

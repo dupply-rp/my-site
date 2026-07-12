@@ -7,13 +7,13 @@ import { createSmokeAnswers } from './lib/smokeFixture'
 import { buildSheetPayload } from './lib/sheetPayload'
 
 function isAuthorized(req: VercelRequest): boolean {
-  const secret = process.env.DIAGNOSTICO_TEST_SECRET
+  const secret = process.env.DIAGNOSTICO_TEST_SECRET?.trim()
   if (!secret) return false
 
-  const authHeader = req.headers.authorization
+  const authHeader = req.headers.authorization?.trim()
   if (authHeader === `Bearer ${secret}`) return true
 
-  const querySecret = typeof req.query.secret === 'string' ? req.query.secret : undefined
+  const querySecret = typeof req.query.secret === 'string' ? req.query.secret.trim() : undefined
   return querySecret === secret
 }
 
@@ -22,8 +22,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: 'Método não permitido' })
   }
 
+  const serverSecret = process.env.DIAGNOSTICO_TEST_SECRET?.trim()
+  if (!serverSecret) {
+    return res.status(503).json({
+      error: 'DIAGNOSTICO_TEST_SECRET não configurado em Production na Vercel',
+    })
+  }
+
   if (!isAuthorized(req)) {
-    return res.status(401).json({ error: 'Não autorizado — configure DIAGNOSTICO_TEST_SECRET' })
+    return res.status(401).json({ error: 'Token inválido — confira se o valor é igual ao da Vercel (Production)' })
   }
 
   const mode = typeof req.query.mode === 'string' ? req.query.mode : 'full'
