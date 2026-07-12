@@ -42,6 +42,8 @@ pnpm dev:local          # API + console
 
 **Após deploy da Fase A (relatório duplo):** rode `pnpm db:push` com `DATABASE_URL` para criar `relatorio_cliente` e `relatorio_interno`.
 
+**Fase A.2:** URL de teste em `/TC_teste` — dados aleatórios com prefixo `TC_`, captcha Turnstile e prévia do relatório cliente.
+
 **Próximo passo natural (Fase 2):** Clerk para clientes externos, Stripe, CRM.
 
 ---

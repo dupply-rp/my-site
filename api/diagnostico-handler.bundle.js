@@ -368,6 +368,14 @@ var init_fallbackReport = __esm({
   }
 });
 
+// packages/diagnostico/dist/randomTestAnswers.js
+var init_randomTestAnswers = __esm({
+  "packages/diagnostico/dist/randomTestAnswers.js"() {
+    "use strict";
+    init_questions();
+  }
+});
+
 // packages/diagnostico/dist/scoring.js
 function calcScore(answers) {
   let score = 0;
@@ -474,6 +482,7 @@ var init_dist = __esm({
     "use strict";
     init_buildSummary();
     init_fallbackReport();
+    init_randomTestAnswers();
     init_questions();
     init_scoring();
   }
@@ -14818,7 +14827,7 @@ async function handler(req, res) {
   } catch (error) {
     console.error("[diagnostico] Rate limit:", error instanceof Error ? error.message : error);
   }
-  const { answers, turnstileToken, website } = req.body ?? {};
+  const { answers, turnstileToken, website, testMode } = req.body ?? {};
   if (website?.trim()) {
     return res.status(400).json({ error: "Requisi\xE7\xE3o inv\xE1lida" });
   }
@@ -14831,6 +14840,10 @@ async function handler(req, res) {
   }
   if (!String(answers.nome ?? "").trim()) {
     return res.status(400).json({ error: "Nome da empresa \xE9 obrigat\xF3rio" });
+  }
+  const isTestRun = testMode === true && String(answers.nome ?? "").trim().toUpperCase().startsWith("TC_");
+  if (testMode === true && !isTestRun) {
+    return res.status(400).json({ error: "Modo teste exige nome com prefixo TC_" });
   }
   const summary = buildSummary(answers, { mode: "api" });
   const score = calcScore(answers);
@@ -14888,7 +14901,7 @@ async function handler(req, res) {
     })
   );
   const recipientEmail = String(answers.email ?? "").trim();
-  const emailDispatched = canSendReportEmail(recipientEmail);
+  const emailDispatched = !isTestRun && canSendReportEmail(recipientEmail);
   if (emailDispatched) {
     waitUntil(
       sendReportEmail({

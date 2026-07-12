@@ -61,10 +61,11 @@ async function handleDiagnostico(request: Request) {
     return jsonResponse({ error: 'JSON inválido' }, 400)
   }
 
-  const { answers, turnstileToken, website } = (body ?? {}) as {
+  const { answers, turnstileToken, website, testMode } = (body ?? {}) as {
     answers?: unknown
     turnstileToken?: string
     website?: string
+    testMode?: boolean
   }
 
   if (website?.trim()) {
@@ -82,6 +83,13 @@ async function handleDiagnostico(request: Request) {
 
   if (!String(answers.nome ?? '').trim()) {
     return jsonResponse({ error: 'Nome da empresa é obrigatório' }, 400)
+  }
+
+  const isTestRun =
+    testMode === true && String(answers.nome ?? '').trim().toUpperCase().startsWith('TC_')
+
+  if (testMode === true && !isTestRun) {
+    return jsonResponse({ error: 'Modo teste exige nome com prefixo TC_' }, 400)
   }
 
   const summary = buildSummary(answers, { mode: 'api' })
@@ -153,7 +161,7 @@ async function handleDiagnostico(request: Request) {
   )
 
   const recipientEmail = String(answers.email ?? '').trim()
-  const emailDispatched = canSendReportEmail(recipientEmail)
+  const emailDispatched = !isTestRun && canSendReportEmail(recipientEmail)
 
   if (emailDispatched) {
     waitUntil(

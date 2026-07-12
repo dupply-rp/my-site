@@ -43,10 +43,11 @@ async function handler(req: VercelRequest, res: VercelResponse) {
     console.error('[diagnostico] Rate limit:', error instanceof Error ? error.message : error)
   }
 
-  const { answers, turnstileToken, website } = (req.body ?? {}) as {
+  const { answers, turnstileToken, website, testMode } = (req.body ?? {}) as {
     answers?: unknown
     turnstileToken?: string
     website?: string
+    testMode?: boolean
   }
 
   if (website?.trim()) {
@@ -64,6 +65,13 @@ async function handler(req: VercelRequest, res: VercelResponse) {
 
   if (!String(answers.nome ?? '').trim()) {
     return res.status(400).json({ error: 'Nome da empresa é obrigatório' })
+  }
+
+  const isTestRun =
+    testMode === true && String(answers.nome ?? '').trim().toUpperCase().startsWith('TC_')
+
+  if (testMode === true && !isTestRun) {
+    return res.status(400).json({ error: 'Modo teste exige nome com prefixo TC_' })
   }
 
   const summary = buildSummary(answers, { mode: 'api' })
@@ -133,7 +141,7 @@ async function handler(req: VercelRequest, res: VercelResponse) {
   )
 
   const recipientEmail = String(answers.email ?? '').trim()
-  const emailDispatched = canSendReportEmail(recipientEmail)
+  const emailDispatched = !isTestRun && canSendReportEmail(recipientEmail)
 
   if (emailDispatched) {
     waitUntil(
