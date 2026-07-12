@@ -141,7 +141,7 @@ async function handler(req: VercelRequest, res: VercelResponse) {
   )
 
   const recipientEmail = String(answers.email ?? '').trim()
-  const emailDispatched = !isTestRun && canSendReportEmail(recipientEmail)
+  const emailDispatched = canSendReportEmail(recipientEmail)
 
   if (emailDispatched) {
     waitUntil(

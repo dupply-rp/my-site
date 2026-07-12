@@ -161,7 +161,7 @@ async function handleDiagnostico(request: Request) {
   )
 
   const recipientEmail = String(answers.email ?? '').trim()
-  const emailDispatched = !isTestRun && canSendReportEmail(recipientEmail)
+  const emailDispatched = canSendReportEmail(recipientEmail)
 
   if (emailDispatched) {
     waitUntil(

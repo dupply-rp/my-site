@@ -72,8 +72,6 @@ export function DiagnosticoTestPage() {
               {securityError}
             </p>
           ) : null}
-
-          <p className="diag-test-footnote">Não enviamos e-mail ao concluir testes com prefixo <code>TC_</code>.</p>
         </div>
       ) : null}
 

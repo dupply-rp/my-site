@@ -137,7 +137,7 @@ export async function handleDiagnosticoPost(req: VercelRequest, res: VercelRespo
   )
 
   const recipientEmail = String(answers.email ?? '').trim()
-  const emailDispatched = !isTestRun && canSendReportEmail(recipientEmail)
+  const emailDispatched = canSendReportEmail(recipientEmail)
 
   if (emailDispatched) {
     waitUntil(

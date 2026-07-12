@@ -59,7 +59,8 @@ export function useDiagnosticoTest() {
         pillars: data.pillars,
         reportHtml: data.reportHtml,
         aiGenerated: data.aiGenerated,
-        emailDispatched: false,
+        emailDispatched: data.emailDispatched,
+        emailTo: data.emailTo,
         testMode: true,
       })
       setScreen('report')
