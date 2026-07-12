@@ -41,13 +41,20 @@ function isResendConfigured(): boolean {
 
 export function mapEmailErrorForClient(error: unknown): string {
   const message = error instanceof Error ? error.message : ''
-  if (!isResendConfigured() || message.includes('RESEND') || message.includes('REPORT_EMAIL_FROM')) {
+  if (
+    !isResendConfigured() ||
+    message.includes('RESEND_NOT_CONFIGURED') ||
+    message.includes('REPORT_EMAIL_FROM')
+  ) {
+    return 'Envio por e-mail indisponível no momento. Fale conosco pelo WhatsApp.'
+  }
+  if (message.includes('not verified') || message.includes('validation_error') || message.includes('(403)')) {
     return 'Envio por e-mail indisponível no momento. Fale conosco pelo WhatsApp.'
   }
   if (message.includes('Nenhum e-mail de notificação')) {
     return 'Envio por e-mail indisponível no momento. Fale conosco pelo WhatsApp.'
   }
-  return message || 'Não foi possível enviar sua solicitação agora.'
+  return 'Não foi possível enviar sua solicitação agora. Fale conosco pelo WhatsApp.'
 }
 
 async function postResendEmail(input: {
@@ -78,6 +85,7 @@ async function postResendEmail(input: {
 
   if (!response.ok) {
     const body = await response.text()
+    console.error('[resend]', response.status, body.slice(0, 500))
     throw new Error(`Resend falhou (${response.status}): ${body.slice(0, 300)}`)
   }
 }
