@@ -9,7 +9,8 @@
       "includeFiles": "api/diagnostico-handler.bundle.js"
     },
     "api/diagnostico/smoke.ts": {
-      "maxDuration": 60
+      "maxDuration": 60,
+      "includeFiles": "api/diagnostico/smoke.bundle.js"
     },
     "api/cron/retry-sheets.ts": {
       "maxDuration": 60,
