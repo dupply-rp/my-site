@@ -40,6 +40,8 @@ pnpm dev:local          # API + console
 
 **Produção:** configure `CONSOLE_SECRET` e `DATABASE_URL` na Vercel.
 
+**Após deploy da Fase A (relatório duplo):** rode `pnpm db:push` com `DATABASE_URL` para criar `relatorio_cliente` e `relatorio_interno`.
+
 **Próximo passo natural (Fase 2):** Clerk para clientes externos, Stripe, CRM.
 
 ---

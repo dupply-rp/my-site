@@ -13269,6 +13269,8 @@ var diagnosticos = pgTable("diagnosticos", {
   budget: text("budget"),
   objetivo: text("objetivo"),
   relatorio: text("relatorio"),
+  relatorioCliente: text("relatorio_cliente"),
+  relatorioInterno: text("relatorio_interno"),
   aiGenerated: boolean("ai_generated").default(false).notNull()
 });
 var diagnosticoRespostas = pgTable("diagnostico_respostas", {
@@ -13347,6 +13349,8 @@ async function getDiagnosticoById(tenantSlug, id) {
     budget: row.budget,
     objetivo: row.objetivo,
     relatorio: row.relatorio,
+    relatorioCliente: row.relatorioCliente,
+    relatorioInterno: row.relatorioInterno,
     respostas
   };
 }

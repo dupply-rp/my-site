@@ -23,6 +23,8 @@ export const diagnosticos = pgTable('diagnosticos', {
   budget: text('budget'),
   objetivo: text('objetivo'),
   relatorio: text('relatorio'),
+  relatorioCliente: text('relatorio_cliente'),
+  relatorioInterno: text('relatorio_interno'),
   aiGenerated: boolean('ai_generated').default(false).notNull(),
 })
 

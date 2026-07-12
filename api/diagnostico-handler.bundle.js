@@ -335,6 +335,12 @@ var init_buildSummary = __esm({
 });
 
 // packages/diagnostico/dist/fallbackReport.js
+function buildFallbackReports(answers, scoreInfo) {
+  return {
+    clientHtml: buildFallbackReport(answers, scoreInfo),
+    internalHtml: ""
+  };
+}
 function buildFallbackReport(answers, scoreInfo) {
   const empresa = String(answers.nome || "sua empresa");
   const setor = String(answers.setor || "seu setor");
@@ -521,6 +527,105 @@ var init_htmlToPlainText = __esm({
     LINE_BREAK_TAGS = /<br\s*\/?>/gi;
     LIST_ITEM_OPEN = /<li\b[^>]*>/gi;
     HORIZONTAL_RULE = /<hr\b[^>]*>/gi;
+  }
+});
+
+// apps/api/src/lib/splitReport.ts
+function joinReportParts(clientHtml, internalHtml) {
+  const client = clientHtml.trim();
+  const internal = internalHtml.trim();
+  if (!internal) return client;
+  if (!client) return internal;
+  return `${client}
+<div class="section-divider"></div>
+<div data-dupply-internal="true">
+${internal}
+</div>`;
+}
+function splitHtmlByH2Sections(html) {
+  const sections = [];
+  const parts = html.split(/(?=<h2\b)/i);
+  for (const part of parts) {
+    const trimmed = part.trim();
+    if (!trimmed) continue;
+    const match = trimmed.match(/^<h2[^>]*>([\s\S]*?)<\/h2>/i);
+    if (!match) {
+      if (sections.length === 0) {
+        sections.push({ title: "", body: trimmed });
+      } else {
+        sections[sections.length - 1].body += trimmed;
+      }
+      continue;
+    }
+    sections.push({
+      title: match[1].replace(/<[^>]+>/g, "").trim(),
+      body: trimmed
+    });
+  }
+  return sections;
+}
+function isInternalSectionTitle(title) {
+  return INTERNAL_SECTION_PATTERNS.some((pattern) => pattern.test(title));
+}
+function splitBySectionHeaders(html) {
+  const sections = splitHtmlByH2Sections(html);
+  const clientParts = [];
+  const internalParts = [];
+  for (const section of sections) {
+    if (!section.title || isInternalSectionTitle(section.title)) {
+      if (section.body.trim()) internalParts.push(section.body);
+    } else {
+      clientParts.push(section.body);
+    }
+  }
+  const clientHtml = clientParts.join("\n").trim();
+  const internalHtml = internalParts.join('\n<div class="section-divider"></div>\n').trim();
+  return {
+    clientHtml,
+    internalHtml,
+    fullHtml: joinReportParts(clientHtml, internalHtml)
+  };
+}
+function stripInternalSectionsFromClient(html) {
+  const sections = splitHtmlByH2Sections(html);
+  const kept = sections.filter((section) => !section.title || !isInternalSectionTitle(section.title));
+  return kept.map((section) => section.body).join("\n").trim();
+}
+function splitReportHtml(raw) {
+  const sanitized = sanitizeReportHtml(raw);
+  const clientMatch = sanitized.match(CLIENT_BLOCK);
+  const internalMatch = sanitized.match(INTERNAL_BLOCK);
+  if (clientMatch) {
+    const clientHtml = stripInternalSectionsFromClient(clientMatch[1].trim());
+    const internalHtml = internalMatch?.[1]?.trim() ?? "";
+    return {
+      clientHtml,
+      internalHtml,
+      fullHtml: joinReportParts(clientHtml, internalHtml)
+    };
+  }
+  return splitBySectionHeaders(sanitized);
+}
+function resolveDiagnosticoReports(rawHtml, options) {
+  if (!options.aiGenerated) {
+    const { clientHtml, internalHtml } = buildFallbackReports(options.answers, options.scoreInfo);
+    return {
+      clientHtml,
+      internalHtml,
+      fullHtml: joinReportParts(clientHtml, internalHtml)
+    };
+  }
+  return splitReportHtml(rawHtml);
+}
+var CLIENT_BLOCK, INTERNAL_BLOCK, INTERNAL_SECTION_PATTERNS;
+var init_splitReport = __esm({
+  "apps/api/src/lib/splitReport.ts"() {
+    "use strict";
+    init_dist();
+    init_htmlToPlainText();
+    CLIENT_BLOCK = /<!--\s*DUPPLY_CLIENT\s*-->([\s\S]*?)<!--\s*\/DUPPLY_CLIENT\s*-->/i;
+    INTERNAL_BLOCK = /<!--\s*DUPPLY_INTERNAL\s*-->([\s\S]*?)<!--\s*\/DUPPLY_INTERNAL\s*-->/i;
+    INTERNAL_SECTION_PATTERNS = [/ferramentas\s+recomendadas/i, /roadmap\s+de\s+90/i];
   }
 });
 
@@ -14274,6 +14379,8 @@ var init_schema2 = __esm({
       budget: text("budget"),
       objetivo: text("objetivo"),
       relatorio: text("relatorio"),
+      relatorioCliente: text("relatorio_cliente"),
+      relatorioInterno: text("relatorio_interno"),
       aiGenerated: boolean("ai_generated").default(false).notNull()
     });
     diagnosticoRespostas = pgTable("diagnostico_respostas", {
@@ -14361,9 +14468,12 @@ async function saveDiagnosticoToDb(input) {
     console.warn("DATABASE_URL n\xE3o configurada \u2014 diagn\xF3stico n\xE3o salvo no banco");
     return null;
   }
-  const { answers, score, scoreLabel, reportHtml, aiGenerated } = input;
+  const { answers, score, scoreLabel, reportClientHtml, reportInternalHtml, aiGenerated } = input;
   const tenantId = await getDefaultTenantId(db);
   const contexto = asString3(answers.contexto_negocio).trim();
+  const clientHtml = sanitizeReportHtml(reportClientHtml);
+  const internalHtml = sanitizeReportHtml(reportInternalHtml);
+  const fullHtml = joinReportParts(clientHtml, internalHtml);
   const [diagnostico] = await db.insert(diagnosticos).values({
     tenantId,
     empresa: asString3(answers.nome),
@@ -14377,7 +14487,9 @@ async function saveDiagnosticoToDb(input) {
     maiorDor: asString3(answers.maior_dor),
     budget: asString3(answers.budget),
     objetivo: contexto.slice(0, 500) || asString3(answers.maior_dor),
-    relatorio: sanitizeReportHtml(reportHtml),
+    relatorio: fullHtml,
+    relatorioCliente: clientHtml,
+    relatorioInterno: internalHtml || null,
     aiGenerated
   }).returning({ id: diagnosticos.id });
   const answerRows = buildAnswerRows(answers);
@@ -14400,6 +14512,7 @@ var init_saveDiagnostico = __esm({
     init_src();
     init_drizzle_orm();
     init_htmlToPlainText();
+    init_splitReport();
   }
 });
 
@@ -14410,47 +14523,65 @@ import { waitUntil } from "@vercel/functions";
 // apps/api/src/lib/prompt.ts
 var DIAGNOSTICO_SYSTEM_PROMPT = `Voc\xEA \xE9 um especialista s\xEAnior em Intelig\xEAncia Artificial e transforma\xE7\xE3o digital para empresas brasileiras. Voc\xEA trabalha para a Dupply, uma consultoria de IA.
 
-Analise o diagn\xF3stico de uma empresa e gere um relat\xF3rio executivo em portugu\xEAs brasileiro.
+Analise o diagn\xF3stico de uma empresa e gere um relat\xF3rio executivo em portugu\xEAs brasileiro, dividido em DUAS PARTES com marcadores obrigat\xF3rios.
 
-REGRAS:
+REGRAS GERAIS:
 - Seja espec\xEDfico e personalizado para o perfil desta empresa
 - Se houver se\xE7\xE3o "CONTEXTO EM ABERTO DO EMPRES\xC1RIO", use como fonte principal \u2014 cite situa\xE7\xF5es, processos e dores mencionados pelo empres\xE1rio
 - Cruze o contexto em aberto com as respostas do question\xE1rio; evite recomenda\xE7\xF5es gen\xE9ricas que sirvam para qualquer empresa
 - Mencione o setor e porte sempre que relevante
 - Traga exemplos concretos do dia a dia da opera\xE7\xE3o (n\xE3o s\xF3 categorias gen\xE9ricas)
-- Foque em benef\xEDcios concretos e mensur\xE1veis (economias em R$, % de tempo, horas/semana recuperadas)
 - Seja direto e orientado a resultados
 - Use linguagem do empreendedor brasileiro: pr\xE1tica, objetiva, motivadora
 - N\xC3O use linguagem corporativa vaga nem listas de buzzwords
 - Retorne APENAS HTML puro, sem markdown, sem blocos de c\xF3digo, sem backticks
+- Respeite EXATAMENTE os marcadores <!-- DUPPLY_CLIENT --> e <!-- DUPPLY_INTERNAL --> abaixo
 
-PROJE\xC7\xD5ES FINANCEIRAS (se\xE7\xE3o Potencial de Retorno \u2014 obrigat\xF3rio):
-- Use linguagem conservadora e condicional: "estimativa", "potencial", "pode representar", "cen\xE1rio prov\xE1vel"
-- NUNCA invente ROI percentual extremo (ex.: acima de 300%) sem dados expl\xEDcitos no diagn\xF3stico (faturamento, custos, horas gastas)
-- Se n\xE3o houver n\xFAmeros suficientes nas respostas, N\xC3O cite ROI %, break-even nem payback em meses \u2014 descreva ganhos qualitativos e ordens de grandeza vagas (ex.: "redu\xE7\xE3o relevante de horas manuais", "economia mensal que tende a superar o investimento em poucos meses")
-- Quando usar n\xFAmeros em R$, baseie em suposi\xE7\xF5es expl\xEDcitas e modestas ligadas ao porte, setor e dores descritas \u2014 evite promessas de retorno garantido
-- Proibido: "ROI de 1500%", "break-even m\xEAs 1", "payback m\xEAs 2" ou qualquer promessa agressiva sem base clara no question\xE1rio
-- Prefira 2\u20134 frases objetivas com impacto em tempo, custo operacional e receita \u2014 sem jarg\xE3o financeiro excessivo (evite explicar break-even/payback ao cliente; se mencionar recupera\xE7\xE3o do investimento, use "primeiros meses" ou faixa "60\u2013120 dias", nunca precis\xE3o falsa)
+PARTE CLIENTE (entre <!-- DUPPLY_CLIENT --> e <!-- /DUPPLY_CLIENT -->):
+- Diagn\xF3stico e oportunidades em n\xEDvel MACRO \u2014 o qu\xEA resolver e por qu\xEA, nunca o como operacional
+- PROIBIDO citar nomes de software, apps, plataformas, ERPs, CRMs ou fornecedores
+- PROIBIDO passo a passo de implementa\xE7\xE3o ou stack t\xE9cnica
+- Foque em benef\xEDcios (horas economizadas, custos, efici\xEAncia, receita) sem entregar a "receita"
+- Encerre com 1 par\xE1grafo convidando a falar com a Dupply para desenhar e implementar as solu\xE7\xF5es
 
-FORMATO (retorne s\xF3 o HTML abaixo, sem nada mais):
+PROJE\xC7\xD5ES FINANCEIRAS (na parte cliente \u2014 se\xE7\xE3o Potencial de Retorno):
+- Use linguagem conservadora e condicional: "estimativa", "potencial", "pode representar"
+- NUNCA invente ROI percentual extremo (ex.: acima de 300%) sem dados expl\xEDcitos no diagn\xF3stico
+- Se n\xE3o houver n\xFAmeros suficientes, N\xC3O cite ROI %, break-even nem payback em meses
+- Proibido: "ROI de 1500%", "break-even m\xEAs 1", "payback m\xEAs 2" sem base clara
+
+PARTE INTERNA (entre <!-- DUPPLY_INTERNAL --> e <!-- /DUPPLY_INTERNAL -->):
+- Somente para uso da equipe Dupply \u2014 pode citar ferramentas, sistemas e apps por nome
+- Inclua recomenda\xE7\xF5es pr\xE1ticas de stack e roadmap operacional de 90 dias
+- Seja espec\xEDfico: nomes de ferramentas com justificativa e a\xE7\xF5es por fase (dias 1\u201330, 31\u201360, 61\u201390)
+
+FORMATO (retorne s\xF3 o HTML com os marcadores, sem nada antes ou depois):
+
+<!-- DUPPLY_CLIENT -->
 <h2>\u{1F4CD} Diagn\xF3stico da Situa\xE7\xE3o Atual</h2>
 <p>[an\xE1lise da situa\xE7\xE3o espec\xEDfica]</p>
-<p>[continue...]</p>
 <div class="section-divider"></div>
 <h2>\u{1F3AF} Oportunidades Priorit\xE1rias de IA</h2>
-<h3>[Oportunidade 1]</h3><p>[descri\xE7\xE3o com impacto estimado]</p>
+<h3>[Oportunidade 1]</h3><p>[descri\xE7\xE3o macro com impacto estimado \u2014 sem citar ferramentas]</p>
 <h3>[Oportunidade 2]</h3><p>[descri\xE7\xE3o]</p>
 <div class="section-divider"></div>
-<h2>\u{1F6E0}\uFE0F Ferramentas Recomendadas</h2>
-<ul><li><strong>[Ferramenta]</strong> \u2014 [justificativa pr\xE1tica]</li></ul>
-<div class="section-divider"></div>
-<h2>\u{1F5FA}\uFE0F Roadmap de 90 Dias</h2>
-<h3>Dias 1\u201330: [t\xEDtulo]</h3><p>[a\xE7\xF5es concretas]</p>
-<h3>Dias 31\u201360: [t\xEDtulo]</h3><p>[a\xE7\xF5es]</p>
-<h3>Dias 61\u201390: [t\xEDtulo]</h3><p>[a\xE7\xF5es]</p>
+<h2>\u{1F5FA}\uFE0F Pr\xF3ximos Passos (vis\xE3o geral)</h2>
+<p>[fases em alto n\xEDvel: descoberta, piloto, escala \u2014 sem ferramentas nem passo a passo detalhado]</p>
 <div class="section-divider"></div>
 <h2>\u{1F4B0} Potencial de Retorno</h2>
-<p>[estimativas conservadoras: horas economizadas, custos evit\xE1veis ou ganho de efici\xEAncia \u2014 s\xF3 use R$ ou % se o diagn\xF3stico trouxer dados suficientes; sem ROI exagerado nem break-even/payback precisos]</p>`;
+<p>[estimativas conservadoras \u2014 horas, custos ou efici\xEAncia; s\xF3 R$ ou % se houver dados no diagn\xF3stico]</p>
+<p>[convite para a Dupply ajudar na implementa\xE7\xE3o pr\xE1tica]</p>
+<!-- /DUPPLY_CLIENT -->
+
+<!-- DUPPLY_INTERNAL -->
+<h2>\u{1F6E0}\uFE0F Ferramentas Recomendadas</h2>
+<ul><li><strong>[Ferramenta]</strong> \u2014 [justificativa pr\xE1tica para este cliente]</li></ul>
+<div class="section-divider"></div>
+<h2>\u{1F5FA}\uFE0F Roadmap de 90 Dias</h2>
+<h3>Dias 1\u201330: [t\xEDtulo]</h3><p>[a\xE7\xF5es concretas com ferramentas]</p>
+<h3>Dias 31\u201360: [t\xEDtulo]</h3><p>[a\xE7\xF5es]</p>
+<h3>Dias 61\u201390: [t\xEDtulo]</h3><p>[a\xE7\xF5es]</p>
+<!-- /DUPPLY_INTERNAL -->`;
 
 // apps/api/src/lib/anthropic.ts
 function cleanReportHtml(raw) {
@@ -14623,6 +14754,9 @@ async function sendReportEmail(params) {
   }
 }
 
+// apps/api/src/diagnostico-handler.entry.ts
+init_splitReport();
+
 // apps/api/src/lib/turnstile.ts
 async function verifyTurnstileToken(token, remoteIp) {
   const secret = process.env.TURNSTILE_SECRET_KEY?.trim();
@@ -14702,10 +14836,10 @@ async function handler(req, res) {
   const score = calcScore(answers);
   const scoreInfo = getScoreInfo(score);
   const pillars = calcPillars(answers);
-  let reportHtml;
+  let rawReportHtml;
   let aiGenerated = false;
   try {
-    reportHtml = await generateAnthropicReport(summary, {
+    rawReportHtml = await generateAnthropicReport(summary, {
       score,
       scoreLabel: scoreInfo.label
     });
@@ -14713,26 +14847,42 @@ async function handler(req, res) {
   } catch (error) {
     const message = error instanceof Error ? error.message : "Erro ao gerar relat\xF3rio";
     console.error("[diagnostico] Anthropic:", message);
-    reportHtml = buildFallbackReport(answers, scoreInfo);
+    rawReportHtml = buildFallbackReport(answers, scoreInfo);
   }
+  const reports = resolveDiagnosticoReports(rawReportHtml, { aiGenerated, answers, scoreInfo });
   const sheetsEnabled = process.env.ENABLE_GOOGLE_SHEETS === "true";
   if (sheetsEnabled) {
     const { saveToGoogleSheets: saveToGoogleSheets2 } = await Promise.resolve().then(() => (init_googleSheets(), googleSheets_exports));
     const { enqueueSheetRetry: enqueueSheetRetry2 } = await Promise.resolve().then(() => (init_retryQueue(), retryQueue_exports));
     const { buildSheetPayload: buildSheetPayload2 } = await Promise.resolve().then(() => (init_sheetPayload(), sheetPayload_exports));
-    const sheetPayload = buildSheetPayload2({ answers, score, scoreLabel: scoreInfo.label, reportHtml });
+    const sheetPayload = buildSheetPayload2({
+      answers,
+      score,
+      scoreLabel: scoreInfo.label,
+      reportHtml: reports.fullHtml
+    });
     waitUntil(
-      saveToGoogleSheets2({ answers, score, scoreLabel: scoreInfo.label, reportHtml }).catch(
-        async (error) => {
-          console.error("[diagnostico] Google Sheets:", error instanceof Error ? error.message : error);
-          await enqueueSheetRetry2(sheetPayload, error instanceof Error ? error.message : "Erro");
-        }
-      )
+      saveToGoogleSheets2({
+        answers,
+        score,
+        scoreLabel: scoreInfo.label,
+        reportHtml: reports.fullHtml
+      }).catch(async (error) => {
+        console.error("[diagnostico] Google Sheets:", error instanceof Error ? error.message : error);
+        await enqueueSheetRetry2(sheetPayload, error instanceof Error ? error.message : "Erro");
+      })
     );
   }
   waitUntil(
     Promise.resolve().then(() => (init_saveDiagnostico(), saveDiagnostico_exports)).then(
-      ({ saveDiagnosticoToDb: saveDiagnosticoToDb2 }) => saveDiagnosticoToDb2({ answers, score, scoreLabel: scoreInfo.label, reportHtml, aiGenerated })
+      ({ saveDiagnosticoToDb: saveDiagnosticoToDb2 }) => saveDiagnosticoToDb2({
+        answers,
+        score,
+        scoreLabel: scoreInfo.label,
+        reportClientHtml: reports.clientHtml,
+        reportInternalHtml: reports.internalHtml,
+        aiGenerated
+      })
     ).catch((error) => {
       console.error("[diagnostico] Postgres:", error instanceof Error ? error.message : error);
     })
@@ -14746,7 +14896,7 @@ async function handler(req, res) {
         companyName: String(answers.nome ?? "Sua empresa"),
         score,
         scoreLabel: scoreInfo.label,
-        reportHtml,
+        reportHtml: reports.clientHtml,
         aiGenerated
       }).catch((error) => {
         console.error("[diagnostico] E-mail:", error instanceof Error ? error.message : error);
@@ -14754,7 +14904,7 @@ async function handler(req, res) {
     );
   }
   return res.status(200).json({
-    reportHtml,
+    reportHtml: reports.clientHtml,
     score,
     scoreInfo,
     pillars,

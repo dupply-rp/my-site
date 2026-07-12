@@ -51,9 +51,19 @@ export function DiagnosticoDetailPage() {
     )
   }
 
-  const hasReport = Boolean(data.relatorio?.trim())
-  const preparedReport = hasReport ? prepareReportForDisplay(data.relatorio!) : null
-  const showPrint = hasReport || data.aiGenerated
+  const legacyReport = !data.relatorioCliente && !data.relatorioInterno ? data.relatorio : null
+
+  const clientPrepared = data.relatorioCliente?.trim()
+    ? prepareReportForDisplay(data.relatorioCliente)
+    : legacyReport
+      ? prepareReportForDisplay(legacyReport)
+      : null
+
+  const internalPrepared = data.relatorioInterno?.trim()
+    ? prepareReportForDisplay(data.relatorioInterno)
+    : null
+
+  const showPrint = Boolean(clientPrepared || internalPrepared || data.aiGenerated)
 
   function handlePrint() {
     window.print()
@@ -128,16 +138,33 @@ export function DiagnosticoDetailPage() {
           </div>
         </section>
 
-        {preparedReport ? (
+        {clientPrepared ? (
           <section className="card detail-card detail-full report-printable">
-            <h2>Relatório</h2>
-            {preparedReport.mode === 'html' ? (
+            <h2>Relatório (visão cliente)</h2>
+            {clientPrepared.mode === 'html' ? (
               <div
                 className="report-formatted"
-                dangerouslySetInnerHTML={{ __html: preparedReport.content }}
+                dangerouslySetInnerHTML={{ __html: clientPrepared.content }}
               />
             ) : (
-              <div className="report-text">{preparedReport.content}</div>
+              <div className="report-text">{clientPrepared.content}</div>
+            )}
+          </section>
+        ) : null}
+
+        {internalPrepared ? (
+          <section className="card detail-card detail-full report-printable report-internal-card">
+            <div className="report-internal-header">
+              <h2>Ferramentas e roadmap</h2>
+              <span className="report-internal-badge">Uso interno</span>
+            </div>
+            {internalPrepared.mode === 'html' ? (
+              <div
+                className="report-formatted"
+                dangerouslySetInnerHTML={{ __html: internalPrepared.content }}
+              />
+            ) : (
+              <div className="report-text">{internalPrepared.content}</div>
             )}
           </section>
         ) : null}
@@ -308,6 +335,37 @@ export function DiagnosticoDetailPage() {
         .report-formatted ul {
           margin: 0 0 1em;
           padding-left: 1.25em;
+        }
+
+        .report-internal-card {
+          border-color: rgba(124, 58, 237, 0.25);
+          background: linear-gradient(180deg, rgba(124, 58, 237, 0.04), #fff 72px);
+        }
+
+        .report-internal-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          flex-wrap: wrap;
+          margin-bottom: 16px;
+        }
+
+        .report-internal-header h2 {
+          margin: 0;
+        }
+
+        .report-internal-badge {
+          display: inline-flex;
+          align-items: center;
+          padding: 4px 10px;
+          border-radius: 999px;
+          background: rgba(124, 58, 237, 0.12);
+          color: #6d28d9;
+          font-size: 0.78rem;
+          font-weight: 700;
+          letter-spacing: 0.04em;
+          text-transform: uppercase;
         }
 
         .back-row {

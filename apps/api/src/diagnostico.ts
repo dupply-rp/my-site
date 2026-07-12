@@ -4,6 +4,7 @@ import type { Answers } from '@dupply/types/diagnostico'
 import { generateAnthropicReport } from './lib/anthropic'
 import { checkDiagnosticoRateLimit, getClientIp } from './lib/rateLimit'
 import { canSendReportEmail, sendReportEmail } from './lib/sendReportEmail'
+import { resolveDiagnosticoReports } from './lib/splitReport'
 import { verifyTurnstileToken } from './lib/turnstile'
 
 export const config = {
@@ -88,11 +89,11 @@ async function handleDiagnostico(request: Request) {
   const scoreInfo = getScoreInfo(score)
   const pillars = calcPillars(answers)
 
-  let reportHtml: string
+  let rawReportHtml: string
   let aiGenerated = false
 
   try {
-    reportHtml = await generateAnthropicReport(summary, {
+    rawReportHtml = await generateAnthropicReport(summary, {
       score,
       scoreLabel: scoreInfo.label,
     })
@@ -100,8 +101,10 @@ async function handleDiagnostico(request: Request) {
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Erro ao gerar relatório'
     console.error('[diagnostico] Anthropic:', message)
-    reportHtml = buildFallbackReport(answers, scoreInfo)
+    rawReportHtml = buildFallbackReport(answers, scoreInfo)
   }
+
+  const reports = resolveDiagnosticoReports(rawReportHtml, { aiGenerated, answers, scoreInfo })
 
   const sheetsEnabled = process.env.ENABLE_GOOGLE_SHEETS === 'true'
 
@@ -114,17 +117,20 @@ async function handleDiagnostico(request: Request) {
       answers,
       score,
       scoreLabel: scoreInfo.label,
-      reportHtml,
+      reportHtml: reports.fullHtml,
     })
 
     waitUntil(
-      saveToGoogleSheets({ answers, score, scoreLabel: scoreInfo.label, reportHtml }).catch(
-        async (error) => {
-          const message = error instanceof Error ? error.message : 'Erro ao salvar na planilha'
-          console.error('[diagnostico] Google Sheets:', message)
-          await enqueueSheetRetry(sheetPayload, message)
-        },
-      ),
+      saveToGoogleSheets({
+        answers,
+        score,
+        scoreLabel: scoreInfo.label,
+        reportHtml: reports.fullHtml,
+      }).catch(async (error) => {
+        const message = error instanceof Error ? error.message : 'Erro ao salvar na planilha'
+        console.error('[diagnostico] Google Sheets:', message)
+        await enqueueSheetRetry(sheetPayload, message)
+      }),
     )
   }
 
@@ -135,7 +141,8 @@ async function handleDiagnostico(request: Request) {
           answers,
           score,
           scoreLabel: scoreInfo.label,
-          reportHtml,
+          reportClientHtml: reports.clientHtml,
+          reportInternalHtml: reports.internalHtml,
           aiGenerated,
         }),
       )
@@ -155,17 +162,17 @@ async function handleDiagnostico(request: Request) {
         companyName: String(answers.nome ?? 'Sua empresa'),
         score,
         scoreLabel: scoreInfo.label,
-        reportHtml,
+        reportHtml: reports.clientHtml,
         aiGenerated,
       }).catch((error) => {
         const message = error instanceof Error ? error.message : 'Erro ao enviar e-mail'
-        console.error('[diagnostico] E-mail:', message)
+        console.error('[diagnostico] E-mail:', error)
       }),
     )
   }
 
   return jsonResponse({
-    reportHtml,
+    reportHtml: reports.clientHtml,
     score,
     scoreInfo,
     pillars,

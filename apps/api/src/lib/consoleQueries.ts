@@ -20,6 +20,8 @@ export interface DiagnosticoDetail extends DiagnosticoListItem {
   budget: string | null
   objetivo: string | null
   relatorio: string | null
+  relatorioCliente: string | null
+  relatorioInterno: string | null
   respostas: Array<{
     id: string
     perguntaId: string
@@ -110,6 +112,8 @@ export async function getDiagnosticoById(
     budget: row.budget,
     objetivo: row.objetivo,
     relatorio: row.relatorio,
+    relatorioCliente: row.relatorioCliente,
+    relatorioInterno: row.relatorioInterno,
     respostas,
   }
 }

@@ -17,6 +17,8 @@ export interface DiagnosticoDetail extends DiagnosticoListItem {
   budget: string | null
   objetivo: string | null
   relatorio: string | null
+  relatorioCliente: string | null
+  relatorioInterno: string | null
   respostas: Array<{
     id: string
     perguntaId: string

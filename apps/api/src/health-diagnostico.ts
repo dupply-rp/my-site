@@ -5,6 +5,7 @@ import type { Answers } from '@dupply/types/diagnostico'
 import { generateAnthropicReport } from './lib/anthropic'
 import { checkDiagnosticoRateLimit } from './lib/rateLimit'
 import { canSendReportEmail, sendReportEmail } from './lib/sendReportEmail'
+import { resolveDiagnosticoReports } from './lib/splitReport'
 import { verifyTurnstileToken } from './lib/turnstile'
 
 function isAnswers(value: unknown): value is Answers {
@@ -66,11 +67,11 @@ export async function handleDiagnosticoPost(req: VercelRequest, res: VercelRespo
   const scoreInfo = getScoreInfo(score)
   const pillars = calcPillars(answers)
 
-  let reportHtml: string
+  let rawReportHtml: string
   let aiGenerated = false
 
   try {
-    reportHtml = await generateAnthropicReport(summary, {
+    rawReportHtml = await generateAnthropicReport(summary, {
       score,
       scoreLabel: scoreInfo.label,
     })
@@ -78,8 +79,10 @@ export async function handleDiagnosticoPost(req: VercelRequest, res: VercelRespo
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Erro ao gerar relatório'
     console.error('[diagnostico] Anthropic:', message)
-    reportHtml = buildFallbackReport(answers, scoreInfo)
+    rawReportHtml = buildFallbackReport(answers, scoreInfo)
   }
+
+  const reports = resolveDiagnosticoReports(rawReportHtml, { aiGenerated, answers, scoreInfo })
 
   const sheetsEnabled = process.env.ENABLE_GOOGLE_SHEETS === 'true'
 
@@ -88,22 +91,37 @@ export async function handleDiagnosticoPost(req: VercelRequest, res: VercelRespo
     const { enqueueSheetRetry } = await import('./lib/retryQueue')
     const { buildSheetPayload } = await import('./lib/sheetPayload')
 
-    const sheetPayload = buildSheetPayload({ answers, score, scoreLabel: scoreInfo.label, reportHtml })
+    const sheetPayload = buildSheetPayload({
+      answers,
+      score,
+      scoreLabel: scoreInfo.label,
+      reportHtml: reports.fullHtml,
+    })
 
     waitUntil(
-      saveToGoogleSheets({ answers, score, scoreLabel: scoreInfo.label, reportHtml }).catch(
-        async (error) => {
-          console.error('[diagnostico] Google Sheets:', error instanceof Error ? error.message : error)
-          await enqueueSheetRetry(sheetPayload, error instanceof Error ? error.message : 'Erro')
-        },
-      ),
+      saveToGoogleSheets({
+        answers,
+        score,
+        scoreLabel: scoreInfo.label,
+        reportHtml: reports.fullHtml,
+      }).catch(async (error) => {
+        console.error('[diagnostico] Google Sheets:', error instanceof Error ? error.message : error)
+        await enqueueSheetRetry(sheetPayload, error instanceof Error ? error.message : 'Erro')
+      }),
     )
   }
 
   waitUntil(
     import('./lib/saveDiagnostico')
       .then(({ saveDiagnosticoToDb }) =>
-        saveDiagnosticoToDb({ answers, score, scoreLabel: scoreInfo.label, reportHtml, aiGenerated }),
+        saveDiagnosticoToDb({
+          answers,
+          score,
+          scoreLabel: scoreInfo.label,
+          reportClientHtml: reports.clientHtml,
+          reportInternalHtml: reports.internalHtml,
+          aiGenerated,
+        }),
       )
       .catch((error) => {
         console.error('[diagnostico] Postgres:', error instanceof Error ? error.message : error)
@@ -120,7 +138,7 @@ export async function handleDiagnosticoPost(req: VercelRequest, res: VercelRespo
         companyName: String(answers.nome ?? 'Sua empresa'),
         score,
         scoreLabel: scoreInfo.label,
-        reportHtml,
+        reportHtml: reports.clientHtml,
         aiGenerated,
       }).catch((error) => {
         console.error('[diagnostico] E-mail:', error instanceof Error ? error.message : error)
@@ -129,7 +147,7 @@ export async function handleDiagnosticoPost(req: VercelRequest, res: VercelRespo
   }
 
   return res.status(200).json({
-    reportHtml,
+    reportHtml: reports.clientHtml,
     score,
     scoreInfo,
     pillars,

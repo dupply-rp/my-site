@@ -1,5 +1,17 @@
 import type { Answers, ScoreInfo } from '@dupply/types/diagnostico'
 
+export interface FallbackReports {
+  clientHtml: string
+  internalHtml: string
+}
+
+export function buildFallbackReports(answers: Answers, scoreInfo: ScoreInfo): FallbackReports {
+  return {
+    clientHtml: buildFallbackReport(answers, scoreInfo),
+    internalHtml: '',
+  }
+}
+
 export function buildFallbackReport(answers: Answers, scoreInfo: ScoreInfo): string {
   const empresa = String(answers.nome || 'sua empresa')
   const setor = String(answers.setor || 'seu setor')
