@@ -15,8 +15,8 @@
     "build:vercel": "pnpm build:api && pnpm --filter @dupply/web build && pnpm --filter @dupply/console build",
     "lint": "turbo lint",
     "preview": "pnpm --filter @dupply/web preview",
-    "test:diagnostico:prod": "node scripts/smoke-diagnostico.mjs",
-    "test:diagnostico:sheets": "SMOKE_MODE=sheets node scripts/smoke-diagnostico.mjs",
+    "test:diagnostico:prod": "dotenv -e .env.local -- node scripts/smoke-diagnostico.mjs",
+    "test:diagnostico:sheets": "SMOKE_MODE=sheets dotenv -e .env.local -- node scripts/smoke-diagnostico.mjs",
     "db:push": "pnpm --filter @dupply/db push",
     "db:studio": "pnpm --filter @dupply/db studio",
     "db:import-sheets": "dotenv -e .env.local -- node scripts/import-sheets-csv.mjs"
