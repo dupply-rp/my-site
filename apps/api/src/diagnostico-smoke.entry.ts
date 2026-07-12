@@ -1,6 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { buildSummary, buildFallbackReport, calcPillars, calcScore, getScoreInfo } from '@dupply/diagnostico'
 import { generateAnthropicReport } from './lib/anthropic'
+import { checkEmailSetup, sendTestNotificationEmail } from './lib/sendReportEmail'
 import { saveToGoogleSheets } from './lib/googleSheets'
 import { isRetryQueueEnabled, enqueueSheetRetry } from './lib/retryQueue'
 import { createSmokeAnswers } from './lib/smokeFixture'
@@ -47,9 +48,41 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     retryQueueEnabled: isRetryQueueEnabled(),
     env: {
       anthropicKey: Boolean(process.env.ANTHROPIC_API_KEY),
+      resendKey: Boolean(process.env.RESEND_API_KEY?.trim()),
+      reportEmailFrom: Boolean(process.env.REPORT_EMAIL_FROM?.trim()),
       sheetsWebhook: Boolean(process.env.GOOGLE_SHEETS_WEBHOOK_URL),
       upstash: isRetryQueueEnabled(),
     },
+  }
+
+  if (mode === 'email') {
+    const setup = await checkEmailSetup()
+    let sendOk = false
+    let sendError: string | undefined
+    let resendId: string | undefined
+
+    if (setup.resendConfigured && setup.recipientCount > 0) {
+      try {
+        const result = await sendTestNotificationEmail()
+        sendOk = true
+        resendId = result.id
+      } catch (error) {
+        sendError = error instanceof Error ? error.message : 'Erro ao enviar teste'
+      }
+    }
+
+    const ok = setup.resendConfigured && setup.recipientCount > 0 && sendOk
+
+    return res.status(ok ? 200 : 503).json({
+      ok,
+      checks: {
+        ...checks,
+        emailSetup: setup,
+        sendOk,
+        sendError,
+        resendId,
+      },
+    })
   }
 
   if (mode === 'sheets') {

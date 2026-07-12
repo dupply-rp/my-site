@@ -1,3 +1,4 @@
+import { sanitizeEnvValue } from './envUtils'
 import { resolveNotifyEmailAddresses } from './notifyEmailQueries'
 
 interface SendReportEmailParams {
@@ -35,26 +36,101 @@ function isValidEmail(value: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())
 }
 
-function isResendConfigured(): boolean {
-  return Boolean(process.env.RESEND_API_KEY?.trim() && process.env.REPORT_EMAIL_FROM?.trim())
+export type EmailErrorCode =
+  | 'RESEND_NOT_CONFIGURED'
+  | 'DOMAIN_NOT_VERIFIED'
+  | 'NO_RECIPIENTS'
+  | 'RESEND_API_ERROR'
+  | 'UNKNOWN'
+
+function getResendConfig(): { apiKey: string; from: string } {
+  return {
+    apiKey: sanitizeEnvValue(process.env.RESEND_API_KEY),
+    from: sanitizeEnvValue(process.env.REPORT_EMAIL_FROM),
+  }
 }
 
-export function mapEmailErrorForClient(error: unknown): string {
+export function isResendConfigured(): boolean {
+  const { apiKey, from } = getResendConfig()
+  return Boolean(apiKey && from)
+}
+
+export function classifyEmailError(error: unknown): EmailErrorCode {
   const message = error instanceof Error ? error.message : ''
+
   if (
     !isResendConfigured() ||
     message.includes('RESEND_NOT_CONFIGURED') ||
     message.includes('REPORT_EMAIL_FROM')
   ) {
-    return 'Envio por e-mail indisponível no momento. Fale conosco pelo WhatsApp.'
+    return 'RESEND_NOT_CONFIGURED'
   }
   if (message.includes('not verified') || message.includes('validation_error') || message.includes('(403)')) {
-    return 'Envio por e-mail indisponível no momento. Fale conosco pelo WhatsApp.'
+    return 'DOMAIN_NOT_VERIFIED'
   }
   if (message.includes('Nenhum e-mail de notificação')) {
+    return 'NO_RECIPIENTS'
+  }
+  if (message.includes('Resend falhou')) {
+    return 'RESEND_API_ERROR'
+  }
+  return 'UNKNOWN'
+}
+
+export function mapEmailErrorForClient(error: unknown): string {
+  const code = classifyEmailError(error)
+  if (code === 'RESEND_NOT_CONFIGURED' || code === 'DOMAIN_NOT_VERIFIED' || code === 'NO_RECIPIENTS') {
     return 'Envio por e-mail indisponível no momento. Fale conosco pelo WhatsApp.'
   }
   return 'Não foi possível enviar sua solicitação agora. Fale conosco pelo WhatsApp.'
+}
+
+export interface EmailSetupStatus {
+  resendConfigured: boolean
+  fromAddress: string | null
+  recipientCount: number
+  recipientsSource: 'database' | 'env' | 'none'
+  issues: string[]
+}
+
+export async function checkEmailSetup(): Promise<EmailSetupStatus> {
+  const { apiKey, from } = getResendConfig()
+  const issues: string[] = []
+
+  if (!apiKey) issues.push('RESEND_API_KEY ausente ou vazia em Production')
+  if (!from) issues.push('REPORT_EMAIL_FROM ausente ou vazia em Production')
+
+  let recipientCount = 0
+  let recipientsSource: EmailSetupStatus['recipientsSource'] = 'none'
+
+  try {
+    const recipients = await resolveNotifyEmailAddresses()
+    recipientCount = recipients.length
+    recipientsSource = recipientCount > 0 ? 'database' : 'none'
+    if (recipientCount === 0) {
+      issues.push('Nenhum destinatário de notificação — cadastre em /console/emails')
+    }
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Erro ao ler destinatários'
+    console.warn('[email-setup] Fallback env:', message)
+    const raw = sanitizeEnvValue(process.env.DIAGNOSTICO_NOTIFY_EMAILS)
+    const fallback = raw
+      ? raw.split(',').map((email) => email.trim()).filter(Boolean)
+      : ['ricardo.lima@dupply.com.br', 'ricardosllacerda@gmail.com']
+    recipientCount = fallback.length
+    recipientsSource = recipientCount > 0 ? 'env' : 'none'
+    if (recipientCount === 0) {
+      issues.push('Nenhum destinatário em DIAGNOSTICO_NOTIFY_EMAILS')
+    }
+  }
+
+  return {
+    resendConfigured: Boolean(apiKey && from),
+    fromAddress: from || null,
+    recipientCount,
+    recipientsSource,
+    issues,
+  }
 }
 
 async function postResendEmail(input: {
@@ -62,8 +138,7 @@ async function postResendEmail(input: {
   subject: string
   html: string
 }): Promise<void> {
-  const apiKey = process.env.RESEND_API_KEY
-  const from = process.env.REPORT_EMAIL_FROM
+  const { apiKey, from } = getResendConfig()
 
   if (!apiKey || !from) {
     throw new Error('RESEND_NOT_CONFIGURED')
@@ -149,6 +224,41 @@ function escapeHtml(value: string): string {
 
 export function canSendReportEmail(to: string): boolean {
   return isResendConfigured() && isValidEmail(to)
+}
+
+export async function sendTestNotificationEmail(): Promise<{ id?: string }> {
+  const recipients = await resolveNotifyEmailAddresses()
+  if (recipients.length === 0) {
+    throw new Error('Nenhum e-mail de notificação configurado')
+  }
+
+  const { apiKey, from } = getResendConfig()
+  if (!apiKey || !from) {
+    throw new Error('RESEND_NOT_CONFIGURED')
+  }
+
+  const response = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      from,
+      to: recipients.slice(0, 1),
+      subject: 'TC_teste — verificação de e-mail Dupply',
+      html: '<p>Smoke test: envio de e-mail em produção OK.</p>',
+    }),
+  })
+
+  if (!response.ok) {
+    const body = await response.text()
+    console.error('[resend-test]', response.status, body.slice(0, 500))
+    throw new Error(`Resend falhou (${response.status}): ${body.slice(0, 300)}`)
+  }
+
+  const data = (await response.json()) as { id?: string }
+  return { id: data.id }
 }
 
 export async function sendLeadNotificationEmail(params: LeadNotificationParams): Promise<void> {
