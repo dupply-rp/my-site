@@ -5,10 +5,12 @@
   "type": "module",
   "exports": {
     "./diagnostico": {
+      "development": "./src/diagnostico.ts",
       "types": "./dist/diagnostico.d.ts",
       "import": "./dist/diagnostico.js"
     },
     "./console": {
+      "development": "./src/console.ts",
       "types": "./dist/console.d.ts",
       "import": "./dist/console.js"
     }
