@@ -35,7 +35,7 @@ function loadEnvLocal() {
 
 loadEnvLocal()
 
-const baseUrl = (process.env.SMOKE_BASE_URL ?? 'https://dupply.com.br').replace(/\/$/, '')
+const baseUrl = (process.env.SMOKE_BASE_URL ?? 'https://www.dupply.com.br').replace(/\/$/, '')
 const secret = process.env.DIAGNOSTICO_TEST_SECRET?.trim()
 const mode = process.env.SMOKE_MODE ?? 'full'
 
