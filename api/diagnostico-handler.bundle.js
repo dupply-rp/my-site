@@ -505,8 +505,12 @@ var init_upstash = __esm({
 function decodeHtmlEntities(value) {
   return value.replace(/&nbsp;/gi, " ").replace(/&amp;/gi, "&").replace(/&lt;/gi, "<").replace(/&gt;/gi, ">").replace(/&quot;/gi, '"').replace(/&#39;/gi, "'").replace(/&#x27;/gi, "'").replace(/&#(\d+);/g, (_, code) => String.fromCharCode(Number(code))).replace(/&#x([0-9a-f]+);/gi, (_, code) => String.fromCharCode(parseInt(code, 16)));
 }
+function sanitizeReportHtml(html) {
+  return html.replace(/<style[\s\S]*?<\/style>/gi, "").replace(/<script[\s\S]*?<\/script>/gi, "").trim();
+}
 function htmlToPlainText(html) {
-  const withBreaks = html.replace(LINE_BREAK_TAGS, "\n").replace(HORIZONTAL_RULE, "\n---\n").replace(LIST_ITEM_OPEN, "\n\u2022 ").replace(BLOCK_END_TAGS, (tag) => tag.startsWith("</") ? "\n" : "").replace(/<[^>]+>/g, "");
+  const withoutEmbedded = sanitizeReportHtml(html);
+  const withBreaks = withoutEmbedded.replace(LINE_BREAK_TAGS, "\n").replace(HORIZONTAL_RULE, "\n---\n").replace(LIST_ITEM_OPEN, "\n\u2022 ").replace(BLOCK_END_TAGS, (tag) => tag.startsWith("</") ? "\n" : "").replace(/<[^>]+>/g, "");
   return decodeHtmlEntities(withBreaks).replace(/\r\n/g, "\n").replace(/[ \t]+\n/g, "\n").replace(/\n[ \t]+/g, "\n").replace(/\n{3,}/g, "\n\n").trim();
 }
 var BLOCK_END_TAGS, LINE_BREAK_TAGS, LIST_ITEM_OPEN, HORIZONTAL_RULE;
@@ -14373,7 +14377,7 @@ async function saveDiagnosticoToDb(input) {
     maiorDor: asString3(answers.maior_dor),
     budget: asString3(answers.budget),
     objetivo: contexto.slice(0, 500) || asString3(answers.maior_dor),
-    relatorio: htmlToPlainText(reportHtml),
+    relatorio: sanitizeReportHtml(reportHtml),
     aiGenerated
   }).returning({ id: diagnosticos.id });
   const answerRows = buildAnswerRows(answers);
@@ -14420,6 +14424,14 @@ REGRAS:
 - N\xC3O use linguagem corporativa vaga nem listas de buzzwords
 - Retorne APENAS HTML puro, sem markdown, sem blocos de c\xF3digo, sem backticks
 
+PROJE\xC7\xD5ES FINANCEIRAS (se\xE7\xE3o Potencial de Retorno \u2014 obrigat\xF3rio):
+- Use linguagem conservadora e condicional: "estimativa", "potencial", "pode representar", "cen\xE1rio prov\xE1vel"
+- NUNCA invente ROI percentual extremo (ex.: acima de 300%) sem dados expl\xEDcitos no diagn\xF3stico (faturamento, custos, horas gastas)
+- Se n\xE3o houver n\xFAmeros suficientes nas respostas, N\xC3O cite ROI %, break-even nem payback em meses \u2014 descreva ganhos qualitativos e ordens de grandeza vagas (ex.: "redu\xE7\xE3o relevante de horas manuais", "economia mensal que tende a superar o investimento em poucos meses")
+- Quando usar n\xFAmeros em R$, baseie em suposi\xE7\xF5es expl\xEDcitas e modestas ligadas ao porte, setor e dores descritas \u2014 evite promessas de retorno garantido
+- Proibido: "ROI de 1500%", "break-even m\xEAs 1", "payback m\xEAs 2" ou qualquer promessa agressiva sem base clara no question\xE1rio
+- Prefira 2\u20134 frases objetivas com impacto em tempo, custo operacional e receita \u2014 sem jarg\xE3o financeiro excessivo (evite explicar break-even/payback ao cliente; se mencionar recupera\xE7\xE3o do investimento, use "primeiros meses" ou faixa "60\u2013120 dias", nunca precis\xE3o falsa)
+
 FORMATO (retorne s\xF3 o HTML abaixo, sem nada mais):
 <h2>\u{1F4CD} Diagn\xF3stico da Situa\xE7\xE3o Atual</h2>
 <p>[an\xE1lise da situa\xE7\xE3o espec\xEDfica]</p>
@@ -14438,15 +14450,15 @@ FORMATO (retorne s\xF3 o HTML abaixo, sem nada mais):
 <h3>Dias 61\u201390: [t\xEDtulo]</h3><p>[a\xE7\xF5es]</p>
 <div class="section-divider"></div>
 <h2>\u{1F4B0} Potencial de Retorno</h2>
-<p>[estimativas de ROI com n\xFAmeros concretos baseados no perfil]</p>`;
+<p>[estimativas conservadoras: horas economizadas, custos evit\xE1veis ou ganho de efici\xEAncia \u2014 s\xF3 use R$ ou % se o diagn\xF3stico trouxer dados suficientes; sem ROI exagerado nem break-even/payback precisos]</p>`;
 
 // apps/api/src/lib/anthropic.ts
 function cleanReportHtml(raw) {
   return raw.replace(/```html?/gi, "").replace(/```/g, "").trim();
 }
 var REPORT_MODEL = "claude-haiku-4-5-20251001";
-var MAX_OUTPUT_TOKENS = 1800;
-var REQUEST_TIMEOUT_MS = 22e3;
+var MAX_OUTPUT_TOKENS = 4096;
+var REQUEST_TIMEOUT_MS = 45e3;
 async function requestReport(model, userContent, timeoutMs) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);

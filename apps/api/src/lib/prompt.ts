@@ -14,6 +14,14 @@ REGRAS:
 - NÃO use linguagem corporativa vaga nem listas de buzzwords
 - Retorne APENAS HTML puro, sem markdown, sem blocos de código, sem backticks
 
+PROJEÇÕES FINANCEIRAS (seção Potencial de Retorno — obrigatório):
+- Use linguagem conservadora e condicional: "estimativa", "potencial", "pode representar", "cenário provável"
+- NUNCA invente ROI percentual extremo (ex.: acima de 300%) sem dados explícitos no diagnóstico (faturamento, custos, horas gastas)
+- Se não houver números suficientes nas respostas, NÃO cite ROI %, break-even nem payback em meses — descreva ganhos qualitativos e ordens de grandeza vagas (ex.: "redução relevante de horas manuais", "economia mensal que tende a superar o investimento em poucos meses")
+- Quando usar números em R$, baseie em suposições explícitas e modestas ligadas ao porte, setor e dores descritas — evite promessas de retorno garantido
+- Proibido: "ROI de 1500%", "break-even mês 1", "payback mês 2" ou qualquer promessa agressiva sem base clara no questionário
+- Prefira 2–4 frases objetivas com impacto em tempo, custo operacional e receita — sem jargão financeiro excessivo (evite explicar break-even/payback ao cliente; se mencionar recuperação do investimento, use "primeiros meses" ou faixa "60–120 dias", nunca precisão falsa)
+
 FORMATO (retorne só o HTML abaixo, sem nada mais):
 <h2>📍 Diagnóstico da Situação Atual</h2>
 <p>[análise da situação específica]</p>
@@ -32,4 +40,4 @@ FORMATO (retorne só o HTML abaixo, sem nada mais):
 <h3>Dias 61–90: [título]</h3><p>[ações]</p>
 <div class="section-divider"></div>
 <h2>💰 Potencial de Retorno</h2>
-<p>[estimativas de ROI com números concretos baseados no perfil]</p>`
+<p>[estimativas conservadoras: horas economizadas, custos evitáveis ou ganho de eficiência — só use R$ ou % se o diagnóstico trouxer dados suficientes; sem ROI exagerado nem break-even/payback precisos]</p>`
