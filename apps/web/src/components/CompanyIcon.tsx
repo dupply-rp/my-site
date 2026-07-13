@@ -27,15 +27,18 @@ const logos: Record<CompanyId, string> = {
   totvs: totvsLogo,
 }
 
+const squareMarkIds = new Set<CompanyId>(['boticario', 'claro'])
+
 export function CompanyIcon({ id }: CompanyIconProps) {
   const { isLight } = useTheme()
   const src = id === 'toro' && !isLight ? toroLogoLight : logos[id]
+  const className = squareMarkIds.has(id) ? 'company-icon company-icon--mark' : 'company-icon'
 
   return (
     <img
       src={src}
       alt=""
-      className="company-icon"
+      className={className}
       loading="lazy"
       decoding="async"
       draggable={false}
