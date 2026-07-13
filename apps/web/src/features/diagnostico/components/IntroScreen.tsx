@@ -1,4 +1,4 @@
-import dupplyLogoTransparent from '../../../assets/dupply-logo-transparent.png'
+import { BrandLogo } from '../../../components/BrandLogo'
 
 function ArrowIcon() {
   return (
@@ -16,13 +16,7 @@ export function IntroScreen({ onStart }: IntroScreenProps) {
   return (
     <div className="diag-intro">
       <div className="diag-logo-mark">
-        <img
-          className="diag-logo-img"
-          src={dupplyLogoTransparent}
-          alt="Dupply"
-          width={300}
-          height={82}
-        />
+        <BrandLogo className="diag-logo-img" />
       </div>
 
       <span className="eyebrow diag-intro-eyebrow">Diagnóstico Gratuito · ~5 minutos</span>

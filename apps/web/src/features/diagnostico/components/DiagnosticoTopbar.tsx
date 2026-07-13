@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
-import dupplyLogo from '../../../assets/dupply-logo-transparent.png'
+import { BrandLogo } from '../../../components/BrandLogo'
+import { ThemeToggle } from '../../../components/ThemeToggle'
 
 interface DiagnosticoTopbarProps {
   showBack?: boolean
@@ -16,13 +17,16 @@ export function DiagnosticoTopbar({
     <header className="diag-topbar">
       <div className="diag-container diag-topbar-inner">
         <Link className="brand diag-brand" to="/" aria-label="Dupply — página inicial">
-          <img src={dupplyLogo} alt="Dupply" width={300} height={82} />
+          <BrandLogo />
         </Link>
-        {showBack ? (
-          <Link className="diag-topbar-link" to={backTo}>
-            {backLabel}
-          </Link>
-        ) : null}
+        <div className="diag-topbar-actions">
+          <ThemeToggle />
+          {showBack ? (
+            <Link className="diag-topbar-link" to={backTo}>
+              {backLabel}
+            </Link>
+          ) : null}
+        </div>
       </div>
     </header>
   )

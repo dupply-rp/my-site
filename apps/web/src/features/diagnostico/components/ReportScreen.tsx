@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import dupplyLogoTransparent from '../../../assets/dupply-logo-transparent.png'
+import { BrandLogo } from '../../../components/BrandLogo'
 import { WHATSAPP_PHONE, WHATSAPP_URL } from '../../../constants/links'
 import { solicitarContatoDupply } from '../solicitarContato'
 import type { Answers, DiagnosticoReport } from '../types'
@@ -84,13 +84,7 @@ export function ReportScreen({ answers, report, onRestart }: ReportScreenProps) 
       <header className="diag-report-header">
         <div className="diag-report-brand-bar">
           <div className="diag-report-brand">
-            <img
-              className="diag-report-logo"
-              src={dupplyLogoTransparent}
-              alt="Dupply"
-              width={300}
-              height={82}
-            />
+            <BrandLogo className="diag-report-logo" />
           </div>
           <div className="diag-report-brand-meta">
             <span className="diag-report-brand-label">Diagnóstico de IA</span>

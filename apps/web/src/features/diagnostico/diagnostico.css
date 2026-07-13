@@ -1,17 +1,17 @@
 .diag-app {
-  --diag-bg: var(--light-bg);
-  --diag-surface: var(--light-surface);
-  --diag-surface-2: rgba(28, 38, 40, 0.06);
-  --diag-ink: var(--light-ink);
-  --diag-muted: var(--light-muted);
-  --diag-soft: var(--light-soft);
-  --diag-line: var(--light-line);
-  --diag-line-strong: var(--light-line-strong);
-  --diag-accent: var(--azul-violeta);
-  --diag-accent-secondary: var(--roxo-claro);
-  --diag-accent-soft: rgba(94, 98, 197, 0.12);
-  --diag-blue: var(--diag-accent);
-  --diag-blue-soft: var(--diag-accent-soft);
+  --diag-bg: var(--bg);
+  --diag-surface: var(--bg-elevated);
+  --diag-surface-2: var(--surface-muted);
+  --diag-ink: var(--text);
+  --diag-muted: var(--text-muted);
+  --diag-soft: var(--text-soft);
+  --diag-line: var(--line);
+  --diag-line-strong: var(--line-strong);
+  --diag-accent: var(--accent);
+  --diag-accent-secondary: var(--accent-secondary);
+  --diag-accent-soft: var(--accent-soft);
+  --diag-blue: var(--accent);
+  --diag-blue-soft: var(--accent-soft);
   --diag-success: #2d8a62;
   --diag-success-soft: rgba(45, 138, 98, 0.12);
   --diag-error: #c53030;
@@ -22,8 +22,8 @@
   min-height: 100vh;
   color: var(--diag-ink);
   background:
-    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(94, 98, 197, 0.08), transparent 60%),
-    radial-gradient(ellipse 50% 40% at 100% 0%, rgba(117, 121, 212, 0.06), transparent 50%),
+    radial-gradient(ellipse 80% 50% at 50% -10%, var(--body-glow-1), transparent 60%),
+    radial-gradient(ellipse 50% 40% at 100% 0%, var(--body-glow-2), transparent 50%),
     var(--diag-bg);
   position: relative;
 }
@@ -44,7 +44,7 @@
   top: 0;
   z-index: 200;
   border-bottom: 1px solid var(--diag-line);
-  background: rgba(242, 243, 245, 0.92);
+  background: var(--topbar-bg);
   backdrop-filter: blur(16px);
 }
 
@@ -57,6 +57,13 @@
 }
 
 .diag-brand {
+  flex-shrink: 0;
+}
+
+.diag-topbar-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   flex-shrink: 0;
 }
 
@@ -189,7 +196,7 @@
   z-index: 100;
   padding: 14px 0;
   border-bottom: 1px solid var(--diag-line);
-  background: rgba(242, 243, 245, 0.95);
+  background: var(--topbar-bg);
   backdrop-filter: blur(16px);
 }
 
@@ -480,9 +487,9 @@
   width: 22px;
   height: 22px;
   margin-top: 1px;
-  border: 1.5px solid rgba(16, 21, 29, 0.14);
+  border: 1.5px solid var(--diag-line-strong);
   border-radius: 6px;
-  background: #fff;
+  background: var(--diag-surface);
   transition: background 0.18s ease, border-color 0.18s ease;
 }
 
@@ -962,7 +969,7 @@
   padding: 28px 24px;
   border: 1px solid var(--diag-line);
   border-radius: 16px;
-  background: #fff;
+  background: var(--diag-surface);
 }
 
 .diag-report-formatted h2 {
@@ -1204,11 +1211,11 @@
   }
 
   body {
-    background: #fff;
+    background: var(--diag-surface);
   }
 
   .diag-app {
-    background: #fff;
+    background: var(--diag-surface);
   }
 
   .diag-back-link,

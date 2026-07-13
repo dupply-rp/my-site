@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import dupplyLogo from '../../assets/dupply-logo-header.png'
+import { BrandLogo } from '../BrandLogo'
+import { ThemeToggle } from '../ThemeToggle'
 import { DIAGNOSTICO_PATH, WHATSAPP_URL } from '../../constants/links'
 
 const navItems = [
@@ -26,7 +27,7 @@ export function Header() {
     <header className="topbar">
       <nav className="nav wrap" aria-label="Navegação principal">
         <a className="brand" href="#top" aria-label="Dupply — página inicial">
-          <img src={dupplyLogo} alt="Dupply" width={300} height={82} />
+          <BrandLogo />
         </a>
 
         <div className="nav-links nav-links-desktop">
@@ -45,23 +46,27 @@ export function Header() {
               </a>
             ),
           )}
+          <ThemeToggle className="theme-toggle theme-toggle-desktop" />
           <Link className="btn btn-primary btn-sm" to={DIAGNOSTICO_PATH}>
             Diagnóstico gratuito
           </Link>
         </div>
 
-        <button
-          type="button"
-          className="nav-toggle"
-          aria-expanded={menuOpen}
-          aria-controls="mobile-menu"
-          aria-label={menuOpen ? 'Fechar menu' : 'Abrir menu'}
-          onClick={() => setMenuOpen((open) => !open)}
-        >
-          <span aria-hidden="true" />
-          <span aria-hidden="true" />
-          <span aria-hidden="true" />
-        </button>
+        <div className="nav-end">
+          <ThemeToggle className="theme-toggle theme-toggle-mobile" />
+          <button
+            type="button"
+            className="nav-toggle"
+            aria-expanded={menuOpen}
+            aria-controls="mobile-menu"
+            aria-label={menuOpen ? 'Fechar menu' : 'Abrir menu'}
+            onClick={() => setMenuOpen((open) => !open)}
+          >
+            <span aria-hidden="true" />
+            <span aria-hidden="true" />
+            <span aria-hidden="true" />
+          </button>
+        </div>
       </nav>
 
       <div
