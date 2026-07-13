@@ -5,8 +5,8 @@
   --diag-ink: var(--ink, #10151d);
   --diag-muted: var(--muted, #5f6877);
   --diag-line: var(--line, rgba(16, 21, 29, 0.1));
-  --diag-blue: var(--blue, #0718ff);
-  --diag-blue-soft: var(--blue-soft, rgba(7, 24, 255, 0.08));
+  --diag-blue: #5e62c5;
+  --diag-blue-soft: rgba(94, 98, 197, 0.14);
   --diag-lilac: #7c3aed;
   --diag-lilac-soft: #ede9fe;
   --diag-success: #059669;
@@ -40,7 +40,7 @@
 
 .diag-back-link:hover {
   color: var(--diag-blue);
-  border-color: rgba(7, 24, 255, 0.2);
+  border-color: rgba(94, 98, 197, 0.2);
 }
 
 .diag-btn-lg {
@@ -90,7 +90,7 @@
   height: 8px;
   border-radius: 50%;
   background: var(--diag-blue);
-  box-shadow: 0 0 10px rgba(7, 24, 255, 0.45);
+  box-shadow: 0 0 10px rgba(94, 98, 197, 0.45);
   animation: diag-pulse-dot 2s ease-in-out infinite;
 }
 
@@ -111,7 +111,7 @@
   margin-bottom: 18px;
   padding: 4px 14px;
   border-radius: 20px;
-  border: 1px solid rgba(7, 24, 255, 0.18);
+  border: 1px solid rgba(94, 98, 197, 0.18);
   background: var(--diag-blue-soft);
   color: var(--diag-blue);
   font-size: 11px;
@@ -165,7 +165,7 @@
   width: 34px;
   height: 34px;
   border-radius: 8px;
-  border: 1px solid rgba(7, 24, 255, 0.14);
+  border: 1px solid rgba(94, 98, 197, 0.14);
   background: var(--diag-blue-soft);
   font-size: 15px;
 }
@@ -214,7 +214,7 @@
 .diag-progress-bar-fill {
   height: 100%;
   border-radius: 4px;
-  background: linear-gradient(90deg, var(--diag-blue), #2d73ff);
+  background: linear-gradient(90deg, var(--diag-blue), #7579d4);
   transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -329,7 +329,7 @@
 
 .diag-input-field:focus {
   border-color: var(--diag-blue);
-  box-shadow: 0 0 0 3px rgba(7, 24, 255, 0.1);
+  box-shadow: 0 0 0 3px rgba(94, 98, 197, 0.1);
 }
 
 .diag-select-wrap {
@@ -415,14 +415,14 @@
 }
 
 .diag-option-card:hover {
-  border-color: rgba(7, 24, 255, 0.22);
+  border-color: rgba(94, 98, 197, 0.22);
   background: var(--diag-blue-soft);
 }
 
 .diag-option-card.selected {
   border-color: var(--diag-blue);
   background: var(--diag-blue-soft);
-  box-shadow: 0 0 0 3px rgba(7, 24, 255, 0.1);
+  box-shadow: 0 0 0 3px rgba(94, 98, 197, 0.1);
 }
 
 .diag-option-emoji {
@@ -518,9 +518,9 @@
   height: 80px;
   margin: 0 auto 28px;
   border-radius: 50%;
-  background: conic-gradient(var(--diag-blue) 0%, #2d73ff 50%, rgba(7, 24, 255, 0.25) 100%);
+  background: conic-gradient(var(--diag-blue) 0%, #7579d4 50%, rgba(94, 98, 197, 0.25) 100%);
   animation: diag-orb-spin 1.2s linear infinite;
-  box-shadow: 0 0 32px rgba(7, 24, 255, 0.2);
+  box-shadow: 0 0 32px rgba(94, 98, 197, 0.2);
   position: relative;
 }
 
@@ -835,7 +835,7 @@
 .diag-pillar-bar-fill {
   height: 100%;
   border-radius: 4px;
-  background: linear-gradient(90deg, var(--diag-blue), #2d73ff);
+  background: linear-gradient(90deg, var(--diag-blue), #7579d4);
   transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -873,7 +873,7 @@
   width: 38px;
   height: 38px;
   border-radius: 10px;
-  border: 1px solid rgba(7, 24, 255, 0.14);
+  border: 1px solid rgba(94, 98, 197, 0.14);
   background: var(--diag-blue-soft);
   font-size: 17px;
 }
@@ -970,11 +970,11 @@
 .diag-report-cta {
   margin-top: 40px;
   padding: 36px 28px;
-  border: 2px solid rgba(7, 24, 255, 0.28);
+  border: 2px solid rgba(94, 98, 197, 0.28);
   border-radius: 24px;
-  background: linear-gradient(180deg, rgba(7, 24, 255, 0.12) 0%, rgba(7, 24, 255, 0.04) 100%);
+  background: linear-gradient(180deg, rgba(94, 98, 197, 0.12) 0%, rgba(94, 98, 197, 0.04) 100%);
   text-align: center;
-  box-shadow: 0 24px 60px rgba(7, 24, 255, 0.12);
+  box-shadow: 0 24px 60px rgba(94, 98, 197, 0.12);
 }
 
 .diag-cta-eyebrow {
@@ -1013,13 +1013,13 @@
   min-height: 56px;
   font-size: 16px;
   font-weight: 700;
-  box-shadow: 0 16px 40px rgba(7, 24, 255, 0.28);
+  box-shadow: 0 16px 40px rgba(94, 98, 197, 0.28);
 }
 
 .diag-cta-btn-contact {
   min-height: 56px;
   padding: 0 24px;
-  border: 2px solid rgba(7, 24, 255, 0.35);
+  border: 2px solid rgba(94, 98, 197, 0.35);
   border-radius: var(--diag-radius);
   background: #fff;
   color: var(--diag-blue);
@@ -1028,7 +1028,7 @@
 }
 
 .diag-cta-btn-contact:hover:not(:disabled) {
-  background: rgba(7, 24, 255, 0.06);
+  background: rgba(94, 98, 197, 0.06);
   transform: translateY(-1px);
 }
 
@@ -1062,7 +1062,7 @@
   justify-content: center;
   gap: 10px;
   padding-top: 8px;
-  border-top: 1px solid rgba(7, 24, 255, 0.12);
+  border-top: 1px solid rgba(94, 98, 197, 0.12);
 }
 
 @media (max-width: 720px) {

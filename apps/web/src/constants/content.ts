@@ -7,6 +7,12 @@ export const heroPromises = [
   'Basta contratar uma ferramenta',
 ] as const
 
+export const heroAboutParagraphs = [
+  'Somos especialistas em aplicar IA onde ela realmente reduz custo, elimina retrabalho e organiza a operação — não em slides bonitos que nunca viram rotina.',
+  'Cada projeto começa pelo diagnóstico: entendemos como sua empresa funciona hoje, onde o tempo se perde e qual solução faz sentido para o seu contexto.',
+  'Da automação de processos à integração entre sistemas, construímos com sua equipe e acompanhamos até a solução funcionar no dia a dia.',
+] as const
+
 export const heroProofItems = [
   'Diagnóstico antes de ferramenta',
   'Mapeamento do processo real',

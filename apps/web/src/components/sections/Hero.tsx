@@ -1,4 +1,4 @@
-import { heroProofItems, heroPromises } from '../../constants/content'
+import { heroAboutParagraphs, heroProofItems, heroPromises } from '../../constants/content'
 import ricardoLima from '../../assets/ricardo-lima.jpg'
 import { DIAGNOSTICO_PATH, WHATSAPP_URL } from '../../constants/links'
 import { Link } from 'react-router-dom'
@@ -20,6 +20,12 @@ export function Hero() {
             A Dupply implementa <strong>IA para resolver problemas reais</strong> — menos promessas,
             mais resultados na operação.
           </p>
+
+          {heroAboutParagraphs.map((paragraph) => (
+            <p className="hero-body" key={paragraph}>
+              {paragraph}
+            </p>
+          ))}
 
           <div className="hero-actions">
             <Link className="btn btn-primary" to={DIAGNOSTICO_PATH}>
