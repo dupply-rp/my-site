@@ -879,6 +879,9 @@ body.menu-open .theme-toggle-fab {
 }
 
 .company-cloud span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   padding: 10px 14px;
   border: 1px solid var(--line);
   border-radius: 999px;
@@ -886,6 +889,13 @@ body.menu-open .theme-toggle-fab {
   font-size: 14px;
   font-weight: 500;
   color: var(--text-muted);
+}
+
+.company-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  border-radius: 4px;
 }
 
 @media (min-width: 1024px) {

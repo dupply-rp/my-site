@@ -31,15 +31,28 @@ export const lossItems = [
   'Fazendo retrabalho',
 ] as const
 
-export const companies = [
-  'Itaú',
-  'Santander',
-  'Neon',
-  'Toro Investimentos',
-  'Pravaler',
-  'Claro',
-  'Grupo Boticário',
-] as const
+export type CompanyId =
+  | 'itau'
+  | 'santander'
+  | 'neon'
+  | 'toro'
+  | 'pravaler'
+  | 'claro'
+  | 'boticario'
+  | 'rdstation'
+  | 'totvs'
+
+export const companies: ReadonlyArray<{ id: CompanyId; name: string }> = [
+  { id: 'itau', name: 'Itaú' },
+  { id: 'santander', name: 'Santander' },
+  { id: 'neon', name: 'Neon' },
+  { id: 'toro', name: 'Toro Investimentos' },
+  { id: 'pravaler', name: 'Pravaler' },
+  { id: 'claro', name: 'Claro' },
+  { id: 'boticario', name: 'Grupo Boticário' },
+  { id: 'rdstation', name: 'RD Station' },
+  { id: 'totvs', name: 'TOTVS' },
+]
 
 export const processSteps = [
   {

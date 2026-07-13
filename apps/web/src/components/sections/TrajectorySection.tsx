@@ -1,3 +1,4 @@
+import { CompanyIcon } from '../CompanyIcon'
 import ricardoLima from '../../assets/ricardo-lima.jpg'
 import { companies } from '../../constants/content'
 
@@ -30,7 +31,10 @@ export function TrajectorySection() {
           </p>
           <div className="company-cloud" aria-label="Empresas da trajetória de Ricardo Lima">
             {companies.map((company) => (
-              <span key={company}>{company}</span>
+              <span key={company.id}>
+                <CompanyIcon id={company.id} />
+                {company.name}
+              </span>
             ))}
           </div>
         </div>
