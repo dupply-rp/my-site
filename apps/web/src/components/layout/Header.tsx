@@ -26,7 +26,7 @@ export function Header() {
     <header className="topbar">
       <nav className="nav wrap" aria-label="Navegação principal">
         <a className="brand" href="#top" aria-label="Dupply — página inicial">
-          <img src={dupplyLogo} alt="Dupply" width={250} height={68} />
+          <img src={dupplyLogo} alt="Dupply" width={300} height={82} />
         </a>
 
         <div className="nav-links nav-links-desktop">
