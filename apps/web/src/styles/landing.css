@@ -386,9 +386,9 @@ ul {
 }
 
 .proof-line {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
   margin-top: 28px;
   padding-top: 24px;
   border-top: 1px solid var(--line);
@@ -401,6 +401,7 @@ ul {
   font-size: 14px;
   font-weight: 500;
   color: var(--text-muted);
+  line-height: 1.35;
 }
 
 .proof-line li::before {
@@ -517,18 +518,6 @@ ul {
 
   .hero-actions .btn {
     width: auto;
-  }
-
-  .proof-line {
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 0;
-  }
-
-  .proof-line li + li {
-    padding-left: 20px;
-    margin-left: 20px;
-    border-left: 1px solid var(--line);
   }
 }
 
