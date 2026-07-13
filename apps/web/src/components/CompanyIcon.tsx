@@ -1,7 +1,8 @@
 import itauLogo from '../assets/companies/itau.svg'
 import santanderLogo from '../assets/companies/santander.svg'
 import neonLogo from '../assets/companies/neon.svg'
-import toroLogo from '../assets/companies/toro.svg'
+import toroLogo from '../assets/companies/toro.png'
+import toroLogoLight from '../assets/companies/toro-light.png'
 import pravalerLogo from '../assets/companies/pravaler.webp'
 import claroLogo from '../assets/companies/claro.svg'
 import boticarioLogo from '../assets/companies/boticario.png'
@@ -29,16 +30,25 @@ const logos: Record<CompanyId, string> = {
   totvs: totvsLogo,
 }
 
-const markIds = new Set<CompanyId>(['boticario', 'santander', 'itau'])
-const wideIds = new Set<CompanyId>(['totvs', 'rdstation', 'toro', 'neon', 'pravaler', 'claro'])
+const markIds = new Set<CompanyId>(['santander', 'itau'])
+const wideIds = new Set<CompanyId>([
+  'totvs',
+  'rdstation',
+  'toro',
+  'neon',
+  'pravaler',
+  'claro',
+  'boticario',
+])
 
-const themeAwareIds = new Set<CompanyId>(['totvs', 'rdstation'])
+const themeAwareIds = new Set<CompanyId>(['toro', 'totvs', 'rdstation'])
 
 export function CompanyIcon({ id, variant = 'inline' }: CompanyIconProps) {
   const { isLight } = useTheme()
 
   let src = logos[id]
   if (themeAwareIds.has(id) && !isLight) {
+    if (id === 'toro') src = toroLogoLight
     if (id === 'totvs') src = totvsLogoLight
     if (id === 'rdstation') src = rdstationLogoLight
   }
