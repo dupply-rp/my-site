@@ -892,10 +892,13 @@ body.menu-open .theme-toggle-fab {
 }
 
 .company-icon {
-  width: 18px;
-  height: 18px;
+  display: block;
+  width: auto;
+  height: 20px;
+  max-width: 80px;
   flex-shrink: 0;
-  border-radius: 4px;
+  object-fit: contain;
+  object-position: left center;
 }
 
 @media (min-width: 1024px) {
