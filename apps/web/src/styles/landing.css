@@ -175,7 +175,7 @@ ul {
 .brand img {
   display: block;
   width: auto;
-  height: 57px;
+  height: 68px;
   opacity: 1;
 }
 
@@ -967,21 +967,11 @@ ul {
 }
 
 .footer-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 20px;
+  display: flex;
+  justify-content: center;
 }
 
-.footer strong {
-  display: block;
-  font-size: 15px;
-  font-weight: 600;
-}
-
-.footer span,
 .footer a {
-  display: block;
-  margin-top: 4px;
   color: var(--text-muted);
   font-size: 14px;
 }
@@ -993,17 +983,32 @@ ul {
 .socials {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
+  justify-content: center;
+  gap: 20px;
+}
+
+.socials a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.social-icon {
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+
+.socials a:hover .social-icon {
+  opacity: 1;
 }
 
 @media (min-width: 640px) {
   .footer-grid {
-    grid-template-columns: 1fr auto;
-    align-items: center;
+    justify-content: flex-start;
   }
 
   .socials {
-    justify-content: flex-end;
+    justify-content: flex-start;
   }
 }
 
