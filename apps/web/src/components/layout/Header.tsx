@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import dupplyLogo from '../../assets/dupply-logo-transparent.png'
+import dupplyLogo from '../../assets/dupply-logo-header.png'
 import { DIAGNOSTICO_PATH, WHATSAPP_URL } from '../../constants/links'
 
 const navItems = [
@@ -26,11 +26,7 @@ export function Header() {
     <header className="topbar">
       <nav className="nav wrap" aria-label="Navegação principal">
         <a className="brand" href="#top" aria-label="Dupply — página inicial">
-          <img src={dupplyLogo} alt="" width={120} height={40} />
-          <span className="brand-text">
-            <span className="brand-name">dupply</span>
-            <span className="brand-tagline">Aprenda construindo no mercado real</span>
-          </span>
+          <img src={dupplyLogo} alt="Dupply" width={148} height={40} />
         </a>
 
         <div className="nav-links nav-links-desktop">
