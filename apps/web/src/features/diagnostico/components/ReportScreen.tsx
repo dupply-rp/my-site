@@ -88,8 +88,8 @@ export function ReportScreen({ answers, report, onRestart }: ReportScreenProps) 
               className="diag-report-logo"
               src={dupplyLogoTransparent}
               alt="Dupply"
-              width={168}
-              height={40}
+              width={300}
+              height={82}
             />
           </div>
           <div className="diag-report-brand-meta">

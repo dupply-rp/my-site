@@ -15,8 +15,8 @@ export function DiagnosticoTopbar({
   return (
     <header className="diag-topbar">
       <div className="diag-container diag-topbar-inner">
-        <Link className="diag-brand" to="/" aria-label="Dupply — página inicial">
-          <img src={dupplyLogo} alt="Dupply" width={168} height={40} />
+        <Link className="brand diag-brand" to="/" aria-label="Dupply — página inicial">
+          <img src={dupplyLogo} alt="Dupply" width={300} height={82} />
         </Link>
         {showBack ? (
           <Link className="diag-topbar-link" to={backTo}>

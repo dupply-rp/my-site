@@ -20,8 +20,8 @@ export function IntroScreen({ onStart }: IntroScreenProps) {
           className="diag-logo-img"
           src={dupplyLogoTransparent}
           alt="Dupply"
-          width={200}
-          height={48}
+          width={300}
+          height={82}
         />
       </div>
 
