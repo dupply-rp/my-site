@@ -25,7 +25,7 @@ export function IntroScreen({ onStart }: IntroScreenProps) {
         />
       </div>
 
-      <span className="diag-hero-eyebrow">Diagnóstico Gratuito · ~5 minutos</span>
+      <span className="eyebrow diag-intro-eyebrow">Diagnóstico Gratuito · ~5 minutos</span>
 
       <h1 className="diag-hero-title">
         Descubra como a <span>IA pode transformar</span> sua empresa

@@ -36,5 +36,14 @@
   --radius-lg: 16px;
   --max: 1180px;
 
+  /* Tema claro (diagnóstico) */
+  --light-bg: var(--off-white);
+  --light-surface: #ffffff;
+  --light-ink: var(--preto-70);
+  --light-muted: rgba(28, 38, 40, 0.62);
+  --light-soft: rgba(28, 38, 40, 0.45);
+  --light-line: rgba(28, 38, 40, 0.1);
+  --light-line-strong: rgba(28, 38, 40, 0.18);
+
   --font: "Outfit", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
