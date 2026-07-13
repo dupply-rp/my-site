@@ -466,6 +466,7 @@ ul {
     padding: 24px 22px;
   }
 
+  .proof-line,
   .myth-line {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     column-gap: 20px;

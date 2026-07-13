@@ -9,7 +9,10 @@ export const heroPromises = [
 
 export const heroProofItems = [
   'Diagnóstico antes de ferramenta',
+  'Mapeamento do processo real',
   'Soluções sob medida',
+  'Integração entre sistemas existentes',
+  'Implementação com sua equipe',
   'Acompanhamento contínuo',
 ] as const
 
