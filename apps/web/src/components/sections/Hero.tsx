@@ -30,19 +30,23 @@ export function Hero() {
             </a>
           </div>
 
-          <ul className="proof-line" aria-label="Diferenciais da Dupply">
-            {heroProofItems.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-
-          <div className="hero-myths" aria-label="Mitos sobre IA que a Dupply não promete">
-            {heroPromises.map((myth) => (
-              <span className="myth-chip" key={myth}>
-                <span className="myth-chip-x" aria-hidden="true">×</span>
-                {myth}
-              </span>
-            ))}
+          <div className="hero-trust">
+            <div className="hero-trust-block">
+              <p className="hero-trust-label">Como a Dupply trabalha</p>
+              <ul className="proof-line">
+                {heroProofItems.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="hero-trust-block">
+              <p className="hero-trust-label">O que não prometemos</p>
+              <ul className="myth-line" aria-label="Mitos sobre IA que a Dupply não promete">
+                {heroPromises.map((myth) => (
+                  <li key={myth}>{myth}</li>
+                ))}
+              </ul>
+            </div>
           </div>
         </div>
 

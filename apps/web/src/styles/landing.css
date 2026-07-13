@@ -385,18 +385,44 @@ ul {
   width: 100%;
 }
 
-.proof-line {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
+.hero-trust {
   margin-top: 28px;
-  padding-top: 24px;
+  padding: 22px 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: rgba(242, 243, 245, 0.03);
+  display: grid;
+  gap: 22px;
+}
+
+.hero-trust-block + .hero-trust-block {
+  padding-top: 22px;
   border-top: 1px solid var(--line);
 }
 
-.proof-line li {
+.hero-trust-label {
+  margin: 0 0 14px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+}
+
+.proof-line,
+.myth-line {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.proof-line li,
+.myth-line li {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 10px;
   font-size: 14px;
   font-weight: 500;
@@ -411,6 +437,7 @@ ul {
   flex-shrink: 0;
   width: 22px;
   height: 22px;
+  margin-top: 1px;
   color: var(--accent-secondary);
   border: 1px solid currentColor;
   border-radius: 999px;
@@ -418,38 +445,31 @@ ul {
   font-weight: 700;
 }
 
-.hero-myths {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 24px;
-}
-
-.myth-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: rgba(242, 243, 245, 0.04);
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text-muted);
-  line-height: 1.3;
-}
-
-.myth-chip-x {
+.myth-line li::before {
+  content: '×';
   display: inline-grid;
   place-items: center;
   flex-shrink: 0;
-  width: 18px;
-  height: 18px;
+  width: 22px;
+  height: 22px;
+  margin-top: 1px;
   color: #ff6b6b;
   border: 1.5px solid currentColor;
   border-radius: 999px;
   font-size: 14px;
+  font-weight: 400;
   line-height: 1;
+}
+
+@media (min-width: 640px) {
+  .hero-trust {
+    padding: 24px 22px;
+  }
+
+  .myth-line {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 20px;
+  }
 }
 
 .hero-aside {
@@ -535,10 +555,6 @@ ul {
   .hero-aside {
     margin: 0;
     max-width: none;
-  }
-
-  .hero-myths {
-    max-width: 600px;
   }
 }
 
@@ -981,14 +997,6 @@ ul {
 @media (max-width: 639px) {
   .wrap {
     width: min(100% - 32px, var(--max));
-  }
-
-  .hero-myths {
-    display: none;
-  }
-
-  .myth-chip {
-    font-size: 12px;
   }
 }
 
