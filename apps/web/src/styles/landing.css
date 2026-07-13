@@ -908,12 +908,12 @@ body.menu-open .theme-toggle-fab {
 }
 
 .company-logo--mark {
-  max-width: 36px;
-  max-height: 32px;
+  max-width: 40px;
+  max-height: 36px;
 }
 
 .company-logo--wide {
-  max-height: 22px;
+  max-height: 26px;
 }
 
 @media (min-width: 640px) {
@@ -927,11 +927,16 @@ body.menu-open .theme-toggle-fab {
   }
 
   .company-logo {
-    max-height: 30px;
+    max-height: 32px;
+  }
+
+  .company-logo--mark {
+    max-width: 44px;
+    max-height: 38px;
   }
 
   .company-logo--wide {
-    max-height: 24px;
+    max-height: 28px;
   }
 }
 
