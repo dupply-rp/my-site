@@ -4,9 +4,8 @@ import { BenefitsSection } from '../components/sections/BenefitsSection'
 import { DiagnosticoBanner } from '../components/sections/DiagnosticoBanner'
 import { DiagnosisSection } from '../components/sections/DiagnosisSection'
 import { FinalCtaSection } from '../components/sections/FinalCtaSection'
-import { MockupHero } from '../components/sections/MockupHero'
+import { Hero } from '../components/sections/Hero'
 import { ProcessSection } from '../components/sections/ProcessSection'
-import { ResponsiveHero } from '../components/sections/ResponsiveHero'
 import { TrajectorySection } from '../components/sections/TrajectorySection'
 import { JsonLd } from '../components/seo/JsonLd'
 import { SkipLink } from '../components/seo/SkipLink'
@@ -20,8 +19,7 @@ export function HomePage() {
       <Header />
       <main id="conteudo-principal">
         <div id="top" tabIndex={-1} />
-        <MockupHero />
-        <ResponsiveHero />
+        <Hero />
         <DiagnosisSection />
         <DiagnosticoBanner />
         <TrajectorySection />
