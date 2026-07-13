@@ -20,6 +20,7 @@
   --accent-secondary: var(--azul-violeta);
   --accent-soft: rgba(94, 98, 197, 0.18);
   --gradient-brand: linear-gradient(135deg, var(--azul-violeta) 0%, var(--azul-ultramarino) 100%);
+  --gradient-brand-purple: linear-gradient(145deg, #7579d4 0%, #5e62c5 42%, #4549a0 100%);
   --gradient-brand-soft: linear-gradient(
     135deg,
     rgba(94, 98, 197, 0.22) 0%,
