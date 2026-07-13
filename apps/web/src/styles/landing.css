@@ -179,27 +179,6 @@ ul {
   opacity: 1;
 }
 
-.nav-actions {
-  display: none;
-  align-items: center;
-  gap: 12px;
-}
-
-.nav-end {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  flex-shrink: 0;
-}
-
-.theme-toggle-desktop {
-  display: none;
-}
-
-.theme-toggle-mobile {
-  display: inline-flex;
-}
-
 .theme-toggle {
   display: inline-flex;
   align-items: center;
@@ -216,7 +195,40 @@ ul {
   transition:
     color 180ms ease,
     border-color 180ms ease,
-    background 180ms ease;
+    background 180ms ease,
+    opacity 180ms ease,
+    transform 180ms ease;
+}
+
+.theme-toggle-fab {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 25;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  opacity: 0.65;
+  backdrop-filter: blur(12px);
+  background: color-mix(in srgb, var(--bg-card) 90%, transparent);
+  box-shadow: var(--shadow-sm);
+}
+
+.theme-toggle-fab:hover {
+  opacity: 1;
+  transform: translateY(-1px);
+}
+
+body.menu-open .theme-toggle-fab {
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (min-width: 768px) {
+  .theme-toggle-fab {
+    right: 20px;
+    bottom: 20px;
+  }
 }
 
 .theme-toggle:hover {
@@ -325,14 +337,6 @@ ul {
 @media (min-width: 1024px) {
   .nav-links-desktop {
     display: flex;
-  }
-
-  .theme-toggle-desktop {
-    display: inline-flex;
-  }
-
-  .theme-toggle-mobile {
-    display: none;
   }
 
   .nav-toggle {

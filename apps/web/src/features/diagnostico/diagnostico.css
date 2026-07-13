@@ -60,13 +60,6 @@
   flex-shrink: 0;
 }
 
-.diag-topbar-actions {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  flex-shrink: 0;
-}
-
 .diag-topbar-link {
   flex-shrink: 0;
   padding: 8px 12px;

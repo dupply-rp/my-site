@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom'
 import { BrandLogo } from '../../../components/BrandLogo'
-import { ThemeToggle } from '../../../components/ThemeToggle'
 
 interface DiagnosticoTopbarProps {
   showBack?: boolean
@@ -19,14 +18,11 @@ export function DiagnosticoTopbar({
         <Link className="brand diag-brand" to="/" aria-label="Dupply — página inicial">
           <BrandLogo />
         </Link>
-        <div className="diag-topbar-actions">
-          <ThemeToggle />
-          {showBack ? (
-            <Link className="diag-topbar-link" to={backTo}>
-              {backLabel}
-            </Link>
-          ) : null}
-        </div>
+        {showBack ? (
+          <Link className="diag-topbar-link" to={backTo}>
+            {backLabel}
+          </Link>
+        ) : null}
       </div>
     </header>
   )
