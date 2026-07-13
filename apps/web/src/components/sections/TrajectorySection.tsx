@@ -29,12 +29,11 @@ export function TrajectorySection() {
             problemas reais, reduzir atrito e criar soluções que sobrevivem ao dia a dia das
             empresas.
           </p>
-          <div className="company-cloud" aria-label="Empresas da trajetória de Ricardo Lima">
+          <div className="company-grid" aria-label="Empresas da trajetória de Ricardo Lima">
             {companies.map((company) => (
-              <span key={company.id}>
-                <CompanyIcon id={company.id} />
-                {company.name}
-              </span>
+              <div key={company.id} className="company-tile" title={company.name}>
+                <CompanyIcon id={company.id} variant="tile" />
+              </div>
             ))}
           </div>
         </div>

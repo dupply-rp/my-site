@@ -7,12 +7,15 @@ import pravalerLogo from '../assets/companies/pravaler.webp'
 import claroLogo from '../assets/companies/claro.svg'
 import boticarioLogo from '../assets/companies/boticario.png'
 import rdstationLogo from '../assets/companies/rdstation.svg'
+import rdstationLogoLight from '../assets/companies/rdstation-light.svg'
 import totvsLogo from '../assets/companies/totvs.svg'
+import totvsLogoLight from '../assets/companies/totvs-light.svg'
 import type { CompanyId } from '../constants/content'
 import { useTheme } from '../hooks/useTheme'
 
 interface CompanyIconProps {
   id: CompanyId
+  variant?: 'inline' | 'tile'
 }
 
 const logos: Record<CompanyId, string> = {
@@ -27,18 +30,34 @@ const logos: Record<CompanyId, string> = {
   totvs: totvsLogo,
 }
 
-const squareMarkIds = new Set<CompanyId>(['boticario', 'claro'])
+const markIds = new Set<CompanyId>(['boticario', 'itau', 'santander'])
+const wideIds = new Set<CompanyId>(['totvs', 'rdstation', 'toro', 'neon', 'pravaler'])
 
-export function CompanyIcon({ id }: CompanyIconProps) {
+const themeAwareIds = new Set<CompanyId>(['toro', 'totvs', 'rdstation'])
+
+export function CompanyIcon({ id, variant = 'inline' }: CompanyIconProps) {
   const { isLight } = useTheme()
-  const src = id === 'toro' && !isLight ? toroLogoLight : logos[id]
-  const className = squareMarkIds.has(id) ? 'company-icon company-icon--mark' : 'company-icon'
+
+  let src = logos[id]
+  if (themeAwareIds.has(id) && !isLight) {
+    if (id === 'toro') src = toroLogoLight
+    if (id === 'totvs') src = totvsLogoLight
+    if (id === 'rdstation') src = rdstationLogoLight
+  }
+
+  const baseClass = variant === 'tile' ? 'company-logo' : 'company-icon'
+  const modifiers = [
+    markIds.has(id) ? `${baseClass}--mark` : '',
+    wideIds.has(id) ? `${baseClass}--wide` : '',
+  ]
+    .filter(Boolean)
+    .join(' ')
 
   return (
     <img
       src={src}
       alt=""
-      className={className}
+      className={[baseClass, modifiers].filter(Boolean).join(' ')}
       loading="lazy"
       decoding="async"
       draggable={false}
