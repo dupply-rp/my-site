@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { DiagnosticoTopbar } from './components/DiagnosticoTopbar'
 import '../../styles/landing.css'
 import { LoadingScreen } from './components/LoadingScreen'
 import { ReportScreen } from './components/ReportScreen'
@@ -23,9 +23,7 @@ export function DiagnosticoTestPage() {
 
   return (
     <div className="diag-app diag-test-app">
-      <Link to="/diagnostico" className="diag-back-link">
-        ← Diagnóstico real
-      </Link>
+      <DiagnosticoTopbar backTo="/diagnostico" backLabel="← Diagnóstico real" />
 
       {screen === 'gate' ? (
         <div className="diag-test-gate">

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import dupplyLogoTransparent from '../../../assets/dupply-logo-transparent.png'
+import { BrandLogo } from '../../../components/BrandLogo'
 import { WHATSAPP_PHONE, WHATSAPP_URL } from '../../../constants/links'
 import { solicitarContatoDupply } from '../solicitarContato'
 import type { Answers, DiagnosticoReport } from '../types'
@@ -84,13 +84,7 @@ export function ReportScreen({ answers, report, onRestart }: ReportScreenProps) 
       <header className="diag-report-header">
         <div className="diag-report-brand-bar">
           <div className="diag-report-brand">
-            <img
-              className="diag-report-logo"
-              src={dupplyLogoTransparent}
-              alt="Dupply"
-              width={168}
-              height={40}
-            />
+            <BrandLogo className="diag-report-logo" />
           </div>
           <div className="diag-report-brand-meta">
             <span className="diag-report-brand-label">Diagnóstico de IA</span>
@@ -123,8 +117,8 @@ export function ReportScreen({ answers, report, onRestart }: ReportScreenProps) 
               <svg viewBox="0 0 140 140" aria-hidden>
                 <defs>
                   <linearGradient id="diag-score-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#0718ff" />
-                    <stop offset="100%" stopColor="#2d73ff" />
+                    <stop offset="0%" stopColor="#7579d4" />
+                    <stop offset="100%" stopColor="#5e62c5" />
                   </linearGradient>
                 </defs>
                 <circle className="diag-score-ring-bg" cx="70" cy="70" r="65" />

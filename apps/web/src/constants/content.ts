@@ -7,9 +7,18 @@ export const heroPromises = [
   'Basta contratar uma ferramenta',
 ] as const
 
+export const heroAboutParagraphs = [
+  'Somos especialistas em aplicar IA onde ela realmente reduz custo, elimina retrabalho e organiza a operação — não em slides bonitos que nunca viram rotina.',
+  'Cada projeto começa pelo diagnóstico: entendemos como sua empresa funciona hoje, onde o tempo se perde e qual solução faz sentido para o seu contexto.',
+  'Da automação de processos à integração entre sistemas, construímos com sua equipe e acompanhamos até a solução funcionar no dia a dia.',
+] as const
+
 export const heroProofItems = [
   'Diagnóstico antes de ferramenta',
+  'Mapeamento do processo real',
   'Soluções sob medida',
+  'Integração entre sistemas existentes',
+  'Implementação com sua equipe',
   'Acompanhamento contínuo',
 ] as const
 
@@ -22,15 +31,28 @@ export const lossItems = [
   'Fazendo retrabalho',
 ] as const
 
-export const companies = [
-  'Itaú',
-  'Santander',
-  'Neon',
-  'Toro Investimentos',
-  'Pravaler',
-  'Claro',
-  'Grupo Boticário',
-] as const
+export type CompanyId =
+  | 'itau'
+  | 'santander'
+  | 'neon'
+  | 'toro'
+  | 'pravaler'
+  | 'claro'
+  | 'boticario'
+  | 'rdstation'
+  | 'totvs'
+
+export const companies: ReadonlyArray<{ id: CompanyId; name: string }> = [
+  { id: 'itau', name: 'Itaú' },
+  { id: 'santander', name: 'Santander' },
+  { id: 'neon', name: 'Neon' },
+  { id: 'toro', name: 'Toro Investimentos' },
+  { id: 'pravaler', name: 'Pravaler' },
+  { id: 'claro', name: 'Claro' },
+  { id: 'boticario', name: 'Grupo Boticário' },
+  { id: 'rdstation', name: 'RD Station' },
+  { id: 'totvs', name: 'TOTVS' },
+]
 
 export const processSteps = [
   {
