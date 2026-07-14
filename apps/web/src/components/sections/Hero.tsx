@@ -1,5 +1,5 @@
 import { heroAboutParagraphs, heroProofItems, heroPromises } from '../../constants/content'
-import ricardoLima from '../../assets/ricardo-lima.jpg'
+import ricardoHero from '../../assets/ricardo-hero.jpg'
 import { DIAGNOSTICO_PATH, WHATSAPP_URL } from '../../constants/links'
 import { Link } from 'react-router-dom'
 
@@ -40,12 +40,12 @@ export function Hero() {
         <aside className="hero-aside" aria-label="Posicionamento Dupply">
           <figure className="portrait-card">
             <img
-              src={ricardoLima}
+              src={ricardoHero}
               alt="Ricardo Lima, CEO da Dupply"
               loading="eager"
               decoding="async"
-              width={480}
-              height={600}
+              width={1024}
+              height={1536}
             />
           </figure>
           <div className="brand-card">
