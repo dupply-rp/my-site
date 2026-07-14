@@ -1,6 +1,13 @@
 <!doctype html>
 <html lang="pt-BR">
   <head>
+    <script>
+      (function () {
+        var stored = localStorage.getItem('dupply-theme');
+        var theme = stored === 'dark' || stored === 'light' ? stored : 'light';
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dupply | IA aplicada à realidade da sua empresa</title>
@@ -14,7 +21,7 @@
     />
     <meta name="author" content="Dupply" />
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
-    <meta name="theme-color" content="#1c2628" />
+    <meta name="theme-color" content="#f2f3f5" />
     <meta name="format-detection" content="telephone=no" />
     <link rel="canonical" href="https://dupply.com.br/" />
 
@@ -45,6 +52,8 @@
       rel="stylesheet"
     />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
   </head>
   <body>
     <div id="root"></div>

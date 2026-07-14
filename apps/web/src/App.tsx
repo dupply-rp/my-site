@@ -1,11 +1,14 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { ThemeToggle } from './components/ThemeToggle'
 import { DiagnosticoPage } from './features/diagnostico/DiagnosticoPage'
 import { DiagnosticoTestPage } from './features/diagnostico/DiagnosticoTestPage'
 import { HomePage } from './pages/HomePage'
+import './styles/landing.css'
 
 function App() {
   return (
     <BrowserRouter>
+      <ThemeToggle className="theme-toggle theme-toggle-fab" />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/diagnostico" element={<DiagnosticoPage />} />

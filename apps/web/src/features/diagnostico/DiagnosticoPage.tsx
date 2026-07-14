@@ -1,10 +1,10 @@
-import { Link } from 'react-router-dom'
-import '../../styles/landing.css'
+import { DiagnosticoTopbar } from './components/DiagnosticoTopbar'
 import { IntroScreen } from './components/IntroScreen'
 import { LoadingScreen } from './components/LoadingScreen'
 import { QuizScreen } from './components/QuizScreen'
 import { ReportScreen } from './components/ReportScreen'
 import { useDiagnostico } from './hooks/useDiagnostico'
+import '../../styles/landing.css'
 import './diagnostico.css'
 
 export function DiagnosticoPage() {
@@ -30,11 +30,7 @@ export function DiagnosticoPage() {
 
   return (
     <div className="diag-app">
-      {screen !== 'quiz' && (
-        <Link to="/" className="diag-back-link">
-          ← Voltar ao site
-        </Link>
-      )}
+      <DiagnosticoTopbar showBack={screen !== 'quiz'} />
 
       {screen === 'intro' && <IntroScreen onStart={startQuiz} />}
 

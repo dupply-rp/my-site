@@ -1,4 +1,5 @@
-import type { FlatQuestion, Answers } from '../types'
+import { BrandLogo } from '../../../components/BrandLogo'
+import type { Answers, FlatQuestion } from '../types'
 import { formatPhoneBr, stripPhoneDigits } from '../formatPhone'
 import { IS_TURNSTILE_ENABLED, TURNSTILE_SITE_KEY } from '../turnstileConfig'
 import { OptionCard } from './OptionCard'
@@ -226,8 +227,7 @@ export function QuizScreen({
       <header className="diag-quiz-header">
         <div className="diag-quiz-header-inner">
           <div className="diag-quiz-logo">
-            <span className="diag-logo-dot" aria-hidden />
-            Dupply
+            <BrandLogo width={120} height={29} />
           </div>
           <div className="diag-progress-wrap">
             <div className="diag-progress-label">
