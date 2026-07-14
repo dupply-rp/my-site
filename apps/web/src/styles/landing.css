@@ -1124,14 +1124,11 @@ body.menu-open .theme-toggle-fab {
 }
 
 .social-icon {
+  display: block;
   flex-shrink: 0;
-  width: 18px;
-  height: 18px;
-  opacity: 0.85;
-}
-
-.socials a:hover .social-icon {
-  opacity: 1;
+  width: 20px;
+  height: 20px;
+  color: inherit;
 }
 
 @media (min-width: 640px) {

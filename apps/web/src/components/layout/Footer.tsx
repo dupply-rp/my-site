@@ -1,9 +1,11 @@
+const SOCIAL_ICON_SIZE = 20
+
 function InstagramIcon() {
   return (
     <svg
       className="social-icon"
-      width="18"
-      height="18"
+      width={SOCIAL_ICON_SIZE}
+      height={SOCIAL_ICON_SIZE}
       viewBox="0 0 24 24"
       fill="currentColor"
       aria-hidden="true"
@@ -11,7 +13,7 @@ function InstagramIcon() {
       <path
         fillRule="evenodd"
         clipRule="evenodd"
-        d="M4.25 2A2.25 2.25 0 0 0 2 4.25v15.5A2.25 2.25 0 0 0 4.25 22h15.5A2.25 2.25 0 0 0 22 19.75V4.25A2.25 2.25 0 0 0 19.75 2H4.25Zm7.75 5.25a4.75 4.75 0 1 0 0 9.5 4.75 4.75 0 0 0 0-9.5ZM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm5.25-2.25a1.125 1.125 0 1 0 0 2.25 1.125 1.125 0 0 0 0-2.25Z"
+        d="M22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003ZM12 6.1a5.9 5.9 0 1 0 0 11.8 5.9 5.9 0 0 0 0-11.8Zm0 2.4a3.5 3.5 0 1 1 0 7 3.5 3.5 0 0 1 0-7ZM17.55 5.2a1.4 1.4 0 1 0 0 2.8 1.4 1.4 0 0 0 0-2.8Z"
       />
     </svg>
   )
@@ -21,8 +23,8 @@ function LinkedInIcon() {
   return (
     <svg
       className="social-icon"
-      width="18"
-      height="18"
+      width={SOCIAL_ICON_SIZE}
+      height={SOCIAL_ICON_SIZE}
       viewBox="0 0 24 24"
       fill="currentColor"
       aria-hidden="true"
