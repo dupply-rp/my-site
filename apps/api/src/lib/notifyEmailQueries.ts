@@ -1,5 +1,6 @@
 import { createDb, notifyEmails, tenants } from '@dupply/db'
 import { and, asc, eq } from 'drizzle-orm'
+import { sanitizeEnvValue } from './envUtils'
 
 export interface NotifyEmailItem {
   id: string
@@ -25,7 +26,7 @@ function normalizeEmail(value: string): string {
 }
 
 function getEnvNotifyEmails(): string[] {
-  const raw = process.env.DIAGNOSTICO_NOTIFY_EMAILS?.trim()
+  const raw = sanitizeEnvValue(process.env.DIAGNOSTICO_NOTIFY_EMAILS)
   const list = raw
     ? raw.split(',').map((email) => email.trim()).filter(Boolean)
     : DEFAULT_NOTIFY_EMAILS

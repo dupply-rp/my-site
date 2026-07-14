@@ -13476,6 +13476,16 @@ async function getDiagnosticoById(tenantSlug, id) {
   };
 }
 
+// apps/api/src/lib/envUtils.ts
+function sanitizeEnvValue(value) {
+  if (!value) return "";
+  let trimmed = value.trim();
+  if (trimmed.startsWith('"') && trimmed.endsWith('"') || trimmed.startsWith("'") && trimmed.endsWith("'")) {
+    trimmed = trimmed.slice(1, -1).trim();
+  }
+  return trimmed;
+}
+
 // apps/api/src/lib/notifyEmailQueries.ts
 var DEFAULT_NOTIFY_EMAILS = ["ricardo.lima@dupply.com.br", "ricardosllacerda@gmail.com"];
 function requireDb2() {
@@ -13490,7 +13500,7 @@ function normalizeEmail(value) {
   return value.trim().toLowerCase();
 }
 function getEnvNotifyEmails() {
-  const raw = process.env.DIAGNOSTICO_NOTIFY_EMAILS?.trim();
+  const raw = sanitizeEnvValue(process.env.DIAGNOSTICO_NOTIFY_EMAILS);
   const list = raw ? raw.split(",").map((email) => email.trim()).filter(Boolean) : DEFAULT_NOTIFY_EMAILS;
   return list.filter(isValidEmail).map(normalizeEmail);
 }

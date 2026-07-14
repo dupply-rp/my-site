@@ -14749,6 +14749,16 @@ async function checkDiagnosticoRateLimit(ip) {
   return { allowed, limit, remaining, resetInSec, enabled: true };
 }
 
+// apps/api/src/lib/envUtils.ts
+function sanitizeEnvValue(value) {
+  if (!value) return "";
+  let trimmed = value.trim();
+  if (trimmed.startsWith('"') && trimmed.endsWith('"') || trimmed.startsWith("'") && trimmed.endsWith("'")) {
+    trimmed = trimmed.slice(1, -1).trim();
+  }
+  return trimmed;
+}
+
 // apps/api/src/lib/notifyEmailQueries.ts
 init_src();
 init_drizzle_orm();
@@ -14765,7 +14775,7 @@ function normalizeEmail(value) {
   return value.trim().toLowerCase();
 }
 function getEnvNotifyEmails() {
-  const raw = process.env.DIAGNOSTICO_NOTIFY_EMAILS?.trim();
+  const raw = sanitizeEnvValue(process.env.DIAGNOSTICO_NOTIFY_EMAILS);
   const list = raw ? raw.split(",").map((email) => email.trim()).filter(Boolean) : DEFAULT_NOTIFY_EMAILS;
   return list.filter(isValidEmail).map(normalizeEmail);
 }
@@ -14822,25 +14832,41 @@ function asString2(value) {
 function isValidEmail2(value) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
 }
-function isResendConfigured() {
-  return Boolean(process.env.RESEND_API_KEY?.trim() && process.env.REPORT_EMAIL_FROM?.trim());
+function getResendConfig() {
+  return {
+    apiKey: sanitizeEnvValue(process.env.RESEND_API_KEY),
+    from: sanitizeEnvValue(process.env.REPORT_EMAIL_FROM)
+  };
 }
-function mapEmailErrorForClient(error) {
+function isResendConfigured() {
+  const { apiKey, from } = getResendConfig();
+  return Boolean(apiKey && from);
+}
+function classifyEmailError(error) {
   const message = error instanceof Error ? error.message : "";
   if (!isResendConfigured() || message.includes("RESEND_NOT_CONFIGURED") || message.includes("REPORT_EMAIL_FROM")) {
-    return "Envio por e-mail indispon\xEDvel no momento. Fale conosco pelo WhatsApp.";
+    return "RESEND_NOT_CONFIGURED";
   }
   if (message.includes("not verified") || message.includes("validation_error") || message.includes("(403)")) {
-    return "Envio por e-mail indispon\xEDvel no momento. Fale conosco pelo WhatsApp.";
+    return "DOMAIN_NOT_VERIFIED";
   }
   if (message.includes("Nenhum e-mail de notifica\xE7\xE3o")) {
+    return "NO_RECIPIENTS";
+  }
+  if (message.includes("Resend falhou")) {
+    return "RESEND_API_ERROR";
+  }
+  return "UNKNOWN";
+}
+function mapEmailErrorForClient(error) {
+  const code = classifyEmailError(error);
+  if (code === "RESEND_NOT_CONFIGURED" || code === "DOMAIN_NOT_VERIFIED" || code === "NO_RECIPIENTS") {
     return "Envio por e-mail indispon\xEDvel no momento. Fale conosco pelo WhatsApp.";
   }
   return "N\xE3o foi poss\xEDvel enviar sua solicita\xE7\xE3o agora. Fale conosco pelo WhatsApp.";
 }
 async function postResendEmail(input) {
-  const apiKey = process.env.RESEND_API_KEY;
-  const from = process.env.REPORT_EMAIL_FROM;
+  const { apiKey, from } = getResendConfig();
   if (!apiKey || !from) {
     throw new Error("RESEND_NOT_CONFIGURED");
   }
@@ -14985,13 +15011,10 @@ async function sendReportEmail(params) {
 function isValidEmail3(value) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
 }
-function isResendConfigured2() {
-  return Boolean(process.env.RESEND_API_KEY?.trim() && process.env.REPORT_EMAIL_FROM?.trim());
-}
 function scheduleDiagnosticoEmails(waitUntil2, input) {
   const recipientEmail = String(input.answers.email ?? "").trim();
   const hasValidClientEmail = isValidEmail3(recipientEmail);
-  if (!isResendConfigured2()) {
+  if (!isResendConfigured()) {
     if (hasValidClientEmail) {
       console.warn("[diagnostico] E-mail n\xE3o enviado \u2014 configure RESEND_API_KEY e REPORT_EMAIL_FROM");
     }
@@ -15100,8 +15123,9 @@ async function handleSolicitarContato(req, res) {
     return res.status(200).json({ ok: true });
   } catch (error) {
     const internal = error instanceof Error ? error.message : "Erro ao solicitar contato";
-    console.error("[solicitar-contato]", internal);
-    return res.status(503).json({ error: mapEmailErrorForClient(error) });
+    const code = classifyEmailError(error);
+    console.error("[solicitar-contato]", code, internal);
+    return res.status(503).json({ error: mapEmailErrorForClient(error), code });
   }
 }
 

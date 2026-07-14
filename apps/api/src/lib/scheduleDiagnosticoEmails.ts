@@ -1,6 +1,6 @@
 import type { Answers } from '@dupply/types/diagnostico'
 
-import { sendLeadNotificationEmail, sendReportEmail } from './sendReportEmail'
+import { sendLeadNotificationEmail, sendReportEmail, isResendConfigured } from './sendReportEmail'
 
 interface ScheduleDiagnosticoEmailsInput {
   answers: Answers
@@ -13,10 +13,6 @@ interface ScheduleDiagnosticoEmailsInput {
 
 function isValidEmail(value: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())
-}
-
-function isResendConfigured(): boolean {
-  return Boolean(process.env.RESEND_API_KEY?.trim() && process.env.REPORT_EMAIL_FROM?.trim())
 }
 
 export function scheduleDiagnosticoEmails(

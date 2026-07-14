@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { mapEmailErrorForClient, sendContactRequestEmail } from './lib/sendReportEmail'
+import { classifyEmailError, mapEmailErrorForClient, sendContactRequestEmail } from './lib/sendReportEmail'
 
 function isValidEmail(value: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())
@@ -46,8 +46,9 @@ export async function handleSolicitarContato(req: VercelRequest, res: VercelResp
     return res.status(200).json({ ok: true })
   } catch (error) {
     const internal = error instanceof Error ? error.message : 'Erro ao solicitar contato'
-    console.error('[solicitar-contato]', internal)
-    return res.status(503).json({ error: mapEmailErrorForClient(error) })
+    const code = classifyEmailError(error)
+    console.error('[solicitar-contato]', code, internal)
+    return res.status(503).json({ error: mapEmailErrorForClient(error), code })
   }
 }
 
