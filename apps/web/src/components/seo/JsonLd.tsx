@@ -13,7 +13,7 @@ const structuredData = {
       description: SITE_DESCRIPTION,
       sameAs: [
         'https://www.instagram.com/dupplybr',
-        'https://www.instagram.com/ricardo.dupply',
+        'https://linkedin.com/company/dupplybr',
       ],
       contactPoint: {
         '@type': 'ContactPoint',
