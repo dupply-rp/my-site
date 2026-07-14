@@ -1090,6 +1090,7 @@ body.menu-open .theme-toggle-fab {
   padding: 32px 0;
   background: var(--footer-bg);
   border-top: 1px solid var(--line);
+  font-family: var(--font);
 }
 
 .footer-grid {
@@ -1099,7 +1100,10 @@ body.menu-open .theme-toggle-fab {
 
 .footer a {
   color: var(--text-muted);
+  font-family: var(--font);
   font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0.01em;
 }
 
 .footer a:hover {
@@ -1121,6 +1125,8 @@ body.menu-open .theme-toggle-fab {
 
 .social-icon {
   flex-shrink: 0;
+  width: 18px;
+  height: 18px;
   opacity: 0.85;
 }
 
