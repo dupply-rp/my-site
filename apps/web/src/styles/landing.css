@@ -549,7 +549,7 @@ body.menu-open .theme-toggle-fab {
   width: 100%;
   aspect-ratio: 4 / 5;
   object-fit: cover;
-  object-position: center 15%;
+  object-position: center 42%;
 }
 
 .brand-card {
@@ -832,7 +832,7 @@ body.menu-open .theme-toggle-fab {
   width: 100%;
   max-height: 480px;
   object-fit: cover;
-  object-position: center top;
+  object-position: center 42%;
 }
 
 .leader-meta {

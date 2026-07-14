@@ -1,5 +1,5 @@
 import { CompanyIcon } from '../CompanyIcon'
-import ricardoLima from '../../assets/ricardo-lima.jpg'
+import ricardoLima from '../../assets/ricardo-lima2.jpg'
 import { companies } from '../../constants/content'
 
 export function TrajectorySection() {
