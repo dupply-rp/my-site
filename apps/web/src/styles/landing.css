@@ -547,9 +547,9 @@ body.menu-open .theme-toggle-fab {
 
 .portrait-card img {
   width: 100%;
-  aspect-ratio: 3 / 4;
+  aspect-ratio: 4 / 5;
   object-fit: cover;
-  object-position: center 20%;
+  object-position: center 15%;
 }
 
 .brand-card {

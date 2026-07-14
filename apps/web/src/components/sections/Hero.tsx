@@ -40,12 +40,12 @@ export function Hero() {
         <aside className="hero-aside" aria-label="Posicionamento Dupply">
           <figure className="portrait-card">
             <img
-              src={ricardoHero}
+              src={ricardoLima}
               alt="Ricardo Lima, CEO da Dupply"
               loading="eager"
               decoding="async"
-              width={1024}
-              height={1536}
+              width={480}
+              height={600}
             />
           </figure>
           <div className="brand-card">
