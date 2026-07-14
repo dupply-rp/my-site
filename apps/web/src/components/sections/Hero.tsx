@@ -1,5 +1,5 @@
 import { heroAboutParagraphs, heroProofItems, heroPromises } from '../../constants/content'
-import ricardoLima from '../../assets/ricardo-lima2.jpg'
+import ricardoLima from '../../assets/ricardo-lima3.png'
 import { DIAGNOSTICO_PATH, WHATSAPP_URL } from '../../constants/links'
 import { Link } from 'react-router-dom'
 
