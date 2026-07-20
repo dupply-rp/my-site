@@ -112,17 +112,23 @@ Esperado: `{"ok":true}` (ou equivalente).
 
 ## Passo 3 — Proxy `/api` no site
 
-1. Na VPS (SSH) ou painel: descubra o nome do container da API:
+1. Confirme que `my-site-api` está **Running** e `/api/health` responde no domínio da API.
+2. Na VPS (SSH) ou painel: descubra o nome/UUID do container da API:
    ```sh
    docker ps | grep my-site-api
    ```
-2. No `my-site` → Nginx custom → substitua `<API_CONTAINER>` em `deploy/nginx-my-site.conf`
-3. **Redeploy** só do `my-site` (ou reload nginx se o Coolify permitir)
+3. No `my-site` → **Custom Nginx Configuration** → cole `deploy/nginx-my-site.conf`
+   com `<API_CONTAINER>` trocado (ex.: `n7ij7ywo1b7ldqb1lsma8hgn`).
+   - Use a versão com `resolver 127.0.0.11` + `set $api_upstream` — evita crash loop
+     se a API estiver off no boot do nginx.
+4. **Redeploy** só do `my-site` (ou Apply/reload nginx se o Coolify permitir).
+5. `my-site` e `my-site-api` com **Connect To Predefined Network** ativado.
 
 Teste pelo domínio/sslip do site:
 
 ```sh
-curl -s https://SEU-DOMINIO/api/health
+curl -s http://SEU-DOMINIO-DO-SITE/api/health
+# esperado: {"ok":true,"service":"dupply-diagnostico"}
 ```
 
 ---
@@ -153,4 +159,6 @@ App `my-site-api` → Scheduled Tasks:
 | NODE_ENV production no build | `NODE_ENV` em Buildtime no site | Remover ou Runtime only no `my-site` |
 | Node 18 EOL | Nixpacks default | `NIXPACKS_NODE_VERSION=22` |
 | API não conecta no banco | Rede Docker | Connect To Predefined Network na API |
-| 502 em `/api/*` | Nginx sem proxy ou nome errado | Passo 3 |
+| 502 em `/api/*` | Nginx sem proxy, nome errado ou API off | Passo 3 + health da API |
+| Nginx crash / Exited 10–11 | `proxy_pass` com hostname fixo no boot | Usar `resolver` + `$api_upstream` |
+| Traefik 404 na API | App parado ou domínio errado | Restart `my-site-api` |

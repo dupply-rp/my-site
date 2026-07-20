@@ -68,6 +68,9 @@ Alternativa do Mac: túnel SSH até o container do Postgres
    Trocar `<API_CONTAINER>` pelo nome do container da `my-site-api` (ver em `docker ps` ou no
    painel do app).
 
+Usar `resolver` + variável no `proxy_pass` (ver `deploy/nginx-my-site.conf`).
+`proxy_pass` fixo com hostname Docker derruba o nginx no boot se a API estiver off.
+
 ```nginx
 server {
     listen 80;
@@ -75,8 +78,12 @@ server {
     root /usr/share/nginx/html;
     index index.html;
 
+    resolver 127.0.0.11 valid=10s ipv6=off;
+
     location /api/ {
-        proxy_pass http://<API_CONTAINER>:3000;
+        set $api_upstream http://<API_CONTAINER>:3000;
+        proxy_pass $api_upstream;
+        proxy_http_version 1.1;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -93,6 +100,7 @@ server {
     }
 }
 ```
+
 
 3. **Connect To Predefined Network:** ativado também no `my-site` (senão o nginx não resolve o
    nome do container da API).
