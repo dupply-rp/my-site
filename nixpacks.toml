@@ -1,3 +1,9 @@
-# Usado pelo Nixpacks no Coolify (my-site e my-site-api)
+# Nixpacks (Coolify) — Node 22 e devDependencies no build
+# Evita falha "tsc: not found" quando NODE_ENV=production está em Buildtime.
+
 [variables]
 NIXPACKS_NODE_VERSION = "22"
+NPM_CONFIG_PRODUCTION = "false"
+
+[phases.install]
+cmds = ["pnpm install --frozen-lockfile --prod=false"]
