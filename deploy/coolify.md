@@ -39,7 +39,7 @@ Colar no Developer view (mesma limpeza de antes: sem `VERCEL_*` e `TURBO_*`):
 - `ENABLE_GOOGLE_SHEETS=false` (a menos que ainda use planilha)
 - Credenciais do Google Sheets, se `ENABLE_GOOGLE_SHEETS=true`
 
-Modelo completo: copie `deploy/env.producao.template` → `.env.producao`, preencha os valores e importe no Coolify (Developer view). Ver comentários no arquivo sobre o que vai em `my-site-api` vs `my-site` (só `VITE_*`).
+Modelo de envs: `deploy/env.coolify-api.env` (app `my-site-api`) e `deploy/env.coolify-site.env` (app `my-site`, só build). Copie para `.env.producao` na raiz se preferir editar localmente antes de importar.
 
 ## 2. Schema no banco novo (db:push)
 
