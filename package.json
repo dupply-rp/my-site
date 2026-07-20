@@ -13,7 +13,7 @@
     "build": "turbo build",
     "build:api": "pnpm --filter @dupply/types build && pnpm --filter @dupply/diagnostico build && node scripts/bundle-diagnostico-handler.mjs && node scripts/bundle-console-diagnosticos.mjs && node scripts/bundle-diagnostico-smoke.mjs",
     "build:vercel": "pnpm build:api && pnpm --filter @dupply/web build && pnpm --filter @dupply/console build",
-    "build:site": "pnpm --filter @dupply/web build && pnpm --filter @dupply/console build",
+    "build:site": "pnpm --filter @dupply/types build && pnpm --filter @dupply/diagnostico build && pnpm --filter @dupply/web build && pnpm --filter @dupply/console build",
     "build:server": "pnpm --filter @dupply/types build && pnpm --filter @dupply/diagnostico build && node scripts/bundle-api-server.mjs",
     "start:server": "node apps/api/dist/server.cjs",
     "lint": "turbo lint",
