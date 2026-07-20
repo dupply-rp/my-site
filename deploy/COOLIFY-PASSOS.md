@@ -19,7 +19,7 @@ Você importou envs da **API** no site estático. Limpe isso primeiro.
 | Is it a static site? | **Sim** |
 | Base Directory | `/` |
 | Install Command | `pnpm install` |
-| Build Command | `pnpm build:site` |
+| Build Command | `pnpm build:site` (compila types + diagnostico + web + console) |
 | Publish Directory | `/apps/web/dist` |
 | Port Exposes | **80** (não 3000) |
 
