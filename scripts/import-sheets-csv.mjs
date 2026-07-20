@@ -8,8 +8,8 @@
 
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
-import { neon } from '@neondatabase/serverless'
-import { drizzle } from 'drizzle-orm/neon-http'
+import { Pool } from 'pg'
+import { drizzle } from 'drizzle-orm/node-postgres'
 import { eq, sql } from 'drizzle-orm'
 import { boolean, integer, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 
@@ -113,18 +113,19 @@ async function main() {
     process.exit(1)
   }
 
-  const sqlClient = neon(process.env.DATABASE_URL)
-  const db = drizzle(sqlClient)
+  const pool = new Pool({ connectionString: process.env.DATABASE_URL })
+  const db = drizzle(pool)
 
-  const content = readFileSync(csvPath, 'utf8')
-  const rows = parseCsv(content)
-  const [, ...dataRows] = rows
+  try {
+    const content = readFileSync(csvPath, 'utf8')
+    const rows = parseCsv(content)
+    const [, ...dataRows] = rows
 
-  const tenantId = await getDefaultTenantId(db)
-  let imported = 0
-  let skipped = 0
+    const tenantId = await getDefaultTenantId(db)
+    let imported = 0
+    let skipped = 0
 
-  for (const columns of dataRows) {
+    for (const columns of dataRows) {
     const [
       createdAtRaw,
       empresa,
@@ -190,15 +191,18 @@ async function main() {
     }
 
     imported += 1
+    }
+
+    const [{ total }] = await db
+      .select({ total: sql`count(*)::int` })
+      .from(diagnosticos)
+      .where(eq(diagnosticos.tenantId, tenantId))
+
+    console.log(`Importação concluída: ${imported} importados, ${skipped} ignorados.`)
+    console.log(`Total no tenant: ${total}`)
+  } finally {
+    await pool.end()
   }
-
-  const [{ total }] = await db
-    .select({ total: sql`count(*)::int` })
-    .from(diagnosticos)
-    .where(eq(diagnosticos.tenantId, tenantId))
-
-  console.log(`Importação concluída: ${imported} importados, ${skipped} ignorados.`)
-  console.log(`Total no tenant: ${total}`)
 }
 
 main().catch((error) => {
