@@ -30,10 +30,12 @@
     "@vercel/functions": "^3.7.5",
     "@vercel/node": "^5.8.22",
     "drizzle-orm": "^0.44.5",
+    "express": "^5.1.0",
     "jose": "^6.1.0"
   },
   "devDependencies": {
     "@dupply/config": "workspace:*",
+    "@types/express": "^5.0.3",
     "@eslint/js": "^9.39.1",
     "eslint": "^9.39.1",
     "globals": "^16.5.0",

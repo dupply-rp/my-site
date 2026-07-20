@@ -13,11 +13,12 @@
     "studio": "dotenv -e ../../.env.local -- drizzle-kit studio"
   },
   "dependencies": {
-    "@neondatabase/serverless": "^1.0.1",
-    "drizzle-orm": "^0.44.5"
+    "drizzle-orm": "^0.44.5",
+    "pg": "^8.16.3"
   },
   "devDependencies": {
     "@dupply/config": "workspace:*",
+    "@types/pg": "^8.15.5",
     "dotenv-cli": "^10.0.0",
     "drizzle-kit": "^0.31.4",
     "typescript": "~5.9.3"
