@@ -10,6 +10,7 @@
   "scripts": {
     "generate": "drizzle-kit generate",
     "push": "dotenv -e ../../.env.local -- drizzle-kit push",
+    "push:env": "drizzle-kit push",
     "studio": "dotenv -e ../../.env.local -- drizzle-kit studio"
   },
   "dependencies": {

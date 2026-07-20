@@ -34,9 +34,12 @@ Colar no Developer view (mesma limpeza de antes: sem `VERCEL_*` e `TURBO_*`):
 
 - `DATABASE_URL` = **Postgres URL (internal)** do `db-diagnostico` (host é o nome do container, ex.: `postgres://postgres:senha@<container>:5432/postgres`)
 - `ANTHROPIC_API_KEY`, `RESEND_API_KEY`, `REPORT_EMAIL_FROM`
-- `TURNSTILE_SECRET_KEY`, `CONSOLE_SECRET`, `CRON_SECRET`, `DEFAULT_TENANT_SLUG`
-- `REDIS_URL` / `UPSTASH_REDIS_REST_*` (rate limit / fila de retry)
-- Credenciais do Google Sheets, se usadas em produção
+- `TURNSTILE_SECRET_KEY`, `CONSOLE_SECRET`, `CRON_SECRET`, `DEFAULT_TENANT_SLUG`, `NODE_ENV=production`, `PORT=3000`
+- `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` (rate limit / fila de retry — **não** use `REDIS_URL`)
+- `ENABLE_GOOGLE_SHEETS=false` (a menos que ainda use planilha)
+- Credenciais do Google Sheets, se `ENABLE_GOOGLE_SHEETS=true`
+
+Modelo completo: copie `deploy/env.producao.template` → `.env.producao`, preencha os valores e importe no Coolify (Developer view). Ver comentários no arquivo sobre o que vai em `my-site-api` vs `my-site` (só `VITE_*`).
 
 ## 2. Schema no banco novo (db:push)
 
@@ -44,8 +47,10 @@ O banco não é acessível publicamente. Caminho mais simples — Terminal do Co
 container da app `my-site-api` (a `DATABASE_URL` já está no ambiente):
 
 ```sh
-pnpm --filter @dupply/db exec drizzle-kit push
+pnpm db:push:env
 ```
+
+(ou `pnpm --filter @dupply/db exec drizzle-kit push` — usa `DATABASE_URL` já presente no ambiente do container)
 
 Alternativa do Mac: túnel SSH até o container do Postgres
 (`ssh -L 15432:<ip-do-container>:5432 root@179.197.224.144`, descobrindo o IP com
@@ -123,6 +128,6 @@ app `my-site-api` → **Scheduled Tasks** → novo task:
 
 ## Pendências anotadas
 
-- Rotacionar `REDIS_URL` (Upstash) e `RESEND_API_KEY` (Resend) — apareceram em screenshots
+- Rotacionar `UPSTASH_REDIS_REST_TOKEN` e `RESEND_API_KEY` — apareceram em screenshots
   durante a migração.
 - Migrar os demais produtos (dash, imob, atendimento) no mesmo padrão.

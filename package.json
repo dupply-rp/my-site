@@ -21,6 +21,7 @@
     "test:diagnostico:prod": "node scripts/smoke-diagnostico.mjs",
     "test:diagnostico:sheets": "SMOKE_MODE=sheets node scripts/smoke-diagnostico.mjs",
     "db:push": "pnpm --filter @dupply/db push",
+    "db:push:env": "pnpm --filter @dupply/db push:env",
     "db:studio": "pnpm --filter @dupply/db studio",
     "db:import-sheets": "dotenv -e .env.local -- node scripts/import-sheets-csv.mjs"
   },
