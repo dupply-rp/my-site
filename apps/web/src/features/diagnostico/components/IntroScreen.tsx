@@ -10,9 +10,17 @@ function ArrowIcon() {
 
 interface IntroScreenProps {
   onStart: () => void
+  onResume?: () => void
+  hasDraft?: boolean
+  draftProgressPct?: number
 }
 
-export function IntroScreen({ onStart }: IntroScreenProps) {
+export function IntroScreen({
+  onStart,
+  onResume,
+  hasDraft = false,
+  draftProgressPct = 0,
+}: IntroScreenProps) {
   return (
     <div className="diag-intro">
       <div className="diag-logo-mark">
@@ -32,23 +40,47 @@ export function IntroScreen({ onStart }: IntroScreenProps) {
 
       <div className="diag-hero-meta">
         <div className="diag-meta-item">
-          <span className="diag-meta-icon" aria-hidden>⏱</span>
+          <span className="diag-meta-icon" aria-hidden>
+            ⏱
+          </span>
           <span>Menos de 5 minutos</span>
         </div>
         <div className="diag-meta-item">
-          <span className="diag-meta-icon" aria-hidden>📊</span>
+          <span className="diag-meta-icon" aria-hidden>
+            📊
+          </span>
           <span>Relatório gerado com IA</span>
         </div>
         <div className="diag-meta-item">
-          <span className="diag-meta-icon" aria-hidden>🎯</span>
+          <span className="diag-meta-icon" aria-hidden>
+            🎯
+          </span>
           <span>100% personalizado</span>
         </div>
       </div>
 
-      <button type="button" className="btn btn-primary diag-btn-lg" onClick={onStart}>
-        Iniciar Diagnóstico
-        <ArrowIcon />
-      </button>
+      {hasDraft && onResume ? (
+        <div className="diag-draft-resume" role="status">
+          <p>
+            Encontramos um diagnóstico em andamento (~{draftProgressPct}% concluído). Você pode continuar de onde
+            parou.
+          </p>
+          <div className="diag-draft-actions">
+            <button type="button" className="btn btn-primary diag-btn-lg" onClick={onResume}>
+              Continuar diagnóstico
+              <ArrowIcon />
+            </button>
+            <button type="button" className="btn btn-secondary" onClick={onStart}>
+              Começar do zero
+            </button>
+          </div>
+        </div>
+      ) : (
+        <button type="button" className="btn btn-primary diag-btn-lg" onClick={onStart}>
+          Iniciar Diagnóstico
+          <ArrowIcon />
+        </button>
+      )}
     </div>
   )
 }

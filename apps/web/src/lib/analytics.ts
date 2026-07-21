@@ -1,4 +1,5 @@
 import { GA_MEASUREMENT_ID, IS_GA_ENABLED } from './analyticsConfig'
+import { isAnalyticsAllowed } from './cookieConsent'
 
 declare global {
   interface Window {
@@ -12,7 +13,7 @@ declare global {
 let initialized = false
 
 export function initAnalytics(): void {
-  if (!IS_GA_ENABLED || initialized || typeof window === 'undefined') return
+  if (!IS_GA_ENABLED || !isAnalyticsAllowed() || initialized || typeof window === 'undefined') return
 
   initialized = true
 
@@ -36,7 +37,7 @@ export function initAnalytics(): void {
 }
 
 export function trackPageView(path: string, title?: string): void {
-  if (!IS_GA_ENABLED || !window.gtag) return
+  if (!IS_GA_ENABLED || !isAnalyticsAllowed() || !window.gtag) return
 
   window.gtag('event', 'page_view', {
     page_path: path,
@@ -50,7 +51,7 @@ export function trackEvent(
   name: string,
   params?: Record<string, string | number | boolean | undefined>,
 ): void {
-  if (!IS_GA_ENABLED || !window.gtag) return
+  if (!IS_GA_ENABLED || !isAnalyticsAllowed() || !window.gtag) return
 
   const payload = Object.fromEntries(
     Object.entries(params ?? {}).filter((entry): entry is [string, string | number | boolean] => {

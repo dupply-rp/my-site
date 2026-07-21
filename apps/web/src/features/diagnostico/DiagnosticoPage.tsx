@@ -17,10 +17,13 @@ export function DiagnosticoPage() {
     currentQuestion,
     totalQuestions,
     progressPct,
+    sectionMeta,
     answers,
     fieldErrors,
     securityError,
     report,
+    hasDraft,
+    draftProgressPct,
     startQuiz,
     restartQuiz,
     setAnswer,
@@ -40,7 +43,14 @@ export function DiagnosticoPage() {
       />
       <DiagnosticoTopbar showBack={screen !== 'quiz'} />
 
-      {screen === 'intro' && <IntroScreen onStart={startQuiz} />}
+      {screen === 'intro' && (
+        <IntroScreen
+          hasDraft={hasDraft}
+          draftProgressPct={draftProgressPct}
+          onStart={() => startQuiz('fresh')}
+          onResume={() => startQuiz('resume')}
+        />
+      )}
 
       {screen === 'quiz' && (
         <QuizScreen
@@ -48,6 +58,9 @@ export function DiagnosticoPage() {
           currentIndex={currentIndex}
           totalQuestions={totalQuestions}
           progressPct={progressPct}
+          sectionLabel={sectionMeta.sectionLabel}
+          sectionIndex={sectionMeta.sectionIndex}
+          sectionCount={sectionMeta.sectionCount}
           answers={answers}
           fieldErrors={fieldErrors}
           securityError={securityError}

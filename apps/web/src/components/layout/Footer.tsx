@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { DIAGNOSTICO_PATH, WHATSAPP_URL } from '../../constants/links'
+import { DIAGNOSTICO_PATH, PRIVACIDADE_PATH, WHATSAPP_URL } from '../../constants/links'
 import { trackCtaClick } from '../../lib/analytics'
 
 const SOCIAL_ICON_SIZE = 20
@@ -54,7 +54,8 @@ export function Footer() {
           >
             Diagnóstico gratuito
           </Link>
-          <a href="#faq">FAQ</a>
+          <a href="/#faq">FAQ</a>
+          <Link to={PRIVACIDADE_PATH}>Privacidade</Link>
           <a
             href={WHATSAPP_URL}
             target="_blank"

@@ -4,3 +4,7 @@ export const WHATSAPP_URL =
 
 export const DIAGNOSTICO_PATH = '/diagnostico'
 export const DIAGNOSTICO_TEST_PATH = '/TC_teste'
+export const PRIVACIDADE_PATH = '/privacidade'
+
+/** Contato para solicitações LGPD / privacidade. */
+export const PRIVACY_EMAIL = 'ricardo.lima@dupply.com.br'

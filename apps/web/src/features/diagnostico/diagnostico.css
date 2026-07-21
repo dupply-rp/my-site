@@ -161,6 +161,36 @@
   margin-bottom: 40px;
 }
 
+.diag-draft-resume {
+  width: min(100%, 420px);
+  margin: 0 auto;
+  padding: 20px 22px;
+  border: 1px solid rgba(94, 98, 197, 0.18);
+  border-radius: var(--radius);
+  background: var(--diag-accent-soft);
+  text-align: center;
+}
+
+.diag-draft-resume p {
+  margin: 0 0 16px;
+  color: var(--diag-ink);
+  font-size: 15px;
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+.diag-draft-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+}
+
+.diag-draft-actions .btn {
+  width: 100%;
+  justify-content: center;
+}
+
 .diag-meta-item {
   display: flex;
   align-items: center;

@@ -1,13 +1,23 @@
-import { useCallback, useState } from 'react'
-import { buildFallbackReport, allQuestions, TOTAL_QUESTIONS, calcPillars, calcScore, getScoreInfo } from '@dupply/diagnostico'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import {
+  buildFallbackReport,
+  allQuestions,
+  TOTAL_QUESTIONS,
+  calcPillars,
+  calcScore,
+  getScoreInfo,
+} from '@dupply/diagnostico'
 import { fetchDiagnosticoFromApi } from '../fetchDiagnosticoApi'
 import { IS_TURNSTILE_ENABLED } from '../turnstileConfig'
 import type { Answers, DiagnosticoReport, DiagnosticoScreen } from '../types'
 import { trackConversion, trackEvent } from '../../../lib/analytics'
+import { clearDiagnosticoDraft, loadDiagnosticoDraft, saveDiagnosticoDraft } from '../draftStorage'
+import { getQuestionSectionMeta } from '../sectionMeta'
 import { validateContactFields } from '../validateContact'
 import { validateTextareaField } from '../validateTextarea'
 
 export function useDiagnostico() {
+  const initialDraft = useMemo(() => loadDiagnosticoDraft(), [])
   const [screen, setScreen] = useState<DiagnosticoScreen>('intro')
   const [currentIndex, setCurrentIndex] = useState(0)
   const [answers, setAnswers] = useState<Answers>({})
@@ -15,9 +25,33 @@ export function useDiagnostico() {
   const [securityError, setSecurityError] = useState<string | null>(null)
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
   const [report, setReport] = useState<DiagnosticoReport | null>(null)
+  const [hasDraft, setHasDraft] = useState(() => Boolean(initialDraft))
 
   const currentQuestion = allQuestions[currentIndex]
   const progressPct = Math.round((currentIndex / TOTAL_QUESTIONS) * 100)
+  const sectionMeta = getQuestionSectionMeta(currentIndex)
+  const draftProgressPct = initialDraft
+    ? Math.round((initialDraft.currentIndex / TOTAL_QUESTIONS) * 100)
+    : 0
+
+  useEffect(() => {
+    if (screen !== 'quiz') return
+    saveDiagnosticoDraft({ currentIndex, answers })
+    setHasDraft(true)
+  }, [screen, currentIndex, answers])
+
+  useEffect(() => {
+    if (screen !== 'quiz') return
+    const meta = getQuestionSectionMeta(currentIndex)
+    trackEvent('diagnostico_step_view', {
+      step_index: currentIndex + 1,
+      step_id: meta.questionId,
+      section: meta.sectionLabel,
+      section_index: meta.sectionIndex,
+      progress_pct: Math.round((currentIndex / TOTAL_QUESTIONS) * 100),
+      test_mode: false,
+    })
+  }, [screen, currentIndex])
 
   const generateReport = useCallback(async (finalAnswers: Answers, token?: string | null) => {
     setScreen('loading')
@@ -35,6 +69,8 @@ export function useDiagnostico() {
       }
     } else {
       const { data } = apiResult
+      clearDiagnosticoDraft()
+      setHasDraft(false)
       trackConversion('diagnostico_complete', {
         score: data.score,
         ai_generated: Boolean(data.aiGenerated),
@@ -64,6 +100,8 @@ export function useDiagnostico() {
     const pillars = calcPillars(finalAnswers)
     const reportHtml = buildFallbackReport(finalAnswers, scoreInfo)
 
+    clearDiagnosticoDraft()
+    setHasDraft(false)
     trackConversion('diagnostico_complete', {
       score,
       ai_generated: false,
@@ -80,18 +118,38 @@ export function useDiagnostico() {
     setScreen('report')
   }, [])
 
-  const startQuiz = useCallback(() => {
-    trackEvent('diagnostico_start', { test_mode: false })
-    setCurrentIndex(0)
-    setAnswers({})
+  const startQuiz = useCallback((mode: 'fresh' | 'resume' = 'fresh') => {
     setFieldErrors({})
     setSecurityError(null)
     setTurnstileToken(null)
     setReport(null)
+
+    if (mode === 'resume') {
+      const draft = loadDiagnosticoDraft()
+      if (draft) {
+        trackEvent('diagnostico_resume', {
+          step_index: draft.currentIndex + 1,
+          progress_pct: Math.round((draft.currentIndex / TOTAL_QUESTIONS) * 100),
+          test_mode: false,
+        })
+        setCurrentIndex(Math.min(Math.max(draft.currentIndex, 0), TOTAL_QUESTIONS - 1))
+        setAnswers(draft.answers)
+        setScreen('quiz')
+        return
+      }
+    }
+
+    clearDiagnosticoDraft()
+    setHasDraft(false)
+    trackEvent('diagnostico_start', { test_mode: false, resumed: false })
+    setCurrentIndex(0)
+    setAnswers({})
     setScreen('quiz')
   }, [])
 
   const restartQuiz = useCallback(() => {
+    clearDiagnosticoDraft()
+    setHasDraft(false)
     setScreen('intro')
     setCurrentIndex(0)
     setAnswers({})
@@ -123,6 +181,7 @@ export function useDiagnostico() {
 
   const goNext = useCallback(() => {
     const question = allQuestions[currentIndex]
+    const meta = getQuestionSectionMeta(currentIndex)
 
     if (question.type === 'contact') {
       const errors = validateContactFields(question.fields, answers)
@@ -144,6 +203,15 @@ export function useDiagnostico() {
       setFieldErrors({ [question.id]: 'Selecione uma opção para continuar' })
       return
     }
+
+    trackEvent('diagnostico_step_complete', {
+      step_index: currentIndex + 1,
+      step_id: meta.questionId,
+      section: meta.sectionLabel,
+      section_index: meta.sectionIndex,
+      progress_pct: Math.round(((currentIndex + 1) / TOTAL_QUESTIONS) * 100),
+      test_mode: false,
+    })
 
     if (currentIndex < TOTAL_QUESTIONS - 1) {
       setSecurityError(null)
@@ -183,11 +251,14 @@ export function useDiagnostico() {
     currentQuestion,
     totalQuestions: TOTAL_QUESTIONS,
     progressPct,
+    sectionMeta,
     answers,
     fieldErrors,
     securityError,
     turnstileToken,
     report,
+    hasDraft,
+    draftProgressPct,
     startQuiz,
     restartQuiz,
     setAnswer,

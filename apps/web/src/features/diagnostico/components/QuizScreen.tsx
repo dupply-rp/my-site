@@ -10,6 +10,9 @@ interface QuizScreenProps {
   currentIndex: number
   totalQuestions: number
   progressPct: number
+  sectionLabel: string
+  sectionIndex: number
+  sectionCount: number
   answers: Answers
   fieldErrors: Record<string, string>
   securityError?: string | null
@@ -34,6 +37,9 @@ export function QuizScreen({
   currentIndex,
   totalQuestions,
   progressPct,
+  sectionLabel,
+  sectionIndex,
+  sectionCount,
   answers,
   fieldErrors,
   securityError,
@@ -232,9 +238,11 @@ export function QuizScreen({
           <div className="diag-progress-wrap">
             <div className="diag-progress-label">
               <span>
-                Pergunta {currentIndex + 1} de {totalQuestions}
+                Etapa {sectionIndex}/{sectionCount} · {sectionLabel}
               </span>
-              <span>{progressPct}%</span>
+              <span>
+                {currentIndex + 1}/{totalQuestions} · {progressPct}%
+              </span>
             </div>
             <div className="diag-progress-bar-bg">
               <div className="diag-progress-bar-fill" style={{ width: `${progressPct}%` }} />
@@ -245,7 +253,9 @@ export function QuizScreen({
 
       <div className="diag-quiz-body">
         <div className="diag-question-container" key={question.id}>
-          <span className="diag-section-badge">{question.sectionLabel}</span>
+          <span className="diag-section-badge">
+            Etapa {sectionIndex} de {sectionCount} · {question.sectionLabel}
+          </span>
           <p className="diag-question-number">
             Pergunta {currentIndex + 1} de {totalQuestions}
           </p>

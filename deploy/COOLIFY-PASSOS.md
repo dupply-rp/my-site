@@ -186,3 +186,14 @@ Você ainda precisa:
 | `nslookup <uuid>` → SERVFAIL | UUID de **app** não é DNS estável | Usar Custom Network Aliases (`my-site-api`) |
 | Nginx Exited 10/11 | `proxy_pass` com hostname fixo sem variável | Usar `resolver` + `set $api_upstream` |
 | Let's Encrypt falha | DNS ainda na Vercel / proxy Cloudflare laranja | Aguardar NS + nuvem cinza no apex |
+
+## Auto-deploy (GitHub → Coolify)
+
+Nos apps `my-site` e `my-site-api` (API Coolify: `is_auto_deploy_enabled=true`):
+
+- Push na branch `main` dispara deploy automático.
+- **Watch paths** (para não rebuildar o outro app à toa):
+  - `my-site`: `apps/web/**`, `apps/console/**`, `packages/**`, `pnpm-lock.yaml`, `package.json`
+  - `my-site-api`: `apps/api/**`, `packages/**`, `pnpm-lock.yaml`, `package.json`, `scripts/**`
+
+Se o push não gerar deploy: Coolify → Sources → GitHub App (permissões no org `dupply-rp`) e Deployments do app.

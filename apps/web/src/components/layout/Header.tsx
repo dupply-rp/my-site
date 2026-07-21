@@ -5,10 +5,10 @@ import { DIAGNOSTICO_PATH, WHATSAPP_URL } from '../../constants/links'
 import { trackCtaClick } from '../../lib/analytics'
 
 const navItems = [
-  { href: '#gargalos', label: 'Soluções' },
-  { href: '#atuacao', label: 'Processo' },
-  { href: '#beneficios', label: 'Resultados' },
-  { href: '#trajetoria', label: 'Sobre' },
+  { href: '/#gargalos', label: 'Soluções' },
+  { href: '/#atuacao', label: 'Processo' },
+  { href: '/#beneficios', label: 'Resultados' },
+  { href: '/#trajetoria', label: 'Sobre' },
   { to: DIAGNOSTICO_PATH, label: 'Diagnóstico', route: true as const },
   { href: WHATSAPP_URL, label: 'Contato', external: true as const },
 ]
@@ -26,9 +26,9 @@ export function Header() {
   return (
     <header className="topbar">
       <nav className="nav wrap" aria-label="Navegação principal">
-        <a className="brand" href="#top" aria-label="Dupply — página inicial">
+        <Link className="brand" to="/" aria-label="Dupply — página inicial">
           <BrandLogo />
-        </a>
+        </Link>
 
         <div className="nav-links nav-links-desktop">
           {navItems.map((item) =>
