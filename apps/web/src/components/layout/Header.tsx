@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { BrandLogo } from '../BrandLogo'
 import { DIAGNOSTICO_PATH, WHATSAPP_URL } from '../../constants/links'
+import { trackCtaClick } from '../../lib/analytics'
 
 const navItems = [
   { href: '#gargalos', label: 'Soluções' },
@@ -32,11 +33,28 @@ export function Header() {
         <div className="nav-links nav-links-desktop">
           {navItems.map((item) =>
             'external' in item ? (
-              <a key={item.label} href={item.href} target="_blank" rel="noopener noreferrer">
+              <a
+                key={item.label}
+                href={item.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() =>
+                  trackCtaClick('whatsapp', { location: 'header_nav', destination: 'whatsapp' })
+                }
+              >
                 {item.label}
               </a>
             ) : 'route' in item ? (
-              <Link key={item.label} to={item.to!}>
+              <Link
+                key={item.label}
+                to={item.to!}
+                onClick={() =>
+                  trackCtaClick('diagnostico_nav', {
+                    location: 'header_nav',
+                    destination: DIAGNOSTICO_PATH,
+                  })
+                }
+              >
                 {item.label}
               </Link>
             ) : (
@@ -45,7 +63,16 @@ export function Header() {
               </a>
             ),
           )}
-          <Link className="btn btn-primary btn-sm" to={DIAGNOSTICO_PATH}>
+          <Link
+            className="btn btn-primary btn-sm"
+            to={DIAGNOSTICO_PATH}
+            onClick={() =>
+              trackCtaClick('diagnostico_gratuito', {
+                location: 'header',
+                destination: DIAGNOSTICO_PATH,
+              })
+            }
+          >
             Diagnóstico gratuito
           </Link>
         </div>
@@ -99,7 +126,17 @@ export function Header() {
               </a>
             ),
           )}
-          <Link className="btn btn-primary" to={DIAGNOSTICO_PATH} onClick={closeMenu}>
+          <Link
+            className="btn btn-primary"
+            to={DIAGNOSTICO_PATH}
+            onClick={() => {
+              trackCtaClick('diagnostico_gratuito', {
+                location: 'header_mobile',
+                destination: DIAGNOSTICO_PATH,
+              })
+              closeMenu()
+            }}
+          >
             Diagnóstico gratuito
           </Link>
         </div>

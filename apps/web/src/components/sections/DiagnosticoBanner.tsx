@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { DIAGNOSTICO_PATH } from '../../constants/links'
+import { trackCtaClick } from '../../lib/analytics'
 
 export function DiagnosticoBanner() {
   return (
@@ -19,7 +20,16 @@ export function DiagnosticoBanner() {
               <span role="listitem">🎯 100% gratuito</span>
             </div>
           </div>
-          <Link className="btn btn-primary" to={DIAGNOSTICO_PATH}>
+          <Link
+            className="btn btn-primary"
+            to={DIAGNOSTICO_PATH}
+            onClick={() =>
+              trackCtaClick('diagnostico_gratuito', {
+                location: 'banner',
+                destination: DIAGNOSTICO_PATH,
+              })
+            }
+          >
             Fazer diagnóstico gratuito
           </Link>
         </div>

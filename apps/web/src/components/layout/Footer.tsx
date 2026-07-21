@@ -1,3 +1,7 @@
+import { Link } from 'react-router-dom'
+import { DIAGNOSTICO_PATH, WHATSAPP_URL } from '../../constants/links'
+import { trackCtaClick } from '../../lib/analytics'
+
 const SOCIAL_ICON_SIZE = 20
 
 function InstagramIcon() {
@@ -38,6 +42,30 @@ export function Footer() {
   return (
     <footer className="footer">
       <div className="wrap footer-grid">
+        <nav className="footer-links" aria-label="Links do rodapé">
+          <Link
+            to={DIAGNOSTICO_PATH}
+            onClick={() =>
+              trackCtaClick('diagnostico_gratuito', {
+                location: 'footer',
+                destination: DIAGNOSTICO_PATH,
+              })
+            }
+          >
+            Diagnóstico gratuito
+          </Link>
+          <a href="#faq">FAQ</a>
+          <a
+            href={WHATSAPP_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() =>
+              trackCtaClick('whatsapp', { location: 'footer', destination: 'whatsapp' })
+            }
+          >
+            WhatsApp
+          </a>
+        </nav>
         <div className="socials">
           <a
             href="https://www.instagram.com/dupplybr"

@@ -1,6 +1,7 @@
 import { heroAboutParagraphs, heroProofItems, heroPromises } from '../../constants/content'
 import ricardoLima from '../../assets/ricardo-lima3.png'
 import { DIAGNOSTICO_PATH, WHATSAPP_URL } from '../../constants/links'
+import { trackCtaClick } from '../../lib/analytics'
 import { Link } from 'react-router-dom'
 
 export function Hero() {
@@ -28,10 +29,27 @@ export function Hero() {
           ))}
 
           <div className="hero-actions">
-            <Link className="btn btn-primary" to={DIAGNOSTICO_PATH}>
+            <Link
+              className="btn btn-primary"
+              to={DIAGNOSTICO_PATH}
+              onClick={() =>
+                trackCtaClick('diagnostico_gratuito', {
+                  location: 'hero',
+                  destination: DIAGNOSTICO_PATH,
+                })
+              }
+            >
               Fazer diagnóstico gratuito
             </Link>
-            <a className="btn btn-secondary" href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
+            <a
+              className="btn btn-secondary"
+              href={WHATSAPP_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() =>
+                trackCtaClick('whatsapp', { location: 'hero', destination: 'whatsapp' })
+              }
+            >
               Falar com a Dupply
             </a>
           </div>

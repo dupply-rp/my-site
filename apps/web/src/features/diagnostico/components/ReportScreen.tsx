@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { BrandLogo } from '../../../components/BrandLogo'
 import { WHATSAPP_PHONE, WHATSAPP_URL } from '../../../constants/links'
-import { trackEvent } from '../../../lib/analytics'
+import { trackConversion, trackCtaClick } from '../../../lib/analytics'
 import { solicitarContatoDupply } from '../solicitarContato'
 import type { Answers, DiagnosticoReport } from '../types'
 
@@ -71,8 +71,12 @@ export function ReportScreen({ answers, report, onRestart }: ReportScreenProps) 
         score,
         scoreLabel: scoreInfo.label,
       })
-      trackEvent('diagnostico_contact_request', {
+      trackConversion('diagnostico_contact_request', {
         test_mode: Boolean(testMode),
+        score,
+      })
+      trackConversion('generate_lead', {
+        method: 'solicitar_contato',
         score,
       })
       setContactStatus('success')
@@ -203,7 +207,18 @@ export function ReportScreen({ answers, report, onRestart }: ReportScreenProps) 
           </p>
 
           <div className="diag-cta-primary-row">
-            <a className="btn btn-primary diag-cta-btn-main" href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
+            <a
+              className="btn btn-primary diag-cta-btn-main"
+              href={WHATSAPP_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() =>
+                trackCtaClick('whatsapp', {
+                  location: 'diagnostico_report',
+                  destination: 'whatsapp',
+                })
+              }
+            >
               Falar com a Dupply no WhatsApp
             </a>
             {canRequestContact ? (

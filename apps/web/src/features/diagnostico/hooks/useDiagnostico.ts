@@ -3,7 +3,7 @@ import { buildFallbackReport, allQuestions, TOTAL_QUESTIONS, calcPillars, calcSc
 import { fetchDiagnosticoFromApi } from '../fetchDiagnosticoApi'
 import { IS_TURNSTILE_ENABLED } from '../turnstileConfig'
 import type { Answers, DiagnosticoReport, DiagnosticoScreen } from '../types'
-import { trackEvent } from '../../../lib/analytics'
+import { trackConversion, trackEvent } from '../../../lib/analytics'
 import { validateContactFields } from '../validateContact'
 import { validateTextareaField } from '../validateTextarea'
 
@@ -35,11 +35,15 @@ export function useDiagnostico() {
       }
     } else {
       const { data } = apiResult
-      trackEvent('diagnostico_complete', {
+      trackConversion('diagnostico_complete', {
         score: data.score,
         ai_generated: Boolean(data.aiGenerated),
         email_dispatched: Boolean(data.emailDispatched),
         test_mode: false,
+      })
+      trackConversion('generate_lead', {
+        method: 'diagnostico',
+        score: data.score,
       })
       setReport({
         score: data.score,
@@ -60,12 +64,16 @@ export function useDiagnostico() {
     const pillars = calcPillars(finalAnswers)
     const reportHtml = buildFallbackReport(finalAnswers, scoreInfo)
 
-    trackEvent('diagnostico_complete', {
+    trackConversion('diagnostico_complete', {
       score,
       ai_generated: false,
       email_dispatched: false,
       test_mode: false,
       fallback: true,
+    })
+    trackConversion('generate_lead', {
+      method: 'diagnostico_fallback',
+      score,
     })
     setReport({ score, scoreInfo, pillars, reportHtml, aiGenerated: false })
     setAnswers(finalAnswers)
