@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { BrandLogo } from '../../../components/BrandLogo'
 import { WHATSAPP_PHONE, WHATSAPP_URL } from '../../../constants/links'
+import { trackEvent } from '../../../lib/analytics'
 import { solicitarContatoDupply } from '../solicitarContato'
 import type { Answers, DiagnosticoReport } from '../types'
 
@@ -69,6 +70,10 @@ export function ReportScreen({ answers, report, onRestart }: ReportScreenProps) 
         telefone: contactPhone || undefined,
         score,
         scoreLabel: scoreInfo.label,
+      })
+      trackEvent('diagnostico_contact_request', {
+        test_mode: Boolean(testMode),
+        score,
       })
       setContactStatus('success')
     } catch (error) {

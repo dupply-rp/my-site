@@ -27,6 +27,7 @@ Criar novo Resource no mesmo projeto/ambiente (production):
 - **Start Command:** `pnpm start:server`
 - **Port:** `3000`
 - **Advanced → Connect To Predefined Network:** ativado (necessário para o nginx do site e o Postgres se enxergarem)
+- **Advanced → Custom Network Aliases:** `my-site-api` (hostname DNS estável; apps **não** resolvem pelo UUID — só databases)
 
 ### Variáveis de ambiente da API
 
@@ -63,10 +64,10 @@ Alternativa do Mac: túnel SSH até o container do Postgres
 
 1. **Build Command:** trocar para `pnpm build:site`
    (builda `apps/web` **e** `apps/console` — o console é copiado para `apps/web/dist/console`).
-2. **Nginx (custom config):** substituir pela config abaixo — adiciona o proxy da API e o
-   fallback do console (o SPA fallback padrão mandaria `/console/*` para o `index.html` errado).
-   Trocar `<API_CONTAINER>` pelo nome do container da `my-site-api` (ver em `docker ps` ou no
-   painel do app).
+2. **Nginx (custom config):** usar `deploy/nginx-my-site.conf` — proxy com
+   `resolver 127.0.0.11` + variável `$api_upstream` apontando para o alias
+   `my-site-api:3000` (não o UUID do container). Hostname literal em `proxy_pass`
+   sem variável derruba o nginx no boot (crash loop).
 
 ```nginx
 server {
@@ -75,8 +76,11 @@ server {
     root /usr/share/nginx/html;
     index index.html;
 
+    resolver 127.0.0.11 valid=10s ipv6=off;
+
     location /api/ {
-        proxy_pass http://<API_CONTAINER>:3000;
+        set $api_upstream http://my-site-api:3000;
+        proxy_pass $api_upstream;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -95,7 +99,7 @@ server {
 ```
 
 3. **Connect To Predefined Network:** ativado também no `my-site` (senão o nginx não resolve o
-   nome do container da API).
+   alias `my-site-api` na rede `coolify`).
 
 Os redirects de host da Vercel (`projetos.`, `drive.`, `webmail.` → Zoho) saem do `vercel.json`
 e passam a ser regras de DNS/redirect no Cloudflare quando o DNS migrar.
@@ -115,21 +119,26 @@ app `my-site-api` → **Scheduled Tasks** → novo task:
 - [ ] `/console` abre e loga com `CONSOLE_SECRET`
 - [ ] Backup do Postgres agendado (aba Backups do `db-diagnostico` — local, depois S3)
 
-## 6. Bloco DNS (antes de cancelar a Vercel — e-mail depende disso)
+## 6. Bloco DNS + HTTPS (Cloudflare → Coolify)
 
-1. Inventário completo no painel da Vercel (Domains → dupply.com.br): todos os registros A,
-   CNAME, MX, TXT (SPF/DKIM), subdomínios (dash, imob, email, projetos, drive, webmail…).
-2. Criar conta gratuita no Cloudflare → adicionar dupply.com.br → replicar todos os registros
-   (TTL baixo, 60–300s). E-mail é Zoho: conferir MX + TXT com atenção.
-3. Registro.br: trocar nameservers de `ns1/ns2.vercel-dns.com` para os do Cloudflare.
-4. Apontar `dupply.com.br` (e `www`) para `179.197.224.144`; configurar o FQDN no app
-   `my-site` do Coolify (Traefik emite Let's Encrypt automaticamente).
-5. Subdomínio para a API não é necessário (proxy same-origin), mas `api.dupply.com.br`
-   pode ser criado depois se outro produto precisar.
-6. Só depois de tudo validado: cancelar a assinatura da Vercel.
+Guia completo e inventário: [`deploy/DNS-CLOUDFLARE.md`](DNS-CLOUDFLARE.md).
+
+### Resumo da ordem
+
+1. Cloudflare → zona `dupply.com.br` com registros do inventário (TTL baixo).
+2. **Agora no Coolify VPS:** A `@`, `www`, `vps` → `179.197.224.144` (nuvem **cinza** até Let's Encrypt).
+3. **Produtos ainda na Vercel:** CNAME `dash`/`imob`/`email`/… → `cname.vercel-dns.com`.
+4. **Redirects Zoho** (`projetos`, `drive`, `webmail`): Cloudflare Redirect Rules (não dependem da Vercel).
+5. Registro.br → nameservers Cloudflare (sair de `ns1/ns2.vercel-dns.com`).
+6. Coolify `my-site` FQDN: `https://dupply.com.br,https://www.dupply.com.br` (**já configurado**).
+7. Coolify Settings → Instance Domain: `https://vps.dupply.com.br` (painel).
+8. Validar HTTPS + `/api/health`; só depois migrar produtos e cancelar Vercel.
+
+API pública **não** precisa de subdomínio (proxy `/api` no nginx do site).
 
 ## Pendências anotadas
 
 - Rotacionar `UPSTASH_REDIS_REST_TOKEN` e `RESEND_API_KEY` — apareceram em screenshots
   durante a migração.
 - Migrar os demais produtos (dash, imob, atendimento) no mesmo padrão.
+- Após DNS: Instance Domain `vps.dupply.com.br` no painel Coolify (API não expõe esse setting).

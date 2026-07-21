@@ -8,6 +8,7 @@ import {
 } from '@dupply/diagnostico'
 import type { Answers, DiagnosticoReport } from '../types'
 import { fetchDiagnosticoFromApi } from '../fetchDiagnosticoApi'
+import { trackEvent } from '../../../lib/analytics'
 import { IS_TURNSTILE_ENABLED } from '../turnstileConfig'
 
 type TestScreen = 'gate' | 'loading' | 'report' | 'error'
@@ -28,6 +29,7 @@ export function useDiagnosticoTest() {
 
       setScreen('loading')
       setSecurityError(null)
+      trackEvent('diagnostico_submit', { test_mode: true })
 
       const apiResult = await fetchDiagnosticoFromApi(answers, turnstileToken ?? undefined, {
         testMode: true,
@@ -37,6 +39,7 @@ export function useDiagnosticoTest() {
 
       if (!apiResult.ok) {
         if (!apiResult.showFallback) {
+          trackEvent('diagnostico_error', { error_type: 'api', test_mode: true })
           setSecurityError(apiResult.error)
           setScreen('gate')
           return
@@ -47,12 +50,25 @@ export function useDiagnosticoTest() {
         const pillars = calcPillars(answers)
         const reportHtml = buildFallbackReport(answers, scoreInfo)
 
+        trackEvent('diagnostico_complete', {
+          score,
+          ai_generated: false,
+          email_dispatched: false,
+          test_mode: true,
+          fallback: true,
+        })
         setReport({ score, scoreInfo, pillars, reportHtml, aiGenerated: false, testMode: true })
         setScreen('report')
         return
       }
 
       const { data } = apiResult
+      trackEvent('diagnostico_complete', {
+        score: data.score,
+        ai_generated: Boolean(data.aiGenerated),
+        email_dispatched: Boolean(data.emailDispatched),
+        test_mode: true,
+      })
       setReport({
         score: data.score,
         scoreInfo: data.scoreInfo,

@@ -33,17 +33,18 @@ Você importou envs da **API** no site estático. Limpe isso primeiro.
 NIXPACKS_NODE_VERSION=22
 VITE_SITE_URL=https://dupply.com.br
 VITE_TURNSTILE_SITE_KEY=seu-site-key
+VITE_GA_MEASUREMENT_ID=G-XXXXXXXXXX
 ```
 
 Marque `VITE_*` como **Available at Buildtime** (precisam no build do Vite).
 
 ### Advanced
 
-- **Connect To Predefined Network:** ativar (para o nginx resolver o container da API depois)
+- **Connect To Predefined Network:** ativar (para o nginx resolver o alias da API na rede `coolify`)
 
 ### Nginx
 
-Static Site → Custom Nginx Configuration → cole `deploy/nginx-my-site.conf` e troque `<API_CONTAINER>` **depois** que o Passo 2 estiver verde.
+Static Site → Custom Nginx Configuration → cole `deploy/nginx-my-site.conf` (já aponta para o alias `my-site-api`).
 
 **Deploy** o `my-site`.
 
@@ -84,7 +85,9 @@ NIXPACKS_NODE_VERSION=22
 
 ### Advanced
 
-- **Connect To Predefined Network:** **ativar** (obrigatório para enxergar o Postgres)
+- **Connect To Predefined Network:** **ativar** (obrigatório para enxergar o Postgres e o site)
+- **Custom Network Aliases:** `my-site-api`  
+  (hostname DNS estável na rede Docker — apps **não** resolvem pelo UUID curto; só databases têm hostname = UUID)
 
 **Save → Deploy.** Aguarde status **Running** (verde).
 
@@ -112,18 +115,25 @@ Esperado: `{"ok":true}` (ou equivalente).
 
 ## Passo 3 — Proxy `/api` no site
 
-1. Na VPS (SSH) ou painel: descubra o nome do container da API:
-   ```sh
-   docker ps | grep my-site-api
-   ```
-2. No `my-site` → Nginx custom → substitua `<API_CONTAINER>` em `deploy/nginx-my-site.conf`
-3. **Redeploy** só do `my-site` (ou reload nginx se o Coolify permitir)
+1. Confirme no `my-site-api` o alias `my-site-api` (Passo 1) e **Connect To Predefined Network** nos dois apps.
+2. No `my-site` → Nginx custom → cole `deploy/nginx-my-site.conf` (resolver + `$api_upstream` → `http://my-site-api:3000`).
+3. **Redeploy** os dois apps (alias/rede só entram em vigor no deploy).
+
+Validar no Terminal do `my-site`:
+
+```sh
+getent hosts my-site-api
+curl -sS http://my-site-api:3000/api/health
+```
 
 Teste pelo domínio/sslip do site:
 
 ```sh
-curl -s https://SEU-DOMINIO/api/health
+curl -s http://SEU-DOMINIO/api/health
+# esperado: {"ok":true,"service":"dupply-diagnostico"}
 ```
+
+**Armadilha:** o UUID do app (`n7ij7ywo…`) **não** é hostname Docker estável. Use o alias. Confira também `l` vs `1` no UUID ao copiar URLs sslip.
 
 ---
 
@@ -145,6 +155,25 @@ App `my-site-api` → Scheduled Tasks:
 
 ---
 
+## Passo 6 — DNS Cloudflare + HTTPS + `vps.dupply.com.br`
+
+Seguir **[`deploy/DNS-CLOUDFLARE.md`](DNS-CLOUDFLARE.md)** (inventário + zona Cloudflare + Registro.br).
+
+Já feito no Coolify:
+
+- FQDN `my-site`: `https://dupply.com.br`, `https://www.dupply.com.br` (+ sslip de fallback)
+- `VITE_SITE_URL=https://dupply.com.br`
+
+Você ainda precisa:
+
+1. Criar zona Cloudflare e trocar NS no Registro.br
+2. Settings Coolify → Instance Domain = `https://vps.dupply.com.br`
+3. Validar `https://dupply.com.br/api/health` após propagação
+
+**Não** cancelar Vercel até migrar `dash` / `imob` / etc.
+
+---
+
 ## Erros comuns
 
 | Aviso / erro | Causa | Correção |
@@ -153,4 +182,7 @@ App `my-site-api` → Scheduled Tasks:
 | NODE_ENV production no build | `NODE_ENV` em Buildtime no site | Remover ou Runtime only no `my-site` |
 | Node 18 EOL | Nixpacks default | `NIXPACKS_NODE_VERSION=22` |
 | API não conecta no banco | Rede Docker | Connect To Predefined Network na API |
-| 502 em `/api/*` | Nginx sem proxy ou nome errado | Passo 3 |
+| 502 em `/api/*` | Nginx sem proxy, UUID errado (`l`/`1`), ou sem alias | Passo 1 alias + Passo 3 |
+| `nslookup <uuid>` → SERVFAIL | UUID de **app** não é DNS estável | Usar Custom Network Aliases (`my-site-api`) |
+| Nginx Exited 10/11 | `proxy_pass` com hostname fixo sem variável | Usar `resolver` + `set $api_upstream` |
+| Let's Encrypt falha | DNS ainda na Vercel / proxy Cloudflare laranja | Aguardar NS + nuvem cinza no apex |
