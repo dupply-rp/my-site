@@ -22,11 +22,6 @@ export const SITE_KEYWORDS = [
   'integração de sistemas',
 ].join(', ')
 
-export const DIAGNOSTICO_TITLE = 'Diagnóstico gratuito de IA | Dupply'
-
-export const DIAGNOSTICO_DESCRIPTION =
-  'Em ~5 minutos, descubra o score de maturidade digital da sua empresa e receba um relatório com oportunidades práticas de automação e IA. 100% gratuito.'
-
 export const DIAGNOSTICO_TITLE =
   'Diagnóstico gratuito de IA | Dupply — maturidade digital em ~5 minutos'
 
