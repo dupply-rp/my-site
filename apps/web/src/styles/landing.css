@@ -203,7 +203,7 @@ ul {
 .theme-toggle-fab {
   position: fixed;
   right: 16px;
-  bottom: 16px;
+  bottom: 84px;
   z-index: 25;
   width: 36px;
   height: 36px;
@@ -227,7 +227,50 @@ body.menu-open .theme-toggle-fab {
 @media (min-width: 768px) {
   .theme-toggle-fab {
     right: 20px;
+    bottom: 92px;
+  }
+}
+
+.whatsapp-fab {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 26;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  background: transparent;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    opacity 180ms ease;
+}
+
+.whatsapp-fab svg {
+  width: 100%;
+  height: 100%;
+}
+
+.whatsapp-fab:hover {
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.28);
+}
+
+body.menu-open .whatsapp-fab {
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (min-width: 768px) {
+  .whatsapp-fab {
+    right: 20px;
     bottom: 20px;
+    width: 60px;
+    height: 60px;
   }
 }
 
@@ -1304,6 +1347,10 @@ body.menu-open .theme-toggle-fab {
 }
 
 body.cookie-banner-open .theme-toggle-fab {
+  bottom: 188px;
+}
+
+body.cookie-banner-open .whatsapp-fab {
   bottom: 120px;
 }
 
@@ -1328,6 +1375,10 @@ body.cookie-banner-open .theme-toggle-fab {
   }
 
   body.cookie-banner-open .theme-toggle-fab {
+    bottom: 168px;
+  }
+
+  body.cookie-banner-open .whatsapp-fab {
     bottom: 96px;
   }
 }
