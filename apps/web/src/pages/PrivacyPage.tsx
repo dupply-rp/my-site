@@ -4,7 +4,9 @@ import { Header } from '../components/layout/Header'
 import { PageMeta } from '../components/seo/PageMeta'
 import { SkipLink } from '../components/seo/SkipLink'
 import {
+  ATENDE_URL,
   DIAGNOSTICO_PATH,
+  EXCLUSAO_DADOS_PATH,
   PRIVACIDADE_PATH,
   PRIVACY_EMAIL,
   WHATSAPP_URL,
@@ -13,14 +15,14 @@ import { SITE_NAME } from '../constants/site'
 import { openCookieConsentPreferences } from '../lib/cookieConsent'
 import '../styles/landing.css'
 
-const UPDATED_AT = '21 de julho de 2026'
+const UPDATED_AT = '27 de agosto de 2026'
 
 export function PrivacyPage() {
   return (
     <>
       <PageMeta
         title={`Privacidade | ${SITE_NAME}`}
-        description="Como a Dupply coleta, usa e protege dados no site e no diagnóstico gratuito de IA. Informações em linguagem clara, alinhadas à LGPD."
+        description="Como a Dupply coleta, usa e protege dados no site, no diagnóstico gratuito e na plataforma Dupply Atende (WhatsApp e Instagram). Em linguagem clara, alinhada à LGPD."
         path={PRIVACIDADE_PATH}
       />
       <SkipLink />
@@ -30,8 +32,8 @@ export function PrivacyPage() {
           <p className="legal-eyebrow">Confiança · LGPD</p>
           <h1>Política de Privacidade</h1>
           <p className="legal-lead">
-            Esta página explica, em linguagem direta, quais dados a Dupply trata quando você usa o site
-            ou o diagnóstico gratuito — e para quê.
+            Esta página explica, em linguagem direta, quais dados a Dupply trata quando você usa o site,
+            o diagnóstico gratuito ou a plataforma de atendimento Dupply Atende — e para quê.
           </p>
           <p className="legal-updated">Última atualização: {UPDATED_AT}</p>
 
@@ -45,6 +47,12 @@ export function PrivacyPage() {
                 WhatsApp
               </a>
               .
+            </p>
+            <p>
+              No <strong>Dupply Atende</strong> o papel é outro: a empresa cliente que conecta seus
+              canais é a <strong>controladora</strong> das conversas com o público dela, e a Dupply
+              atua como <strong>operadora</strong>, tratando esses dados apenas sob instrução da
+              empresa. Veja a seção 4.
             </p>
           </section>
 
@@ -90,8 +98,54 @@ export function PrivacyPage() {
             </p>
           </section>
 
+          <section className="legal-section" id="atende-plataformas-meta">
+            <h2>4. Dupply Atende — WhatsApp e Instagram</h2>
+            <p>
+              O{' '}
+              <a href={ATENDE_URL} target="_blank" rel="noopener noreferrer">
+                Dupply Atende
+              </a>{' '}
+              centraliza o atendimento da empresa cliente em canais de mensagem. A conexão é feita
+              pelas <strong>APIs oficiais da Meta</strong>, mediante autorização explícita da empresa
+              titular da conta.
+            </p>
+            <p>Ao conectar um canal, tratamos:</p>
+            <ul>
+              <li>
+                <strong>Dados da conta conectada</strong> — identificador e nome de usuário da conta
+                de Instagram ou do número de WhatsApp, e o token de acesso concedido, guardado{' '}
+                <strong>criptografado</strong> e usado apenas para operar aquele canal.
+              </li>
+              <li>
+                <strong>Conversas</strong> — mensagens recebidas e enviadas, com data/hora e o
+                identificador do contato fornecido pela plataforma (no Instagram, um identificador
+                válido só no escopo daquela conta).
+              </li>
+              <li>
+                <strong>Mídias</strong> — áudios, imagens e arquivos enviados na conversa, guardados
+                em storage privado para exibição no histórico.
+              </li>
+            </ul>
+            <p>
+              <strong>Para quê:</strong> exibir a conversa no inbox da empresa, gerar respostas
+              assistidas por IA conforme a configuração dela, manter o histórico do atendimento e
+              proteger o serviço contra abuso.
+            </p>
+            <p>
+              <strong>O que não fazemos:</strong> não vendemos esses dados, não os usamos para
+              publicidade, não os compartilhamos com outras empresas clientes e não os utilizamos
+              para treinar modelos de IA próprios.
+            </p>
+            <p>
+              <strong>Retenção e exclusão:</strong> os dados permanecem enquanto o canal estiver
+              conectado e o contrato vigente. A empresa pode desconectar o canal a qualquer momento —
+              o que revoga o token — e solicitar a eliminação do histórico. O passo a passo está na{' '}
+              <Link to={EXCLUSAO_DADOS_PATH}>página de exclusão de dados</Link>.
+            </p>
+          </section>
+
           <section className="legal-section">
-            <h2>4. Com quem compartilhamos (operadores)</h2>
+            <h2>5. Com quem compartilhamos (operadores)</h2>
             <p>Usamos provedores que processam dados sob nossa instrução:</p>
             <ul>
               <li>
@@ -114,11 +168,24 @@ export function PrivacyPage() {
               <li>
                 <strong>Upstash</strong> — limites de taxa / filas técnicas, quando habilitado.
               </li>
+              <li>
+                <strong>Meta</strong> — entrega das mensagens nos canais WhatsApp e Instagram, pelas
+                APIs oficiais, quando a empresa conecta esses canais no Dupply Atende.
+              </li>
+              <li>
+                <strong>Provedores de IA (Anthropic, Google, OpenAI)</strong> — geração das respostas
+                assistidas, conforme o modelo configurado. Os provedores tratam o conteúdo apenas
+                para responder à solicitação, sem finalidade publicitária.
+              </li>
+              <li>
+                <strong>Cloudflare R2</strong> — armazenamento privado das mídias recebidas nas
+                conversas.
+              </li>
             </ul>
           </section>
 
           <section className="legal-section">
-            <h2>5. Base legal e retenção</h2>
+            <h2>6. Base legal e retenção</h2>
             <p>
               Tratamos dados com base na execução de solicitação sua (receber o diagnóstico /
               contato) e no legítimo interesse de operar, medir e proteger o serviço, sempre de
@@ -132,7 +199,7 @@ export function PrivacyPage() {
           </section>
 
           <section className="legal-section">
-            <h2>6. Seus direitos (LGPD)</h2>
+            <h2>7. Seus direitos (LGPD)</h2>
             <p>Você pode solicitar, entre outros:</p>
             <ul>
               <li>confirmação de tratamento e acesso aos dados;</li>
@@ -141,10 +208,14 @@ export function PrivacyPage() {
               <li>informação sobre compartilhamentos;</li>
               <li>revogação de consentimento, quando aplicável.</li>
             </ul>
+            <p>
+              Para pedir a eliminação dos seus dados, siga o passo a passo da{' '}
+              <Link to={EXCLUSAO_DADOS_PATH}>página de exclusão de dados</Link>.
+            </p>
           </section>
 
           <section className="legal-section">
-            <h2>7. Cookies e armazenamento local</h2>
+            <h2>8. Cookies e armazenamento local</h2>
             <p>Usamos três categorias simples:</p>
             <ul>
               <li>
@@ -174,7 +245,7 @@ export function PrivacyPage() {
           </section>
 
           <section className="legal-section">
-            <h2>8. Atualizações</h2>
+            <h2>9. Atualizações</h2>
             <p>
               Podemos atualizar esta política quando o produto ou a base legal mudarem. A data no
               topo desta página indica a versão vigente.

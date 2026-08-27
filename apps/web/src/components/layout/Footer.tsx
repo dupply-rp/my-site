@@ -1,5 +1,11 @@
 import { Link } from 'react-router-dom'
-import { DIAGNOSTICO_PATH, PRIVACIDADE_PATH, WHATSAPP_URL } from '../../constants/links'
+import {
+  DIAGNOSTICO_PATH,
+  EXCLUSAO_DADOS_PATH,
+  PRIVACIDADE_PATH,
+  TERMOS_PATH,
+  WHATSAPP_URL,
+} from '../../constants/links'
 import { trackCtaClick } from '../../lib/analytics'
 
 const SOCIAL_ICON_SIZE = 20
@@ -56,6 +62,8 @@ export function Footer() {
           </Link>
           <a href="/#faq">FAQ</a>
           <Link to={PRIVACIDADE_PATH}>Privacidade</Link>
+          <Link to={TERMOS_PATH}>Termos</Link>
+          <Link to={EXCLUSAO_DADOS_PATH}>Exclusão de dados</Link>
           <a
             href={WHATSAPP_URL}
             target="_blank"
