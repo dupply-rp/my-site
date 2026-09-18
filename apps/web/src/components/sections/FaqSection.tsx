@@ -13,11 +13,14 @@ export function FaqSection() {
           </div>
 
           <div className="dp-faq-lista">
-            {faqItems.map((item) => (
-              <div className="dp-faq-item" key={item.question}>
-                <h3>{item.question}</h3>
+            {faqItems.map((item, i) => (
+              <details className="dp-faq-item" key={item.question} open={i === 0}>
+                <summary>
+                  <span>{item.question}</span>
+                  <span className="dp-faq-sinal" aria-hidden="true" />
+                </summary>
                 <p>{item.answer}</p>
-              </div>
+              </details>
             ))}
           </div>
         </div>

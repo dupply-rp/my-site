@@ -1,4 +1,3 @@
-import { CompanyIcon } from '../CompanyIcon'
 import { companies } from '../../constants/content'
 
 export function TrajectorySection() {
@@ -8,11 +7,11 @@ export function TrajectorySection() {
         <p className="dp-eyebrow" id="trajetoria-titulo">
           Onde eu trabalhei e entreguei projetos antes da Dupply
         </p>
-        <div className="dp-logos">
+        <ul className="dp-logos">
           {companies.map((company) => (
-            <CompanyIcon key={company.id} id={company.id} />
+            <li key={company.id}>{company.name}</li>
           ))}
-        </div>
+        </ul>
       </div>
     </section>
   )

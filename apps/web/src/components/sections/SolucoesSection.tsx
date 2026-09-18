@@ -1,6 +1,7 @@
 import { produtos } from '../../constants/content'
 import { whatsappProduto } from '../../constants/links'
 import { trackCtaClick } from '../../lib/analytics'
+import { IconeSeta } from '../Icones'
 
 export function SolucoesSection() {
   return (
@@ -26,13 +27,12 @@ export function SolucoesSection() {
                 <h3>{produto.nome}</h3>
                 {produto.piloto ? (
                   <span className="dp-pill">EM PILOTO</span>
-                ) : (
-                  <div className="dp-produto-fio" aria-hidden="true" />
-                )}
+                ) : null}
               </div>
               <p>{produto.descricao}</p>
               {produto.nota ? <p className="dp-nota">{produto.nota}</p> : null}
               <a
+                className="dp-produto-link"
                 href={whatsappProduto(produto.nome)}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -44,6 +44,7 @@ export function SolucoesSection() {
                 }
               >
                 Falar sobre o {produto.nome}
+                <IconeSeta />
               </a>
             </article>
           ))}

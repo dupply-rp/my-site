@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import ricardo from '../../assets/marca/ricardo-estudio.jpg'
 import { DIAGNOSTICO_PATH, whatsappUrl } from '../../constants/links'
 import { trackCtaClick } from '../../lib/analytics'
+import { IconeWhatsApp } from '../Icones'
 
 export function Hero() {
   return (
@@ -29,7 +30,7 @@ export function Hero() {
             entra na sua operação, e a IA vem junto com ele.
           </p>
 
-          <div className="dp-hero-acoes">
+          <div className="dp-hero-acoes dp-acoes-lado">
             <Link
               className="dp-btn dp-btn-primary"
               to={DIAGNOSTICO_PATH}
@@ -43,7 +44,7 @@ export function Hero() {
               Fazer o diagnóstico gratuito
             </Link>
             <a
-              className="dp-link-secundario"
+              className="dp-btn dp-btn-fantasma"
               href={whatsappUrl('heroi')}
               target="_blank"
               rel="noopener noreferrer"
@@ -51,7 +52,8 @@ export function Hero() {
                 trackCtaClick('whatsapp', { location: 'heroi', destination: 'whatsapp' })
               }
             >
-              ou fale direto no WhatsApp
+              <IconeWhatsApp />
+              Falar no WhatsApp
             </a>
           </div>
 
