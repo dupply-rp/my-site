@@ -1,11 +1,11 @@
 # Spec — Home nova do site institucional
 
-Estado: rascunho
+Estado: pronta
 Projeto: my-site
 Branch: <preenchida pelo Davi>
 Pedido por: Ricardo, nesta conversa, 17/09/2026 ("gostei, vamos iniciar")
 
-**Por que ainda é rascunho:** o gate `especificacao` exige que os comandos de validação estejam definidos no `ciad.yaml` do projeto, e o `my-site` não tem `ciad.yaml` nem CI. Os dois arquivos estão prontos ao lado deste (`ciad.yaml` e `ci.yml`). **Os dois entram no mesmo pull request que este arquivo. Quando ele for mesclado, esta spec passa para pronta sem mudar mais nada.**
+**Estado pronta desde 18/09/2026.** O gate `especificacao` foi passado pelo Oscar depois de `ciad.yaml` e CI entrarem no PR #100 e a referência de arquivo em T5-T7 ser corrigida (ver "Parecer de validação" e o Histórico). Os três arquivos (`ciad.yaml`, `ci.yml` e esta spec) seguem no mesmo PR #100, sem merge ainda. Mesclar é publicar.
 
 ---
 
@@ -62,7 +62,8 @@ Não há rota nova, payload novo, tabela nova nem mudança de schema. **Esta ent
 | `apps/web/src/constants/faq.ts` | Perguntas novas |
 | `apps/web/src/constants/links.ts` | Mensagem pré-preenchida de WhatsApp por origem |
 | `apps/web/src/lib/analytics.ts` | Eventos novos |
-| `apps/web/src/App.tsx` | Ordem das seções |
+| `apps/web/src/App.tsx` | Nenhuma mudança de conteúdo; permanece só com rotas e componentes globais (`AnalyticsTracker`, `ThemeToggle`, `WhatsappFloatingButton`) |
+| `apps/web/src/pages/HomePage.tsx` | Ordem das seções |
 
 ### Arquivos novos
 
@@ -182,14 +183,14 @@ Nenhuma variável de ambiente nova. Nenhum segredo novo.
   - `DiagnosisSection.tsx` com a segunda linha por dor, `ProcessSection.tsx` redesenhada, `PromessasSection.tsx` nova a partir do que hoje está dentro do `Hero.tsx`
   - testes: os seis itens de "o que não prometemos" continuam na página
 - [ ] **T7. Soluções, dúvidas e fecho** (critérios 6, 2, 20)
-  - `SolucoesSection.tsx` nova, `FaqSection.tsx` com as perguntas novas **e a resposta sobre dado de cliente sem citar artefato de governança interna**, `FinalCtaSection.tsx` em gradiente. Remover `BenefitsSection.tsx` e `DiagnosticoBanner.tsx` do `App.tsx`
+  - `SolucoesSection.tsx` nova, `FaqSection.tsx` com as perguntas novas **e a resposta sobre dado de cliente sem citar artefato de governança interna**, `FinalCtaSection.tsx` em gradiente. Remover `BenefitsSection.tsx` e `DiagnosticoBanner.tsx` do `HomePage.tsx`
   - testes: os quatro produtos aparecem, "Agenda" e "Dash" não aparecem, o Imob tem o rótulo, e nenhuma resposta do FAQ contém as palavras "constituição", "CIAD" ou "Hermes"
 - [ ] **T8. Contato e medição** (critérios 8, 9, 10, 17, 18)
   - Eventos em `analytics.ts`, origem por parâmetro, mensagem de WhatsApp por origem em `links.ts`
   - O número escrito por extenso no rodapé, usando a constante `WHATSAPP_PHONE` que já existe e nunca foi usada
   - testes: cada botão dispara o evento com o bloco de origem certo, e cada link abre com a mensagem daquela origem
 
-**Arquivos que o Davi precisa ler:** `apps/web/src/App.tsx`, `apps/web/src/styles/tokens.css`, `apps/web/src/styles/landing.css`, `apps/web/src/constants/content.ts`, `apps/web/src/constants/links.ts`, `apps/web/src/lib/analytics.ts`, e a prancha aprovada.
+**Arquivos que o Davi precisa ler:** `apps/web/src/pages/HomePage.tsx`, `apps/web/src/styles/tokens.css`, `apps/web/src/styles/landing.css`, `apps/web/src/constants/content.ts`, `apps/web/src/constants/links.ts`, `apps/web/src/lib/analytics.ts`, e a prancha aprovada.
 
 **Como testar:** `pnpm lint` e `pnpm build:site`, conforme o `ciad.yaml`. Depois, no navegador: a home em 1440 px e em 390 px, o `/diagnostico` enviando de verdade, e o relatório em tempo real do GA4 recebendo os eventos.
 
@@ -199,7 +200,12 @@ Nenhuma. O que dependia do dono virou "Fora de escopo".
 
 ### Parecer de validação
 
-<Oscar: pendente, esperando o `ciad.yaml` entrar no repositório>
+Gate: especificacao
+Decisão: PRONTA
+Itens não atendidos: nenhum
+
+Segunda passada, depois da correção de referência acima (`App.tsx` → `pages/HomePage.tsx`). Conferido de novo no repositório: `HomePage.tsx` existe com esse nome e monta as seções na ordem que a spec descreve. `App.tsx` de fato só tem rotas e componentes globais, então a tabela da seção 3 agora está exata. Nenhum outro item obrigatório do gate falha: problema de negócio com evidência concreta, nenhuma pergunta aberta, decisões técnicas registradas (frase final do herói com histórico de por que mudou duas vezes), critérios de aceite observáveis e verificáveis, "não pode quebrar" listado, fora de escopo explícito, oito tarefas na ordem certa de dependência (tokens e assets antes de seções que os usam), comandos de validação definidos no `ciad.yaml`. Spec cabe em uma leitura, sem exigir abrir a arquitetura inteira.
+Avaliado por: Oscar em 2026-09-18
 
 ## 8. Registro de implementação
 
@@ -219,3 +225,4 @@ Nenhuma. O que dependia do dono virou "Fora de escopo".
 |---|---|---|---|---|
 | 17/09/2026 | Dora (especificação) | rascunho | Spec escrita a partir do projeto e da prancha aprovada pelo dono | Entrar com `ciad.yaml` e CI no `my-site`, e então validar com o Oscar |
 | 18/09/2026 | Dora (especificação) | rascunho | Um mockup fora do fluxo da CIAD (feito por outro agente) implementou a spec ao pé da letra, inclusive a frase já reprovada pelo dono no critério 1, e trouxe dois elementos sem decisão: um botão "Ver como funciona na prática" no bloco de método, e uma resposta de FAQ citando "nossa constituição" para explicar a proteção de dado do cliente. A equipe (Iris, Bento, Gil, Clara, Manu, Téo, Caio) revisou o mockup e o projeto contra o site real e as referências. O dono reprovou a frase de novo, aprovou a primeira substituta do Bento e depois apontou uma contradição (a Dupply também vende ferramenta), fechando a frase final nesta conversa. Critérios 1 e T4 atualizados com a frase final; critério 19 e T5 fecham o botão sem destino como fora de escopo; critério 20 e T7 tiram a citação ao artefato de governança interna do texto público. | Confirmar `ciad.yaml` e CI no PR #100, então validar com o Oscar. |
+| 18/09/2026 | Oscar (arquiteto) | volta a rascunho | `ciad.yaml` e CI confirmados no PR #100, CI verde. Conferência de referências no repositório achou um erro: a seção 3 e as tarefas T5-T7 citavam `App.tsx` como o arquivo que ordena as seções da home, mas quem faz isso é `pages/HomePage.tsx` (`App.tsx` só tem rotas e componentes globais). Corrigido na própria passada: seção 3, T7 e a lista de arquivos que o Davi precisa ler agora apontam para `HomePage.tsx`. Resto do gate de especificação passa: nenhuma pergunta aberta, critérios verificáveis, fora de escopo explícito, oito tarefas, ordem de dependência ok. | Nova passada de validação, só para confirmar a correção de referência; sem decisão nova do dono envolvida. |
