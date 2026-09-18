@@ -1,20 +1,24 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { BrandLogo } from '../BrandLogo'
-import { DIAGNOSTICO_PATH, WHATSAPP_URL } from '../../constants/links'
+import assinaturaClara from '../../assets/marca/dupply-assinatura-clara.png'
+import assinaturaEscura from '../../assets/marca/dupply-assinatura-escura.png'
+import { DIAGNOSTICO_PATH } from '../../constants/links'
 import { trackCtaClick } from '../../lib/analytics'
 
 const navItems = [
-  { href: '/#gargalos', label: 'Soluções' },
+  { href: '/#solucoes', label: 'Soluções' },
   { href: '/#atuacao', label: 'Processo' },
-  { href: '/#beneficios', label: 'Resultados' },
   { href: '/#trajetoria', label: 'Sobre' },
-  { to: DIAGNOSTICO_PATH, label: 'Diagnóstico', route: true as const },
-  { href: WHATSAPP_URL, label: 'Contato', external: true as const },
-]
+] as const
 
-export function Header() {
+interface HeaderProps {
+  /** Na home o topo começa transparente sobre o herói escuro. Nas outras páginas, não. */
+  sobreEscuro?: boolean
+}
+
+export function Header({ sobreEscuro = false }: HeaderProps = {}) {
   const [menuOpen, setMenuOpen] = useState(false)
+  const [rolou, setRolou] = useState(!sobreEscuro)
 
   const closeMenu = () => setMenuOpen(false)
 
@@ -23,52 +27,35 @@ export function Header() {
     return () => document.body.classList.remove('menu-open')
   }, [menuOpen])
 
+  useEffect(() => {
+    if (!sobreEscuro) return
+    const aoRolar = () => setRolou(window.scrollY > 40)
+    aoRolar()
+    window.addEventListener('scroll', aoRolar, { passive: true })
+    return () => window.removeEventListener('scroll', aoRolar)
+  }, [sobreEscuro])
+
+  const classe = rolou ? 'dp-topo dp-topo-solido' : 'dp-topo'
+
   return (
-    <header className="topbar">
-      <nav className="nav wrap" aria-label="Navegação principal">
-        <Link className="brand" to="/" aria-label="Dupply — página inicial">
-          <BrandLogo />
+    <header className={classe}>
+      <nav className="dp-topo-nav dp-wrap" aria-label="Navegação principal">
+        <Link className="dp-topo-marca" to="/" aria-label="Dupply, página inicial">
+          <img src={rolou ? assinaturaEscura : assinaturaClara} alt="Dupply" height={44} />
         </Link>
 
-        <div className="nav-links nav-links-desktop">
-          {navItems.map((item) =>
-            'external' in item ? (
-              <a
-                key={item.label}
-                href={item.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() =>
-                  trackCtaClick('whatsapp', { location: 'header_nav', destination: 'whatsapp' })
-                }
-              >
-                {item.label}
-              </a>
-            ) : 'route' in item ? (
-              <Link
-                key={item.label}
-                to={item.to!}
-                onClick={() =>
-                  trackCtaClick('diagnostico_nav', {
-                    location: 'header_nav',
-                    destination: DIAGNOSTICO_PATH,
-                  })
-                }
-              >
-                {item.label}
-              </Link>
-            ) : (
-              <a key={item.label} href={item.href}>
-                {item.label}
-              </a>
-            ),
-          )}
+        <div className="dp-topo-links">
+          {navItems.map((item) => (
+            <a key={item.label} href={item.href}>
+              {item.label}
+            </a>
+          ))}
           <Link
-            className="btn btn-primary btn-sm"
+            className="dp-topo-btn"
             to={DIAGNOSTICO_PATH}
             onClick={() =>
               trackCtaClick('diagnostico_gratuito', {
-                location: 'header',
+                location: 'topo',
                 destination: DIAGNOSTICO_PATH,
               })
             }
@@ -79,7 +66,7 @@ export function Header() {
 
         <button
           type="button"
-          className="nav-toggle"
+          className="dp-topo-toggle"
           aria-expanded={menuOpen}
           aria-controls="mobile-menu"
           aria-label={menuOpen ? 'Fechar menu' : 'Abrir menu'}
@@ -87,51 +74,34 @@ export function Header() {
         >
           <span aria-hidden="true" />
           <span aria-hidden="true" />
-          <span aria-hidden="true" />
         </button>
       </nav>
 
       <div
         id="mobile-menu"
-        className={`nav-mobile${menuOpen ? ' is-open' : ''}`}
+        className={menuOpen ? 'dp-menu dp-menu-aberto' : 'dp-menu'}
         hidden={!menuOpen}
         onClick={closeMenu}
         role="presentation"
       >
         <div
-          className="nav-mobile-panel"
+          className="dp-menu-painel"
           onClick={(event) => event.stopPropagation()}
           role="dialog"
           aria-modal="true"
           aria-label="Menu de navegação"
         >
-          {navItems.map((item) =>
-            'external' in item ? (
-              <a
-                key={item.label}
-                href={item.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={closeMenu}
-              >
-                {item.label}
-              </a>
-            ) : 'route' in item ? (
-              <Link key={item.label} to={item.to!} onClick={closeMenu}>
-                {item.label}
-              </Link>
-            ) : (
-              <a key={item.label} href={item.href} onClick={closeMenu}>
-                {item.label}
-              </a>
-            ),
-          )}
+          {navItems.map((item) => (
+            <a key={item.label} href={item.href} onClick={closeMenu}>
+              {item.label}
+            </a>
+          ))}
           <Link
-            className="btn btn-primary"
+            className="dp-btn dp-btn-primary"
             to={DIAGNOSTICO_PATH}
             onClick={() => {
               trackCtaClick('diagnostico_gratuito', {
-                location: 'header_mobile',
+                location: 'topo_celular',
                 destination: DIAGNOSTICO_PATH,
               })
               closeMenu()

@@ -1,97 +1,64 @@
-import { heroAboutParagraphs, heroProofItems, heroPromises } from '../../constants/content'
-import ricardoLima from '../../assets/ricardo-lima3.png'
-import { DIAGNOSTICO_PATH, WHATSAPP_URL } from '../../constants/links'
-import { trackCtaClick } from '../../lib/analytics'
 import { Link } from 'react-router-dom'
+import ricardo from '../../assets/marca/ricardo-estudio.jpg'
+import { DIAGNOSTICO_PATH, whatsappUrl } from '../../constants/links'
+import { trackCtaClick } from '../../lib/analytics'
+import { IconeWhatsApp } from '../Icones'
 
 export function Hero() {
   return (
-    <section className="hero" aria-labelledby="hero-heading">
-      <div className="wrap hero-grid">
-        <div className="hero-copy">
-          <span className="eyebrow">Inteligência Artificial</span>
+    <section className="dp-hero" aria-labelledby="hero-heading">
+      <img
+        className="dp-hero-foto"
+        src={ricardo}
+        alt="Ricardo Lima, fundador da Dupply"
+        width={769}
+        height={1134}
+        loading="eager"
+        decoding="async"
+      />
+      <div className="dp-hero-veu" aria-hidden="true" />
+      <div className="dp-hero-base" aria-hidden="true" />
+
+      <div className="dp-wrap">
+        <div className="dp-hero-inner dp-anima">
+          <div className="dp-hero-fio" aria-hidden="true" />
+          <p className="dp-eyebrow">Ricardo Lima · fundador da Dupply</p>
           <h1 id="hero-heading">
-            Cansado de promessas sobre IA que nunca funcionam na prática?
+            O que falta na sua operação não é mais uma ferramenta de IA. É método por trás dela.
           </h1>
-          <p className="hero-lead">
-            Sua empresa não precisa de mais um discurso sobre transformação digital. Precisa de
-            automação, integração e processos que funcionem no dia a dia.
-          </p>
-          <p className="hero-highlight">
-            A Dupply implementa <strong>IA para resolver problemas reais</strong> — menos promessas,
-            mais resultados na operação.
+          <p className="dp-hero-sub">
+            21 anos fazendo tecnologia funcionar em operação que não pode parar. Agora esse método
+            entra na sua operação, e a IA vem junto com ele.
           </p>
 
-          {heroAboutParagraphs.map((paragraph) => (
-            <p className="hero-body" key={paragraph}>
-              {paragraph}
-            </p>
-          ))}
-
-          <div className="hero-actions">
+          <div className="dp-hero-acoes dp-acoes-lado">
             <Link
-              className="btn btn-primary"
+              className="dp-btn dp-btn-primary"
               to={DIAGNOSTICO_PATH}
               onClick={() =>
                 trackCtaClick('diagnostico_gratuito', {
-                  location: 'hero',
+                  location: 'heroi',
                   destination: DIAGNOSTICO_PATH,
                 })
               }
             >
-              Fazer diagnóstico gratuito
+              Fazer o diagnóstico gratuito
             </Link>
             <a
-              className="btn btn-secondary"
-              href={WHATSAPP_URL}
+              className="dp-btn dp-btn-fantasma"
+              href={whatsappUrl('heroi')}
               target="_blank"
               rel="noopener noreferrer"
               onClick={() =>
-                trackCtaClick('whatsapp', { location: 'hero', destination: 'whatsapp' })
+                trackCtaClick('whatsapp', { location: 'heroi', destination: 'whatsapp' })
               }
             >
-              Falar com a Dupply
+              <IconeWhatsApp />
+              Falar no WhatsApp
             </a>
           </div>
-        </div>
 
-        <aside className="hero-aside" aria-label="Posicionamento Dupply">
-          <figure className="portrait-card">
-            <img
-              src={ricardoLima}
-              alt="Ricardo Lima, CEO da Dupply"
-              loading="eager"
-              decoding="async"
-              width={480}
-              height={600}
-            />
-          </figure>
-          <div className="brand-card">
-            <span className="brand-card-label">Dupply</span>
-            <strong>IA aplicada à realidade da sua empresa</strong>
-            <p className="brand-card-tagline">Aprenda construindo no mercado real</p>
-          </div>
-        </aside>
-      </div>
-
-      <div className="wrap">
-        <div className="hero-trust">
-          <div className="hero-trust-block">
-            <p className="hero-trust-label">Como a Dupply trabalha</p>
-            <ul className="proof-line">
-              {heroProofItems.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          </div>
-          <div className="hero-trust-block">
-            <p className="hero-trust-label">O que não prometemos</p>
-            <ul className="myth-line" aria-label="Mitos sobre IA que a Dupply não promete">
-              {heroPromises.map((myth) => (
-                <li key={myth}>{myth}</li>
-              ))}
-            </ul>
-          </div>
+          <p className="dp-micro">5 minutos, sem cartão. O relatório chega no seu e-mail.</p>
         </div>
       </div>
     </section>

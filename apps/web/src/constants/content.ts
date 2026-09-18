@@ -31,28 +31,19 @@ export const lossItems = [
   'Fazendo retrabalho',
 ] as const
 
-export type CompanyId =
-  | 'itau'
-  | 'santander'
-  | 'neon'
-  | 'toro'
-  | 'pravaler'
-  | 'claro'
-  | 'boticario'
-  | 'rdstation'
-  | 'totvs'
-
-export const companies: ReadonlyArray<{ id: CompanyId; name: string }> = [
-  { id: 'itau', name: 'Itaú' },
-  { id: 'santander', name: 'Santander' },
-  { id: 'neon', name: 'Neon' },
-  { id: 'toro', name: 'Toro Investimentos' },
-  { id: 'pravaler', name: 'Pravaler' },
-  { id: 'claro', name: 'Claro' },
-  { id: 'boticario', name: 'Grupo Boticário' },
-  { id: 'rdstation', name: 'RD Station' },
-  { id: 'totvs', name: 'TOTVS' },
-]
+// A trajetória é escrita, não desenhada: as logomarcas dos clientes antigos
+// davam artefato ao inverter para o fundo escuro, e só três tinham versão clara.
+export const companies = [
+  'Itaú',
+  'Santander',
+  'Neon',
+  'Toro Investimentos',
+  'Pravaler',
+  'Claro',
+  'Grupo Boticário',
+  'RD Station',
+  'Pluxee',
+] as const
 
 export const processSteps = [
   {
@@ -84,4 +75,89 @@ export const benefits = [
   'Sistemas integrados',
   'Mais rentabilidade',
   'Decisões mais inteligentes',
+] as const
+
+/* --- Home nova (spec .specs/home-nova.md) --- */
+
+// Fala de resultado de operação, nunca de prática de engenharia. A versão
+// anterior descrevia revisão de código e teste automático, que é assunto de
+// outro time técnico, não do dono de empresa que o site quer atender.
+export const metodoCards = [
+  {
+    titulo: 'Diagnóstico antes de ferramenta',
+    frase:
+      'A gente entende sua operação antes de sugerir qualquer coisa: onde o tempo se perde e onde a IA realmente ajuda.',
+  },
+  {
+    titulo: 'Tarefa repetitiva sai da sua mão',
+    frase:
+      'O que hoje toma horas do seu time vira automático, sem precisar contratar mais gente.',
+  },
+  {
+    titulo: 'Atendimento e venda que não param',
+    frase: 'IA que responde, qualifica lead e ajuda a fechar negócio 24 horas por dia.',
+  },
+  {
+    titulo: 'Pronto quando existe, sob medida quando não existe',
+    frase:
+      'Usamos o que já funciona, e construímos o que sua empresa precisa e ainda não existe pronto.',
+  },
+] as const
+
+export const dores = [
+  {
+    titulo: 'Conferindo planilhas',
+    saida: 'A conferência sai da mão e o número chega pronto, com a origem do dado rastreável.',
+  },
+  {
+    titulo: 'Procurando informações',
+    saida: 'Um lugar só para achar, em vez de seis. Quem procura para de perguntar para os outros.',
+  },
+  {
+    titulo: 'Copiando dados entre sistemas',
+    saida: 'Integração entre o que você já usa. Ninguém troca de sistema para resolver isso.',
+  },
+  {
+    titulo: 'Dependendo do WhatsApp para tudo',
+    saida: 'Atendimento com fila, dono e histórico, no mesmo número que o cliente já usa.',
+  },
+  {
+    titulo: 'Informações espalhadas',
+    saida: 'Cadastro único, e o resto puxa dali. Acaba a versão que cada um tem da verdade.',
+  },
+  {
+    titulo: 'Fazendo retrabalho',
+    saida: 'O passo que se repete toda semana vira automação, e a pessoa volta para o que pensa.',
+  },
+] as const
+
+export const produtos = [
+  {
+    nome: 'Atende',
+    descricao:
+      'Junta num só painel as conversas de WhatsApp, Instagram e Telegram, com fila para a equipe, funil de vendas e IA que responde ou ajuda a responder.',
+    piloto: false,
+    nota: '',
+  },
+  {
+    nome: 'Otto',
+    descricao:
+      'Assistente financeiro que organiza as contas de uma pessoa ou de um pequeno negócio, e responde pelo aplicativo e pelo WhatsApp.',
+    piloto: false,
+    nota: '',
+  },
+  {
+    nome: 'Congregar',
+    descricao:
+      'Sistema para a igreja organizar membros, ministérios, escalas de voluntários e tesouraria num lugar só, com aplicativo para os membros.',
+    piloto: false,
+    nota: '',
+  },
+  {
+    nome: 'Imob',
+    descricao:
+      'Site próprio de imóveis com a marca da imobiliária, mais um painel para cadastrar imóveis e receber interessados.',
+    piloto: false,
+    nota: '',
+  },
 ] as const

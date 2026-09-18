@@ -12,6 +12,7 @@ import {
 } from '../constants/links'
 import { SITE_NAME } from '../constants/site'
 import '../styles/landing.css'
+import '../styles/home.css'
 
 const UPDATED_AT = '27 de agosto de 2026'
 

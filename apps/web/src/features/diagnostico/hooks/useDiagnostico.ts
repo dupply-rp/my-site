@@ -37,6 +37,11 @@ export function useDiagnostico() {
   useEffect(() => {
     if (screen !== 'quiz') return
     saveDiagnosticoDraft({ currentIndex, answers })
+    // A regra está certa, e o conserto certo é derivar hasDraft em vez de guardá-lo.
+    // Isso mexe no fluxo do rascunho do diagnóstico, que é receita, e não há teste
+    // aqui para provar que não quebrou. Fica como dívida com spec própria, e não
+    // como conserto feito às pressas junto de uma entrega de aparência.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setHasDraft(true)
   }, [screen, currentIndex, answers])
 

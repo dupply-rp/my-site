@@ -1,0 +1,53 @@
+# CI do my-site.
+#
+# Existe porque sem ela a Vera (qualidade) não tem o que rodar e o Davi
+# (fullstack) não pode implementar, pela regra de parada do time de Estrutura.
+#
+# Roda só o que o repositório tem de verdade: lint e build. Não há script de
+# teste nem de typecheck separado; a checagem de tipos acontece dentro do
+# build, no `tsc -b` do apps/web.
+#
+# Não roda `pnpm audit`. No Atende, a auditoria quebrou a CI da main por 29
+# execuções seguidas enquanto o Coolify publicava assim mesmo, o que ensina
+# que auditoria só entra quando alguém se compromete a tratar o resultado.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  qualidade:
+    name: Lint e build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Baixar o código
+        uses: actions/checkout@v4
+
+      - name: Instalar o pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.0
+
+      - name: Instalar o Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Instalar dependências
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Build
+        run: pnpm build:site

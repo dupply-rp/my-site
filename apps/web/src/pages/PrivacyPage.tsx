@@ -14,6 +14,7 @@ import {
 import { SITE_NAME } from '../constants/site'
 import { openCookieConsentPreferences } from '../lib/cookieConsent'
 import '../styles/landing.css'
+import '../styles/home.css'
 
 const UPDATED_AT = '27 de agosto de 2026'
 

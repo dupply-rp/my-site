@@ -13,11 +13,9 @@ interface CookieConsentBannerProps {
 }
 
 export function CookieConsentBanner({ onAnalyticsAccepted }: CookieConsentBannerProps) {
-  const [visible, setVisible] = useState(false)
+  const [visible, setVisible] = useState(() => !hasAnsweredCookieConsent())
 
   useEffect(() => {
-    setVisible(!hasAnsweredCookieConsent())
-
     const onOpen = () => setVisible(true)
     window.addEventListener(COOKIE_CONSENT_OPEN_EVENT, onOpen)
     return () => window.removeEventListener(COOKIE_CONSENT_OPEN_EVENT, onOpen)
