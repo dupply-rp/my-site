@@ -1,0 +1,109 @@
+# Convenções do my-site (site institucional da Dupply).
+# Missão do Oscar (arquiteto), escrita em 17/09/2026.
+# Tudo aqui foi conferido no repositório no commit 3f84070, ou está marcado.
+
+projeto:
+  nome: my-site
+  produto: "Site institucional da Dupply e diagnóstico gratuito de IA"
+  criticidade: producao
+
+documentos:
+  especificacoes: .specs/
+  arquitetura: docs/ARQUITETURA.md    # NOVO, ainda não existe
+  decisoes: docs/decisoes/            # NOVO, ainda não existe
+  fatiado: false
+
+regras_do_repositorio:
+  - .claude/                          # existe no repositório
+  # NÃO existem AGENTS.md nem CLAUDE.md na raiz, ao contrário do Atende.
+  # Criar os dois é item da onda 0.
+
+contexto_obrigatorio: []              # nada obrigatório ainda; a spec basta
+
+desenvolvimento:
+  branch: "feature/<slug-da-spec>"
+  atualizar_branch: merge
+  mesclar_pr: squash
+  commits: conventional
+  # Só entram comandos que existem. O repositório NÃO tem script de teste
+  # nem script de typecheck separado: a checagem de tipos roda dentro do
+  # build (`tsc -b && vite build` em apps/web).
+  validacao:
+    lint: pnpm lint
+    build: pnpm build:site
+  execucao: ci
+
+infraestrutura:
+  orquestrador: coolify
+  painel: https://vps.dupply.com.br
+  servidor: SaaS
+  aplicacoes:
+    - my-site
+  bancos:
+    - postgres (Neon, via @neondatabase/serverless)
+  dominios:
+    - dupply.com.br
+  compartilha_servidor_com:
+    - otto
+    - atende
+    - congregar
+    - imob
+    - dash
+    - agenda
+
+publicacao:
+  branch_principal: main
+  publica_ao_mergear: true
+  migracao_roda_no_deploy: false      # não há Dockerfile com migrate deploy neste repositório
+  verificacao_pos_deploy:
+    - "GET https://dupply.com.br/ responde 200"
+    - "GET https://dupply.com.br/diagnostico carrega o questionário"
+    - "o formulário do diagnóstico envia e devolve relatório"
+  nao_pode_quebrar:
+    - "o diagnóstico gratuito, do formulário ao e-mail"
+    - "as páginas legais /privacidade, /termos e /exclusao-de-dados"
+    - "os links de WhatsApp"
+    - "o console em /console"
+
+gates:
+  - checklists/arquitetura.md
+  - checklists/especificacao.md
+  - checklists/entrega.md
+  - checklists/publicacao.md
+
+autonomia:
+  pode_sozinho:
+    - ler codigo e documentacao
+    - criar branch de trabalho, commitar e fazer push nela
+    - abrir pull request
+  exige_ok:
+    - merge na branch principal
+    - deploy
+    - variavel de ambiente de producao
+    - mudanca de dependencia (exige regenerar o pnpm-lock.yaml, o que não cabe no fluxo pelo GitHub)
+  nunca:
+    - apagar, arquivar ou transferir repositorio
+    - mudar visibilidade do repositorio
+    - push forcado
+    - apagar a branch principal
+
+# --- Achados de 17/09 que este arquivo registra, e que precisam de decisão ---
+#
+# 1. CONFIRMADO PELO DONO em 17/09: a Dupply não está mais hospedada na
+#    Vercel. A produção roda no Coolify, o que bate com o `server: nginx`
+#    que o dupply.com.br responde e com a pasta `deploy/`, que tem
+#    `nginx-my-site.conf` e os passos do Coolify.
+#
+#    **O que isso deixa em aberto:** o `vercel.json` continua no repositório,
+#    e dentro dele existe um cron diário às 9h para `/api/cron/retry-sheets`,
+#    que reprocessa o envio dos leads do diagnóstico para a planilha. Esse cron
+#    era da Vercel. Não há nada equivalente na pasta `deploy/`, então ele
+#    provavelmente não roda em lugar nenhum desde a mudança de hospedagem.
+#    Lead que falhou no envio não está sendo reprocessado.
+#
+#    O `vercel.json` sai do repositório na mesma entrega, para parar de
+#    descrever uma infraestrutura que não existe mais.
+#
+# 2. Não existe CI. Sem ela, a Vera (qualidade) não tem o que rodar e o
+#    Davi (fullstack) não pode implementar, pela regra de parada do time.
+#    O arquivo de CI está pronto em `ci.yml`, ao lado deste.
