@@ -1353,3 +1353,31 @@
     gap: 0;
   }
 }
+
+/* O retrato funde com o fundo em vez de virar retângulo colado.
+   "lighten" faz todo pixel mais escuro que o fundo da seção virar exatamente
+   o fundo da seção, então o preto do estúdio some e sobra só o que é mais
+   claro que ele: o rosto, a barba, a camisa. Some a borda do arquivo. */
+.dp-hero-foto {
+  mix-blend-mode: lighten;
+}
+
+/* E a base da foto some num degradê, para não cortar na linha da seção */
+.dp-hero-base {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: min(54%, 780px);
+  height: 190px;
+  background: linear-gradient(0deg, #1c2628 6%, rgba(28, 38, 40, 0) 100%);
+  pointer-events: none;
+}
+
+@media (max-width: 720px) {
+  .dp-hero-base {
+    width: 100%;
+    height: 150px;
+    top: 230px;
+    bottom: auto;
+  }
+}

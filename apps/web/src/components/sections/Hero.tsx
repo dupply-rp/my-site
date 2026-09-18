@@ -17,6 +17,7 @@ export function Hero() {
         decoding="async"
       />
       <div className="dp-hero-veu" aria-hidden="true" />
+      <div className="dp-hero-base" aria-hidden="true" />
 
       <div className="dp-wrap">
         <div className="dp-hero-inner dp-anima">
