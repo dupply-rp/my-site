@@ -1,6 +1,5 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { AnalyticsTracker } from './components/AnalyticsTracker'
-import { ThemeToggle } from './components/ThemeToggle'
 import { WhatsappFloatingButton } from './components/WhatsappFloatingButton'
 import { DiagnosticoPage } from './features/diagnostico/DiagnosticoPage'
 import { DiagnosticoTestPage } from './features/diagnostico/DiagnosticoTestPage'
@@ -14,7 +13,6 @@ function App() {
   return (
     <BrowserRouter>
       <AnalyticsTracker />
-      <ThemeToggle className="theme-toggle theme-toggle-fab" />
       <WhatsappFloatingButton />
       <Routes>
         <Route path="/" element={<HomePage />} />

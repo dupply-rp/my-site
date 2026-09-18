@@ -1219,3 +1219,137 @@
   min-height: 2.44em;
   margin-bottom: 12px;
 }
+
+/* --- Passe de artesanato, 18/09 ---
+   Tira o que faz página parecer gerada: caixa em cima de caixa, tudo do mesmo
+   peso, sombra em tudo. Entra hierarquia por tipografia e fio, não por moldura. */
+
+/* Contraste do botão do topo, que perdia para a regra dos links */
+.dp-topo-links a.dp-topo-btn,
+.dp-topo-solido .dp-topo-links a.dp-topo-btn {
+  color: #fff;
+}
+
+/* Logomarca: topo e rodapé em tamanhos diferentes, como manda o bom senso */
+.dp-topo-marca img {
+  height: 34px;
+}
+
+.dp-topo-nav {
+  min-height: 84px;
+}
+
+.dp-rodape-marca img {
+  height: 26px;
+  margin-bottom: 20px;
+}
+
+/* Título um pouco menor, para não gritar */
+.dp-hero h1 {
+  font-size: clamp(2.2rem, 3.7vw, 3.35rem);
+}
+
+/* O método vira lista editorial: numeral grande, fio fino, sem caixa */
+.dp-metodo-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid rgba(28, 38, 40, 0.12);
+}
+
+.dp-metodo-lista li {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 300px) minmax(0, 1fr);
+  gap: 0 32px;
+  align-items: baseline;
+  padding: 30px 0;
+  border-bottom: 1px solid rgba(28, 38, 40, 0.12);
+}
+
+.dp-metodo-num {
+  font-size: 1.4rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--dp-ultramarino);
+  font-variant-numeric: tabular-nums;
+}
+
+.dp-metodo-lista h3 {
+  margin: 0;
+  font-size: 1.3125rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.dp-metodo-lista p {
+  margin: 0;
+  font-size: 1.03rem;
+  line-height: 1.55;
+  font-weight: 300;
+  color: var(--dp-texto-escuro);
+}
+
+.dp-metodo-fecho {
+  margin: 44px 0 0;
+  max-width: 18em;
+  font-size: clamp(1.5rem, 2.6vw, 2.15rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.12;
+}
+
+/* Cartões de dor: fio no lugar de preenchimento, sem sombra nem salto */
+.dp-card-dor,
+.dp-sec-clara .dp-card-dor {
+  background: transparent;
+  border: 1px solid rgba(28, 38, 40, 0.12);
+  border-radius: 0;
+  padding: 28px 0 28px 0;
+}
+
+.dp-card-dor {
+  border-width: 0 0 1px 0;
+}
+
+.dp-card-dor:hover {
+  transform: none;
+}
+
+.dp-grid-3 {
+  gap: 0 48px;
+}
+
+/* Produtos: contorno em vez de preenchimento */
+.dp-produto {
+  background: transparent;
+  border: 1px solid rgba(28, 38, 40, 0.14);
+  border-radius: 18px;
+  padding: 34px;
+}
+
+.dp-produto:hover {
+  transform: none;
+  border-color: rgba(2, 21, 252, 0.35);
+}
+
+/* Sem sombra de card em lugar nenhum */
+.dp-card:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+@media (max-width: 860px) {
+  .dp-metodo-lista li {
+    grid-template-columns: 52px minmax(0, 1fr);
+    gap: 6px 20px;
+    padding: 24px 0;
+  }
+
+  .dp-metodo-lista p {
+    grid-column: 2;
+  }
+
+  .dp-grid-3 {
+    gap: 0;
+  }
+}

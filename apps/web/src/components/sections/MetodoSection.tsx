@@ -19,24 +19,19 @@ export function MetodoSection() {
           </p>
         </div>
 
-        <div className="dp-grid-4">
+        <ol className="dp-metodo-lista">
           {metodoCards.map((card, i) => (
-            <article className="dp-card" key={card.titulo}>
-              <div className="dp-card-topo">
-                <div className="dp-card-fio" aria-hidden="true" />
-                <div className="dp-card-num" aria-hidden="true">
-                  {String(i + 1).padStart(2, '0')}
-                </div>
-              </div>
+            <li key={card.titulo}>
+              <span className="dp-metodo-num" aria-hidden="true">
+                {String(i + 1).padStart(2, '0')}
+              </span>
               <h3>{card.titulo}</h3>
               <p>{card.frase}</p>
-            </article>
+            </li>
           ))}
-        </div>
+        </ol>
 
-        <div className="dp-fecho-metodo">
-          <p>Processo de banco, rodando numa empresa pequena.</p>
-        </div>
+        <p className="dp-metodo-fecho">Processo de banco, rodando numa empresa pequena.</p>
       </div>
     </section>
   )
