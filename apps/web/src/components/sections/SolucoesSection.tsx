@@ -1,0 +1,54 @@
+import { produtos } from '../../constants/content'
+import { whatsappProduto } from '../../constants/links'
+import { trackCtaClick } from '../../lib/analytics'
+
+export function SolucoesSection() {
+  return (
+    <section className="dp-sec dp-sec-branca" id="solucoes" aria-labelledby="solucoes-titulo">
+      <div className="dp-wrap">
+        <div className="dp-cabecalho">
+          <div>
+            <p className="dp-eyebrow">O que a Dupply faz</p>
+            <h2 className="dp-h2" id="solucoes-titulo">
+              Sistema pronto, ou sob medida depois do diagnóstico.
+            </h2>
+          </div>
+          <p className="dp-lead">
+            Quatro sistemas que já rodam com cliente, e consultoria para o que não cabe em nenhum
+            deles.
+          </p>
+        </div>
+
+        <div className="dp-grid-2">
+          {produtos.map((produto) => (
+            <article className="dp-produto" key={produto.nome}>
+              <div className="dp-produto-topo">
+                <h3>{produto.nome}</h3>
+                {produto.piloto ? (
+                  <span className="dp-pill">EM PILOTO</span>
+                ) : (
+                  <div className="dp-produto-fio" aria-hidden="true" />
+                )}
+              </div>
+              <p>{produto.descricao}</p>
+              {produto.nota ? <p className="dp-nota">{produto.nota}</p> : null}
+              <a
+                href={whatsappProduto(produto.nome)}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() =>
+                  trackCtaClick('whatsapp', {
+                    location: 'produto_' + produto.nome.toLowerCase(),
+                    destination: 'whatsapp',
+                  })
+                }
+              >
+                Falar sobre o {produto.nome}
+              </a>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}

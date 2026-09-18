@@ -1,25 +1,27 @@
-import { lossItems } from '../../constants/content'
+import { dores } from '../../constants/content'
 
 export function DiagnosisSection() {
   return (
-    <section className="section" id="gargalos">
-      <div className="wrap">
-        <div className="section-head">
+    <section className="dp-sec dp-sec-branca" id="gargalos" aria-labelledby="gargalos-titulo">
+      <div className="dp-wrap">
+        <div className="dp-cabecalho">
           <div>
-            <span className="eyebrow">Diagnóstico</span>
-            <h2>Onde sua empresa está perdendo tempo hoje?</h2>
+            <p className="dp-eyebrow">O problema</p>
+            <h2 className="dp-h2" id="gargalos-titulo">
+              Onde sua empresa está perdendo tempo hoje.
+            </h2>
           </div>
-          <p>
-            Antes de falar em tecnologia, a Dupply olha para a operação. O desperdício quase sempre
-            aparece em tarefas pequenas, repetidas e invisíveis.
+          <p className="dp-lead">
+            Antes de falar em tecnologia, a gente olha a operação. O desperdício quase sempre está
+            em tarefa pequena, repetida e invisível.
           </p>
         </div>
 
-        <div className="card-grid">
-          {lossItems.map((title, index) => (
-            <article className="loss-card" key={title}>
-              <span className="num">{String(index + 1).padStart(2, '0')}</span>
-              <h3>{title}</h3>
+        <div className="dp-grid-3">
+          {dores.map((dor) => (
+            <article className="dp-card-dor" key={dor.titulo}>
+              <h3>{dor.titulo}</h3>
+              <p>{dor.saida}</p>
             </article>
           ))}
         </div>

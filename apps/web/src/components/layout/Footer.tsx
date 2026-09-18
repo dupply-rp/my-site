@@ -4,7 +4,8 @@ import {
   EXCLUSAO_DADOS_PATH,
   PRIVACIDADE_PATH,
   TERMOS_PATH,
-  WHATSAPP_URL,
+  WHATSAPP_PHONE,
+  whatsappUrl,
 } from '../../constants/links'
 import { trackCtaClick } from '../../lib/analytics'
 
@@ -65,14 +66,14 @@ export function Footer() {
           <Link to={TERMOS_PATH}>Termos</Link>
           <Link to={EXCLUSAO_DADOS_PATH}>Exclusão de dados</Link>
           <a
-            href={WHATSAPP_URL}
+            href={whatsappUrl('fecho')}
             target="_blank"
             rel="noopener noreferrer"
             onClick={() =>
-              trackCtaClick('whatsapp', { location: 'footer', destination: 'whatsapp' })
+              trackCtaClick('whatsapp', { location: 'rodape', destination: 'whatsapp' })
             }
           >
-            WhatsApp
+            {WHATSAPP_PHONE}
           </a>
         </nav>
         <div className="socials">
