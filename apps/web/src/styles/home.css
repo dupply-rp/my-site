@@ -97,6 +97,7 @@
 
 /* 2. Herói */
 .dp-hero {
+  --dp-foto-larg: min(43%, 600px);
   position: relative;
   background: var(--dp-preto);
   color: var(--dp-offwhite);
@@ -108,10 +109,10 @@
   position: absolute;
   top: 0;
   right: 0;
-  width: min(54%, 780px);
+  width: var(--dp-foto-larg);
   height: 100%;
   object-fit: cover;
-  object-position: 44% 22%;
+  object-position: 50% 46%;
   display: block;
 }
 
@@ -119,7 +120,7 @@
   position: absolute;
   top: 0;
   right: 0;
-  width: calc(min(54%, 780px) + 200px);
+  width: calc(var(--dp-foto-larg) + 200px);
   height: 100%;
   background: linear-gradient(
     90deg,
@@ -650,8 +651,8 @@
     margin-top: 24px;
   }
 
-  .dp-hero-foto {
-    width: 50%;
+  .dp-hero {
+    --dp-foto-larg: 50%;
   }
 }
 
@@ -669,22 +670,26 @@
     padding: 0;
   }
 
+  /* Altura por proporcao, nao por pixel: assim o corte e o mesmo em qualquer
+     largura de tela, e a logo da camiseta nunca cai dentro do degrade. */
   .dp-hero-foto {
     position: relative;
     width: 100%;
     max-width: none;
-    height: 380px;
-    object-position: 50% 18%;
+    height: auto;
+    aspect-ratio: 769 / 880;
+    object-position: 50% 40%;
   }
 
   .dp-hero-veu {
     width: 100%;
-    height: 380px;
+    height: auto;
+    aspect-ratio: 769 / 880;
     background: linear-gradient(
       0deg,
-      #1c2628 4%,
-      rgba(28, 38, 40, 0.25) 48%,
-      rgba(28, 38, 40, 0) 100%
+      #1c2628 0%,
+      rgba(28, 38, 40, 0.85) 5%,
+      rgba(28, 38, 40, 0) 13%
     );
   }
 
@@ -1367,17 +1372,15 @@
   position: absolute;
   right: 0;
   bottom: 0;
-  width: min(54%, 780px);
-  height: 190px;
-  background: linear-gradient(0deg, #1c2628 6%, rgba(28, 38, 40, 0) 100%);
+  width: var(--dp-foto-larg);
+  height: 90px;
+  background: linear-gradient(0deg, #1c2628 8%, rgba(28, 38, 40, 0) 100%);
   pointer-events: none;
 }
 
 @media (max-width: 720px) {
+  /* no celular o veu ja faz o pe da foto sumir, a faixa sobraria por cima da camiseta */
   .dp-hero-base {
-    width: 100%;
-    height: 150px;
-    top: 230px;
-    bottom: auto;
+    display: none;
   }
 }

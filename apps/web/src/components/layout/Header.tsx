@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import assinaturaClara from '../../assets/marca/dupply-assinatura-clara.svg'
-import assinaturaEscura from '../../assets/marca/dupply-assinatura-escura.svg'
+import assinaturaClara from '../../assets/marca/dupply-assinatura-clara.png'
+import assinaturaEscura from '../../assets/marca/dupply-assinatura-escura.png'
 import { DIAGNOSTICO_PATH } from '../../constants/links'
 import { trackCtaClick } from '../../lib/analytics'
 

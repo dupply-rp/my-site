@@ -8,7 +8,7 @@ import {
   whatsappUrl,
 } from '../../constants/links'
 import { trackCtaClick } from '../../lib/analytics'
-import assinatura from '../../assets/marca/dupply-assinatura-escura.svg'
+import assinatura from '../../assets/marca/dupply-assinatura-escura.png'
 import {
   IconeDocumento,
   IconeDuvida,
