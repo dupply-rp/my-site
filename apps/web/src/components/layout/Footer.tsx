@@ -49,7 +49,7 @@ export function Footer() {
     <footer className="dp-rodape">
       <div className="dp-wrap dp-rodape-grade">
         <div className="dp-rodape-marca">
-          <img src={assinatura} alt="Dupply" height={38} />
+          <img src={assinatura} alt="Dupply" height={48} />
           <a
             className="dp-rodape-fone"
             href={whatsappUrl('heroi')}

@@ -160,7 +160,7 @@ export const produtos = [
     nome: 'Imob',
     descricao:
       'Site próprio de imóveis com a marca da imobiliária, mais um painel para cadastrar imóveis e receber interessados.',
-    piloto: true,
-    nota: 'Ainda sem cliente pagante em produção. Converse com o Ricardo antes de contratar.',
+    piloto: false,
+    nota: '',
   },
 ] as const

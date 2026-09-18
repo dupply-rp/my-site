@@ -1171,3 +1171,51 @@
     width: 100%;
   }
 }
+
+/* --- Ajustes de 18/09, segunda leitura --- */
+
+/* Logomarca no tamanho do projeto */
+.dp-topo-marca img {
+  height: 44px;
+}
+
+.dp-topo-nav {
+  min-height: 100px;
+}
+
+.dp-rodape-marca img {
+  height: 48px;
+  margin-bottom: 22px;
+}
+
+/* Etapas alinhadas: todo título reserva duas linhas, para o corpo começar na mesma altura */
+.dp-etapa h3 {
+  min-height: 2.4em;
+  display: flex;
+  align-items: flex-start;
+}
+
+@media (max-width: 720px) {
+  .dp-etapa h3 {
+    min-height: 0;
+  }
+
+  .dp-topo-marca img {
+    height: 38px;
+  }
+
+  .dp-topo-nav {
+    min-height: 76px;
+  }
+
+  .dp-rodape-marca img {
+    height: 46px;
+  }
+}
+
+/* Etapas: entrelinha fixa para duas linhas caberem exatamente na altura reservada */
+.dp-etapa h3 {
+  line-height: 1.22;
+  min-height: 2.44em;
+  margin-bottom: 12px;
+}

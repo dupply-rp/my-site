@@ -41,7 +41,7 @@ export function Header({ sobreEscuro = false }: HeaderProps = {}) {
     <header className={classe}>
       <nav className="dp-topo-nav dp-wrap" aria-label="Navegação principal">
         <Link className="dp-topo-marca" to="/" aria-label="Dupply, página inicial">
-          <img src={rolou ? assinaturaEscura : assinaturaClara} alt="Dupply" height={34} />
+          <img src={rolou ? assinaturaEscura : assinaturaClara} alt="Dupply" height={44} />
         </Link>
 
         <div className="dp-topo-links">
