@@ -21,7 +21,7 @@ O site institucional é o destino de todo conteúdo do `@ricardo.lima.ia` e do `
 
 ## 2. Decisões
 
-Todas tomadas pelo dono em 17/09, nesta conversa, e registradas em `CIAD/docs/site/2026-09-17-projeto-novo-site.md`:
+Todas tomadas pelo dono em 17/09, nesta conversa, e registradas em `CIAD/docs/site/2026-09-17-projeto-novo-site.md`. **A frase do primeiro quadro foi revista em 18/09, ver nota abaixo da tabela.**
 
 | Decisão | Quem |
 |---|---|
@@ -34,7 +34,9 @@ Todas tomadas pelo dono em 17/09, nesta conversa, e registradas em `CIAD/docs/si
 | Identidade da casa: Outfit, paleta `#1C2628`, `#F2F3F5`, `#5E62C5`, `#0215FC` e o gradiente entre os dois azuis | Manual da marca |
 | Dado de demonstração pode ser usado nas telas de produto | Ricardo |
 
-O desenho aprovado está em `https://claude.ai/artifact/CX3msAaGH4NRoADGk2okqV`, prancha "Home · direção Autoridade". **É o contrato visual desta spec.**
+**Nota de 18/09 — frase do primeiro quadro revista duas vezes.** A versão original, "Eu trouxe o padrão do banco para a sua empresa.", foi aprovada em 17/09 e reprovada pelo próprio dono em 18/09, por soar vaidosa. A primeira substituta, "O que falta na sua operação não é ferramenta. É método.", foi aprovada pelo Bento (copy) no parecer de 18/09, mas o dono apontou uma contradição real antes de fechar: a Dupply também vende ferramenta (Otto, Atende, Congregar, Imob), então a frase não pode soar como se desprezasse o que ela vende. **A frase final, aprovada pelo dono em 18/09, resolve isso mudando o alvo de "ferramenta" para "ferramenta sem método": "O que falta na sua operação não é mais uma ferramenta de IA. É método por trás dela."** Isso mantém a lógica do bloco 8 (Otto, Atende, Congregar, Imob) coerente: são ferramentas com o método já embutido, não a "mais uma ferramenta solta" que a frase ataca.
+
+O desenho aprovado está em `https://claude.ai/artifact/CX3msAaGH4NRoADGk2okqV`, prancha "Home · direção Autoridade". **É o contrato visual desta spec**, com a frase do herói substituída pela versão final acima.
 
 ## 3. Contratos
 
@@ -124,7 +126,7 @@ Nenhuma variável de ambiente nova. Nenhum segredo novo.
 
 ## 5. Critérios de aceite
 
-1. Dado que alguém abre `dupply.com.br` num computador, quando a página carrega, então o primeiro quadro mostra o retrato do Ricardo sangrando à direita, o título "Eu trouxe o padrão do banco para a sua empresa." e **um único botão cheio**, "Fazer o diagnóstico gratuito".
+1. Dado que alguém abre `dupply.com.br` num computador, quando a página carrega, então o primeiro quadro mostra o retrato do Ricardo sangrando à direita, o título "O que falta na sua operação não é mais uma ferramenta de IA. É método por trás dela." e **um único botão cheio**, "Fazer o diagnóstico gratuito".
 2. Dado que alguém abre a home, quando procura o botão do WhatsApp, então ele existe com peso visual menor que o do diagnóstico, no herói e no fecho.
 3. Dado que alguém lê a faixa de autoridade, quando vê os nove logos, então acima deles está escrito "Onde eu trabalhei e entreguei projetos antes da Dupply", e eles aparecem em linha corrida, nunca em grade de caixas.
 4. Dado que alguém procura quantos anos de experiência, quando lê a página inteira, então o número é 21 em todo lugar, e "15" não aparece.
@@ -135,9 +137,10 @@ Nenhuma variável de ambiente nova. Nenhum segredo novo.
 9. Dado que alguém entra por um link com parâmetro de origem, quando a página carrega, então a origem é registrada e o link de WhatsApp daquela página leva a mensagem pré-preenchida correspondente.
 10. Dado que a página é medida com Lighthouse em celular, quando o teste roda, então o Largest Contentful Paint fica abaixo de 2,5 segundos.
 11. Nenhuma imagem da página exibe número de resultado que não venha de cliente real. A imagem `ricardo-lima3.png` sai da home.
-
 17. Dado que alguém procura o contato da Dupply, quando chega no rodapé, então o número **(77) 99951-8373** está escrito por extenso, e clicável, além de existir como botão no herói e no fecho.
 18. Dado que alguém clica no WhatsApp a partir de lugares diferentes, quando a conversa abre, então a mensagem pré-preenchida é a daquela origem, e não a mesma em todos.
+19. Dado que alguém chega no bloco do método, quando lê o fecho do bloco, então **não existe nenhum botão ou link do tipo "Ver como funciona na prática"** nesta entrega: a demonstração interativa do método é item de fora de escopo (seção 6), e este bloco fecha só com a frase "Processo de banco, rodando numa empresa pequena.", sem call-to-action próprio.
+20. Dado que alguém lê qualquer resposta do FAQ sobre proteção de dado do cliente, quando lê o texto, então a resposta afirma a regra ("dado de cliente não vira treino de modelo, e é conferido") sem citar o nome de nenhum artefato de governança interna da CIAD (não aparecem as palavras "constituição", "CIAD" nem "Hermes" no texto voltado ao público).
 
 ### Não pode quebrar
 
@@ -151,6 +154,7 @@ Nenhuma variável de ambiente nova. Nenhum segredo novo.
 
 - **O bloco "Para quem a Dupply não é".** Depende de três linhas que só o dono escreve.
 - **O bloco de preço.** Depende da decisão dele de publicar faixa ou não.
+- **A demonstração interativa "Ver como funciona na prática".** Apareceu num mockup fora do fluxo da CIAD, sem spec própria e sem decisão de para onde aponta (vídeo, demo ao vivo, outra página). Não entra nesta onda. Se o dono quiser esse botão, é spec nova, com o destino definido antes de qualquer código.
 - **Capturas reais de produto.** Dependem de um workspace de demonstração em cada sistema, que é entrega própria. Nesta onda o herói usa o retrato, não a tela do produto.
 - **O hub `/ricardo`** e as páginas por produto. Specs próprias.
 - **O redesenho do `/diagnostico`.** Ele herda os tokens novos, e o resto fica para depois.
@@ -169,17 +173,17 @@ Nenhuma variável de ambiente nova. Nenhum segredo novo.
   - `Header.tsx` e `Footer.tsx` com a assinatura da marca e um botão só
   - testes: a logo tem altura de 50 px no topo e a área útil ocupa a altura declarada
 - [ ] **T4. Herói e faixa de autoridade** (critérios 1, 2, 3, 4, 11)
-  - `Hero.tsx` e `TrajectorySection.tsx`, com o retrato, a legenda e os logos em linha
-  - testes: a palavra "15" não aparece no HTML da home, e `ricardo-lima3.png` não é referenciada
-- [ ] **T5. Método** (critério 5)
-  - `MetodoSection.tsx` novo, quatro cards com número, título e frase, mais a faixa de fecho
-  - testes: os quatro títulos aparecem, e a frase de fecho também
+  - `Hero.tsx` e `TrajectorySection.tsx`, com o retrato, a legenda e os logos em linha, usando o título final da seção 2 ("O que falta na sua operação não é mais uma ferramenta de IA. É método por trás dela.")
+  - testes: a palavra "15" não aparece no HTML da home, `ricardo-lima3.png` não é referenciada, e o texto "Eu trouxe o padrão do banco" também não aparece em lugar nenhum
+- [ ] **T5. Método** (critérios 5, 19)
+  - `MetodoSection.tsx` novo, quatro cards com número, título e frase, mais a faixa de fecho, **sem nenhum botão ou link ao final do bloco**
+  - testes: os quatro títulos aparecem, a frase de fecho também, e não existe elemento clicável do tipo "ver como funciona"
 - [ ] **T6. Problema, processo e promessas** (critérios 1, 7)
   - `DiagnosisSection.tsx` com a segunda linha por dor, `ProcessSection.tsx` redesenhada, `PromessasSection.tsx` nova a partir do que hoje está dentro do `Hero.tsx`
   - testes: os seis itens de "o que não prometemos" continuam na página
-- [ ] **T7. Soluções, dúvidas e fecho** (critérios 6, 2)
-  - `SolucoesSection.tsx` nova, `FaqSection.tsx` com as perguntas novas, `FinalCtaSection.tsx` em gradiente. Remover `BenefitsSection.tsx` e `DiagnosticoBanner.tsx` do `App.tsx`
-  - testes: os quatro produtos aparecem, "Agenda" e "Dash" não aparecem, e o Imob tem o rótulo
+- [ ] **T7. Soluções, dúvidas e fecho** (critérios 6, 2, 20)
+  - `SolucoesSection.tsx` nova, `FaqSection.tsx` com as perguntas novas **e a resposta sobre dado de cliente sem citar artefato de governança interna**, `FinalCtaSection.tsx` em gradiente. Remover `BenefitsSection.tsx` e `DiagnosticoBanner.tsx` do `App.tsx`
+  - testes: os quatro produtos aparecem, "Agenda" e "Dash" não aparecem, o Imob tem o rótulo, e nenhuma resposta do FAQ contém as palavras "constituição", "CIAD" ou "Hermes"
 - [ ] **T8. Contato e medição** (critérios 8, 9, 10, 17, 18)
   - Eventos em `analytics.ts`, origem por parâmetro, mensagem de WhatsApp por origem em `links.ts`
   - O número escrito por extenso no rodapé, usando a constante `WHATSAPP_PHONE` que já existe e nunca foi usada
@@ -214,3 +218,4 @@ Nenhuma. O que dependia do dono virou "Fora de escopo".
 | Data | Papel | Estado | O que aconteceu | Próxima ação |
 |---|---|---|---|---|
 | 17/09/2026 | Dora (especificação) | rascunho | Spec escrita a partir do projeto e da prancha aprovada pelo dono | Entrar com `ciad.yaml` e CI no `my-site`, e então validar com o Oscar |
+| 18/09/2026 | Dora (especificação) | rascunho | Um mockup fora do fluxo da CIAD (feito por outro agente) implementou a spec ao pé da letra, inclusive a frase já reprovada pelo dono no critério 1, e trouxe dois elementos sem decisão: um botão "Ver como funciona na prática" no bloco de método, e uma resposta de FAQ citando "nossa constituição" para explicar a proteção de dado do cliente. A equipe (Iris, Bento, Gil, Clara, Manu, Téo, Caio) revisou o mockup e o projeto contra o site real e as referências. O dono reprovou a frase de novo, aprovou a primeira substituta do Bento e depois apontou uma contradição (a Dupply também vende ferramenta), fechando a frase final nesta conversa. Critérios 1 e T4 atualizados com a frase final; critério 19 e T5 fecham o botão sem destino como fora de escopo; critério 20 e T7 tiram a citação ao artefato de governança interna do texto público. | Confirmar `ciad.yaml` e CI no PR #100, então validar com o Oscar. |
