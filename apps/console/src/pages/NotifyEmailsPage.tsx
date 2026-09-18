@@ -20,21 +20,25 @@ export function NotifyEmailsPage() {
   const [saving, setSaving] = useState(false)
   const [removingId, setRemovingId] = useState<string | null>(null)
 
-  async function loadItems() {
-    setLoading(true)
-    setError(null)
-    try {
-      const data = await client.listNotifyEmails()
-      setItems(data)
-    } catch (err) {
-      setError(err instanceof ConsoleApiError ? err.message : 'Erro ao carregar e-mails')
-    } finally {
-      setLoading(false)
-    }
-  }
-
   useEffect(() => {
-    void loadItems()
+    let ativo = true
+
+    client
+      .listNotifyEmails()
+      .then((data) => {
+        if (ativo) setItems(data)
+      })
+      .catch((err) => {
+        if (!ativo) return
+        setError(err instanceof ConsoleApiError ? err.message : 'Erro ao carregar e-mails')
+      })
+      .finally(() => {
+        if (ativo) setLoading(false)
+      })
+
+    return () => {
+      ativo = false
+    }
   }, [])
 
   const subtitle = useMemo(() => {
