@@ -19,6 +19,14 @@ export function PromessasSection() {
               </li>
             ))}
           </ul>
+
+          <div className="dp-nao-e">
+            <p className="dp-eyebrow">Para quem a Dupply não é</p>
+            <p>
+              Para quem quer resultado sem mudar nada em como a operação funciona hoje. A IA entra
+              dentro do processo, não ao lado dele.
+            </p>
+          </div>
         </div>
       </div>
     </section>
