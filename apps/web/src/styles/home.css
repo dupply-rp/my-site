@@ -212,6 +212,10 @@
 
 /* Seções claras */
 .dp-sec {
+  /* a marca dagua e posicionada com deslocamento negativo: sem ancora e sem
+     corte aqui, ela empurrava a pagina 140px para o lado no celular */
+  position: relative;
+  overflow: hidden;
   padding: 96px 0;
 }
 
