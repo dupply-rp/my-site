@@ -31,7 +31,9 @@ export function MetodoSection() {
           ))}
         </ol>
 
-        <p className="dp-metodo-fecho">Processo de banco, rodando numa empresa pequena.</p>
+        <p className="dp-metodo-fecho">
+          Método de operação grande, na velocidade de empresa pequena.
+        </p>
       </div>
     </section>
   )

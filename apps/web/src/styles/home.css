@@ -1390,3 +1390,45 @@
     display: none;
   }
 }
+
+/* O bloco de soluções não é o catálogo fechado da casa: os quatro sistemas
+   entram como exemplo do que já roda, e o fecho abre para qualquer área. */
+.dp-solucoes-sub {
+  margin: 0 0 18px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(28, 38, 40, 0.42);
+}
+
+.dp-solucoes-fecho {
+  margin-top: 28px;
+  padding-top: 26px;
+  border-top: 1px solid rgba(28, 38, 40, 0.12);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 40px;
+}
+
+.dp-solucoes-fecho p {
+  margin: 0;
+  max-width: 62ch;
+  font-size: 1.03rem;
+  line-height: 1.55;
+  font-weight: 300;
+  color: var(--dp-texto-escuro);
+}
+
+.dp-solucoes-fecho strong {
+  font-weight: 600;
+  color: var(--dp-preto);
+}
+
+@media (max-width: 720px) {
+  .dp-solucoes-fecho {
+    display: block;
+  }
+}
