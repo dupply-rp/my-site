@@ -1432,3 +1432,26 @@
     display: block;
   }
 }
+
+/* A linha de desqualificação fecha o bloco duro da página. É uma só porque é
+   a única que o dono assina; linha de desqualificação escrita de fora não
+   filtra ninguém, só soa arrogante. */
+.dp-nao-e {
+  margin-top: 40px;
+  padding-top: 26px;
+  border-top: 1px solid rgba(242, 243, 245, 0.16);
+  max-width: 56ch;
+}
+
+.dp-nao-e .dp-eyebrow {
+  color: rgba(242, 243, 245, 0.5);
+  margin-bottom: 10px;
+}
+
+.dp-nao-e p:last-child {
+  margin: 0;
+  font-size: 1.1rem;
+  line-height: 1.5;
+  font-weight: 300;
+  color: var(--dp-texto-claro);
+}
