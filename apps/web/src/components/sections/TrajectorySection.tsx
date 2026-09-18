@@ -8,8 +8,8 @@ export function TrajectorySection() {
           Antes da Dupply, eu entreguei projeto para
         </p>
         <ul className="dp-logos">
-          {companies.map((company) => (
-            <li key={company.id}>{company.name}</li>
+          {companies.map((empresa) => (
+            <li key={empresa}>{empresa}</li>
           ))}
         </ul>
       </div>
