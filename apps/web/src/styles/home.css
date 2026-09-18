@@ -1268,7 +1268,7 @@
 
 .dp-metodo-lista li {
   display: grid;
-  grid-template-columns: 96px minmax(0, 300px) minmax(0, 1fr);
+  grid-template-columns: 88px minmax(0, 360px) minmax(0, 1fr);
   gap: 0 32px;
   align-items: baseline;
   padding: 30px 0;
@@ -1288,6 +1288,8 @@
   font-size: 1.3125rem;
   font-weight: 600;
   letter-spacing: -0.02em;
+  /* titulo de duas linhas parte equilibrado, nao com uma palavra sozinha */
+  text-wrap: balance;
 }
 
 .dp-metodo-lista p {

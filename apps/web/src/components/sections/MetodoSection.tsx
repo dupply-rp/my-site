@@ -15,7 +15,7 @@ export function MetodoSection() {
           </div>
           <p className="dp-lead">
             Empresa grande tem processo porque tem gente para manter processo. A sua não tem, e não
-            precisa ter: eu trago o método pronto, e ele roda na Dupply todo dia.
+            precisa ter: eu trago o método pronto, e ele roda no seu negócio todo dia.
           </p>
         </div>
 

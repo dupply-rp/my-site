@@ -79,22 +79,28 @@ export const benefits = [
 
 /* --- Home nova (spec .specs/home-nova.md) --- */
 
+// Fala de resultado de operação, nunca de prática de engenharia. A versão
+// anterior descrevia revisão de código e teste automático, que é assunto de
+// outro time técnico, não do dono de empresa que o site quer atender.
 export const metodoCards = [
   {
-    titulo: 'Revisão independente',
-    frase: 'Quem escreve o código não é quem revisa, e quem revisa não é quem publica.',
+    titulo: 'Diagnóstico antes de ferramenta',
+    frase:
+      'A gente entende sua operação antes de sugerir qualquer coisa: onde o tempo se perde e onde a IA realmente ajuda.',
   },
   {
-    titulo: 'Verificação automática',
-    frase: 'Nada entra no ar sem passar por teste que roda sozinho, toda vez.',
+    titulo: 'Tarefa repetitiva sai da sua mão',
+    frase:
+      'O que hoje toma horas do seu time vira automático, sem precisar contratar mais gente.',
   },
   {
-    titulo: 'Segredo fora da conversa',
-    frase: 'Senha e chave nunca circulam em mensagem, e cada acesso é o mínimo necessário.',
+    titulo: 'Atendimento e venda que não param',
+    frase: 'IA que responde, qualifica lead e ajuda a fechar negócio 24 horas por dia.',
   },
   {
-    titulo: 'Seu dado é seu',
-    frase: 'Dado de cliente não vira treino de modelo. É regra escrita, e é conferida.',
+    titulo: 'Pronto quando existe, sob medida quando não existe',
+    frase:
+      'Usamos o que já funciona, e construímos o que sua empresa precisa e ainda não existe pronto.',
   },
 ] as const
 

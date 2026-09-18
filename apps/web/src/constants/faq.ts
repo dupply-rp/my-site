@@ -24,4 +24,14 @@ export const faqItems = [
     answer:
       'Você pode falar conosco no WhatsApp, pedir para a Dupply entrar em contato ou simplesmente usar o relatório internamente. Não há obrigação de contratar.',
   },
+  {
+    question: 'O Atende usa a API oficial da Meta?',
+    answer:
+      'Usa. O WhatsApp conecta pelo cadastro oficial da Meta, e o número pode continuar funcionando no aplicativo WhatsApp Business do celular. O Instagram Direct conecta pelo login oficial da Meta, com a autorização aprovada por ela. Existe ainda uma conexão antiga por QR code, que segue disponível mas não é a recomendada.',
+  },
+  {
+    question: 'O que acontece com os dados da minha empresa?',
+    answer:
+      'Dado de cliente não vira treino de modelo. É regra escrita, e é conferida. Você pode pedir a exclusão dos seus dados a qualquer momento.',
+  },
 ] as const

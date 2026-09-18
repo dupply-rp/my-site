@@ -7,7 +7,7 @@ import { trackCtaClick } from '../../lib/analytics'
 
 const navItems = [
   { href: '/#solucoes', label: 'Soluções' },
-  { href: '/#atuacao', label: 'Como funciona' },
+  { href: '/#atuacao', label: 'Processo' },
   { href: '/#trajetoria', label: 'Sobre' },
 ] as const
 
