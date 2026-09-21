@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="light">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Quanto você gasta com assinaturas? | Dupply</title>
+<meta name="description" content="Calculadora gratuita: descubra em 1 minuto quanto você gasta por ano com assinaturas.">
+<meta property="og:title" content="Quanto você gasta com assinaturas sem perceber?">
+<meta property="og:description" content="Marque o que você assina e descubra o total do ano. Grátis, em 1 minuto.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F2F3F5; --surface:#FFFFFF; --tint:#E8EAFB; --tint-line:#C9CEF5;
+  --ink:#151B1E; --body:#3A4449; --muted:#5B666B; --line:#D9DDE3;
+  --blue:#0215FC; --blue-ink:#0215FC; --on-blue:#FFFFFF; --violet:#5E62C5;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Outfit',system-ui,-apple-system,'Segoe UI',sans-serif;-webkit-font-smoothing:antialiased}
+img{max-width:100%}
+.topbar{height:8px;background:var(--blue)}
+.wrap{max-width:640px;margin:0 auto;padding:28px 20px 180px}
+.brand{display:flex;align-items:center;justify-content:space-between;margin-bottom:36px}
+.logo{width:186px;height:36px;overflow:hidden}.logo img{display:block;width:214px;height:82px;max-width:none;margin:-23px 0 0 -14px}
+.brand span{font-size:14px;color:var(--muted)}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border:1.5px solid var(--blue-ink);border-radius:999px;color:var(--blue-ink);font-weight:700;font-size:13px;letter-spacing:.5px}
+h1{font-size:clamp(34px,8.5vw,52px);line-height:1.04;letter-spacing:-1.5px;font-weight:800;margin:20px 0 16px}
+h1 em{font-style:normal;color:var(--blue-ink)}
+.rule{width:72px;height:5px;border-radius:3px;background:var(--blue);margin-bottom:18px}
+.lead{font-size:19px;line-height:1.45;color:var(--body);margin:0 0 10px}
+.privacy{display:flex;gap:8px;align-items:center;font-size:14px;color:var(--muted);margin:0 0 32px}
+.group{margin-bottom:28px}
+.group h2{font-size:15px;font-weight:700;color:var(--muted);margin:0 0 10px;letter-spacing:.3px}
+.list{background:var(--surface);border-radius:20px;overflow:hidden;border:1px solid var(--line)}
+.item{display:flex;align-items:center;gap:14px;padding:14px 16px;border-top:1px solid var(--line);min-height:60px}
+.item:first-child{border-top:none}
+.item input[type=checkbox]{appearance:none;-webkit-appearance:none;flex-shrink:0;width:28px;height:28px;border-radius:50%;border:2px solid var(--tint-line);display:grid;place-items:center;cursor:pointer;margin:0;background:transparent}
+.item input[type=checkbox]:checked{background:var(--blue);border-color:var(--blue)}
+.item input[type=checkbox]:checked::after{content:"";width:12px;height:7px;border-left:2.5px solid #fff;border-bottom:2.5px solid #fff;transform:translateY(-2px) rotate(-45deg)}
+.item input[type=checkbox]:focus-visible,.price:focus-visible,button:focus-visible,a:focus-visible,.custom input:focus-visible{outline:3px solid var(--violet);outline-offset:2px}
+.item label{flex-grow:1;min-width:0;font-size:17px;line-height:1.25;font-weight:500;cursor:pointer}
+.pricewrap{flex-shrink:0;display:flex;align-items:center;gap:4px;font-size:15px;color:var(--muted)}
+.price{width:84px;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;font-size:16px;font-weight:600;text-align:right}
+.item.off .price{opacity:.55}
+.custom{display:flex;gap:10px;padding:14px 16px;border-top:1px solid var(--line);flex-wrap:wrap}
+.custom input{flex:1 1 140px;min-width:0;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;font-size:16px}
+.custom input.val{flex:0 0 110px}
+.btn-add{flex:0 0 auto;min-height:46px;padding:0 18px;border-radius:12px;border:1.5px solid var(--blue-ink);background:transparent;color:var(--blue-ink);font:inherit;font-weight:700;font-size:15px;cursor:pointer}
+.note{font-size:13px;color:var(--muted);margin:-14px 0 28px}
+.result{background:var(--tint);border-radius:28px;padding:28px 24px;margin:8px 0 22px}
+.result .label{font-size:16px;color:var(--body);margin:0 0 6px}
+.result .big{font-size:clamp(44px,12vw,64px);font-weight:800;letter-spacing:-2px;color:var(--blue-ink);line-height:1}
+.result .row{display:flex;gap:12px;margin-top:22px;flex-wrap:wrap}
+.stat{flex:1 1 130px;min-width:0;background:var(--surface);border-radius:16px;padding:14px 16px}
+.stat b{display:block;font-size:24px;font-weight:700}
+.stat span{font-size:14px;color:var(--muted)}
+.message{font-size:17px;line-height:1.45;color:var(--body);margin:20px 0 0}
+.otto{background:var(--surface);border:1px solid var(--line);border-radius:28px;padding:28px 24px;margin-bottom:22px}
+.otto h3{font-size:26px;line-height:1.15;letter-spacing:-.5px;margin:14px 0 10px;font-weight:800}
+.otto p{font-size:17px;line-height:1.5;color:var(--body);margin:0 0 20px}
+.cta{display:flex;align-items:center;justify-content:center;gap:10px;min-height:56px;border-radius:16px;background:var(--blue);color:var(--on-blue);font-weight:700;font-size:18px;text-decoration:none}
+.share{width:100%;min-height:52px;border-radius:16px;border:1.5px solid var(--line);background:transparent;color:var(--ink);font:inherit;font-size:16px;font-weight:600;cursor:pointer;margin-top:12px}
+.foot{font-size:13px;color:var(--muted);text-align:center;margin-top:28px}
+.dock{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));box-shadow:0 -8px 24px rgba(2,21,252,.08)}
+.dock-in{max-width:640px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;align-items:center;gap:12px}
+.dock-in>div{min-width:0}
+.dock small{display:block;font-size:13px;color:var(--muted)}
+.dock strong{display:block;font-size:clamp(18px,5.4vw,24px);font-weight:800;letter-spacing:-.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dock strong.yr{color:var(--blue-ink)}
+.dock a{min-height:48px;min-width:48px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 16px;border-radius:14px;background:var(--blue);color:var(--on-blue);font-weight:700;text-decoration:none;font-size:15px;white-space:nowrap}
+.dock a svg{display:none}
+@media (max-width:380px){.dock a{padding:0}.dock a span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}.dock a svg{display:block}}
+.toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:12px;font-size:15px;opacity:0;pointer-events:none;transition:opacity .2s}
+.toast.on{opacity:1}
+@media (prefers-reduced-motion: reduce){.toast{transition:none}}
+@media (max-width:380px){.wrap{padding-left:16px;padding-right:16px}.item{gap:10px;padding:12px}.item label{font-size:16px}.price{width:76px}.result{padding:24px 18px}.otto{padding:24px 18px}}
+</style>
+</head>
+<body>
+<div class="topbar"></div>
+<main class="wrap">
+  <div class="brand">
+    <div class="logo"><img src="/logo.png" alt="Dupply" width="214" height="82"></div>
+    <span>Ferramenta gratuita</span>
+  </div>
+
+  <span class="pill">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2.5"></rect><path d="M3 10h18"></path></svg>
+    SUAS FINANÇAS
+  </span>
+  <h1>Quanto você gasta com <em>assinaturas</em> sem perceber?</h1>
+  <div class="rule"></div>
+  <p class="lead">Marque o que você assina. Em 1 minuto você descobre quanto isso custa no ano.</p>
+  <p class="privacy">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>
+    Nada do que você marca sai do seu celular.
+  </p>
+
+  <div id="groups"></div>
+  <p class="note">Valores aproximados. Ajuste para o que você paga de verdade.</p>
+
+  <section class="result" aria-live="polite">
+    <p class="label">Suas assinaturas custam por ano</p>
+    <div class="big" id="yearBig">R$ 0,00</div>
+    <div class="row">
+      <div class="stat"><b id="monthStat">R$ 0,00</b><span>por mês</span></div>
+      <div class="stat"><b id="fiveStat">R$ 0,00</b><span>em 5 anos</span></div>
+      <div class="stat"><b id="countStat">0</b><span>assinaturas ativas</span></div>
+    </div>
+    <p class="message" id="message">Marque as assinaturas acima para ver o seu total.</p>
+  </section>
+
+  <section class="otto">
+    <span class="pill">PRÓXIMO PASSO</span>
+    <h3>Somar isso na mão todo mês cansa.</h3>
+    <p>O Otto conecta suas contas por open finance e mostra tudo num lugar só, inclusive as assinaturas que você esqueceu que existiam. E tem plano gratuito.</p>
+    <a class="cta" id="ottoLink" href="https://otto.dupply.com.br" target="_blank" rel="noopener">
+      Começar grátis no Otto
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="M13 6l6 6-6 6"></path></svg>
+    </a>
+    <button class="share" id="shareBtn" type="button">Compartilhar meu resultado</button>
+  </section>
+
+  <p class="foot">Feito pela Dupply · IA aplicada à realidade das empresas</p>
+</main>
+
+<div class="dock" aria-hidden="false">
+  <div class="dock-in">
+    <div><small>Por mês</small><strong id="dockMonth">R$ 0</strong></div>
+    <div><small>Por ano</small><strong class="yr" id="dockYear">R$ 0</strong></div>
+    <a href="#resultado" id="dockGo"><span>Ver resultado</span><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"></path><path d="M6 13l6 6 6-6"></path></svg></a>
+  </div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+const OTTO_URL = "https://otto.dupply.com.br";
+const DATA = [
+  {name:"Streaming de vídeo", items:[["Netflix",44.90],["Prime Video",19.90],["Disney+",43.90],["Max",34.90],["Globoplay",24.90],["YouTube Premium",26.90],["Apple TV+",21.90]]},
+  {name:"Música", items:[["Spotify",23.90],["Deezer",22.90],["Apple Music",21.90]]},
+  {name:"Armazenamento na nuvem", items:[["iCloud+",16.90],["Google One",9.99],["Dropbox",49.90]]},
+  {name:"Apps e ferramentas", items:[["ChatGPT Plus",110.00],["Canva Pro",34.90],["Microsoft 365",44.90],["App de idiomas",29.90]]},
+  {name:"Rotina e casa", items:[["Academia",99.90],["Clube de delivery",12.90],["Assinatura de marketplace",14.90],["Plano de jogos",39.90]]}
+];
+const custom = [];
+const fmt = v => v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+const fmt0 = v => v.toLocaleString("pt-BR",{style:"currency",currency:"BRL",maximumFractionDigits:0});
+const groupsEl = document.getElementById("groups");
+let uid = 0;
+
+function row(name, price, isCustom){
+  const id = "i" + (uid++);
+  const d = document.createElement("div");
+  d.className = "item off";
+  d.innerHTML = `<input type="checkbox" id="${id}"${isCustom ? " checked" : ""}>
+    <label for="${id}"></label>
+    <span class="pricewrap">R$ <input class="price" type="number" inputmode="decimal" min="0" step="0.01" aria-label=""></span>`;
+  d.querySelector("label").textContent = name;
+  const p = d.querySelector(".price");
+  p.value = price.toFixed(2);
+  p.setAttribute("aria-label", "Valor mensal de " + name);
+  if (isCustom) d.classList.remove("off");
+  d.querySelector("input[type=checkbox]").addEventListener("change", e => { d.classList.toggle("off", !e.target.checked); calc(); });
+  p.addEventListener("input", calc);
+  return d;
+}
+
+DATA.forEach((g, gi) => {
+  const sec = document.createElement("section");
+  sec.className = "group";
+  const h = document.createElement("h2"); h.textContent = g.name; sec.appendChild(h);
+  const list = document.createElement("div"); list.className = "list";
+  g.items.forEach(([n, v]) => list.appendChild(row(n, v, false)));
+  sec.appendChild(list);
+  groupsEl.appendChild(sec);
+});
+
+// custom
+const cs = document.createElement("section"); cs.className = "group";
+cs.innerHTML = `<h2>Outras assinaturas</h2><div class="list" id="customList">
+  <div class="custom">
+    <input type="text" id="cName" placeholder="Nome (ex.: jornal, curso)" aria-label="Nome da assinatura">
+    <input type="number" class="val" id="cVal" inputmode="decimal" min="0" step="0.01" placeholder="R$ / mês" aria-label="Valor mensal">
+    <button class="btn-add" id="cAdd" type="button">Adicionar</button>
+  </div></div>`;
+groupsEl.appendChild(cs);
+document.getElementById("cAdd").addEventListener("click", () => {
+  const n = document.getElementById("cName").value.trim();
+  const v = parseFloat(String(document.getElementById("cVal").value).replace(",", "."));
+  if (!n || !(v > 0)) { toast("Preencha o nome e o valor mensal."); return; }
+  const list = document.getElementById("customList");
+  list.insertBefore(row(n, v, true), list.lastElementChild);
+  document.getElementById("cName").value = ""; document.getElementById("cVal").value = "";
+  calc();
+});
+
+let last = {m:0, y:0, c:0};
+function calc(){
+  let m = 0, c = 0;
+  document.querySelectorAll(".item").forEach(it => {
+    const on = it.querySelector("input[type=checkbox]").checked;
+    const v = parseFloat(it.querySelector(".price").value) || 0;
+    if (on && v > 0) { m += v; c++; }
+  });
+  const y = m * 12;
+  last = {m, y, c};
+  document.getElementById("yearBig").textContent = fmt(y);
+  document.getElementById("monthStat").textContent = fmt(m);
+  document.getElementById("fiveStat").textContent = fmt0(y * 5);
+  document.getElementById("countStat").textContent = c;
+  document.getElementById("dockMonth").textContent = fmt0(m);
+  document.getElementById("dockYear").textContent = fmt0(y);
+  let msg = "Marque as assinaturas acima para ver o seu total.";
+  if (c > 0 && y < 600) msg = "Você está no controle. Mesmo assim, vale conferir se usa todas de verdade.";
+  else if (c > 0 && y < 2000) msg = "Parece pouco no mês, mas no ano já é uma viagem de fim de semana. Tem alguma que você nem lembra a última vez que usou?";
+  else if (c > 0) msg = "Esse é o valor de um celular novo, todo ano. Vale revisar quais você realmente usa.";
+  document.getElementById("message").textContent = msg;
+}
+calc();
+
+document.querySelector(".result").id = "resultado";
+document.getElementById("dockGo").addEventListener("click", e => {
+  e.preventDefault();
+  document.getElementById("resultado").scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block:"start"});
+});
+
+function toast(t){
+  const el = document.getElementById("toast");
+  el.textContent = t; el.classList.add("on");
+  clearTimeout(toast._t); toast._t = setTimeout(() => el.classList.remove("on"), 2400);
+}
+
+document.getElementById("shareBtn").addEventListener("click", async () => {
+  const text = last.c > 0
+    ? `Descobri que gasto ${fmt(last.y)} por ano com ${last.c} assinaturas. Faz a conta aí também:`
+    : "Descubra quanto você gasta por ano com assinaturas:";
+  const url = location.href;
+  try {
+    if (navigator.share) { await navigator.share({text, url}); return; }
+  } catch (e) { if (e && e.name === "AbortError") return; }
+  try { await navigator.clipboard.writeText(text + " " + url); toast("Texto copiado. É só colar onde quiser."); }
+  catch (e) { toast("Não deu para copiar automaticamente."); }
+});
+</script>
+</body>
+</html>
