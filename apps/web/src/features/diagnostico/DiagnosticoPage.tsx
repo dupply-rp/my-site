@@ -1,6 +1,6 @@
 import { PageMeta } from '../../components/seo/PageMeta'
 import { DIAGNOSTICO_PATH } from '../../constants/links'
-import { DIAGNOSTICO_DESCRIPTION, DIAGNOSTICO_TITLE } from '../../constants/site'
+import { routeSeo } from '../../constants/seo'
 import { DiagnosticoTopbar } from './components/DiagnosticoTopbar'
 import { IntroScreen } from './components/IntroScreen'
 import { LoadingScreen } from './components/LoadingScreen'
@@ -36,11 +36,7 @@ export function DiagnosticoPage() {
 
   return (
     <div className="diag-app">
-      <PageMeta
-        title={DIAGNOSTICO_TITLE}
-        description={DIAGNOSTICO_DESCRIPTION}
-        path={DIAGNOSTICO_PATH}
-      />
+      <PageMeta route={routeSeo(DIAGNOSTICO_PATH)} />
       <DiagnosticoTopbar showBack={screen !== 'quiz'} />
 
       {screen === 'intro' && (

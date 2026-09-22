@@ -11,7 +11,7 @@ import {
   PRIVACY_EMAIL,
   WHATSAPP_URL,
 } from '../constants/links'
-import { SITE_NAME } from '../constants/site'
+import { routeSeo } from '../constants/seo'
 import { openCookieConsentPreferences } from '../lib/cookieConsent'
 import '../styles/landing.css'
 import '../styles/home.css'
@@ -21,11 +21,7 @@ const UPDATED_AT = '27 de agosto de 2026'
 export function PrivacyPage() {
   return (
     <>
-      <PageMeta
-        title={`Privacidade | ${SITE_NAME}`}
-        description="Como a Dupply coleta, usa e protege dados no site, no diagnóstico gratuito e na plataforma Dupply Atende (WhatsApp e Instagram). Em linguagem clara, alinhada à LGPD."
-        path={PRIVACIDADE_PATH}
-      />
+      <PageMeta route={routeSeo(PRIVACIDADE_PATH)} />
       <SkipLink />
       <Header />
       <main id="conteudo-principal" className="legal-page">

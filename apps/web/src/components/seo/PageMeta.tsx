@@ -1,10 +1,9 @@
 import { useEffect } from 'react'
+import type { RouteSeo } from '../../constants/seo'
 import { SITE_URL } from '../../constants/site'
 
 export interface PageMetaProps {
-  title: string
-  description: string
-  path?: string
+  route: RouteSeo
   ogImage?: string
 }
 
@@ -18,20 +17,35 @@ function setMeta(attr: 'name' | 'property', key: string, content: string) {
   el.setAttribute('content', content)
 }
 
-export function PageMeta({ title, description, path = '/', ogImage }: PageMetaProps) {
+/**
+ * Espelha em runtime as mesmas meta tags que o build grava no HTML estático da
+ * rota (vite.config.ts). Necessário porque a navegação client-side não recarrega
+ * o documento — sem isso, ir da home para /termos manteria o canonical da home.
+ */
+export function PageMeta({ route, ogImage }: PageMetaProps) {
+  const { path, title, description, ogDescription, indexable } = route
+
   useEffect(() => {
     const url = `${SITE_URL}${path === '/' ? '/' : path}`
     const image = ogImage ?? `${SITE_URL}/og-image.png`
+    const social = ogDescription ?? description
 
     document.title = title
 
     setMeta('name', 'description', description)
+    setMeta(
+      'name',
+      'robots',
+      indexable
+        ? 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'
+        : 'noindex, nofollow',
+    )
     setMeta('property', 'og:title', title)
-    setMeta('property', 'og:description', description)
+    setMeta('property', 'og:description', social)
     setMeta('property', 'og:url', url)
     setMeta('property', 'og:image', image)
     setMeta('name', 'twitter:title', title)
-    setMeta('name', 'twitter:description', description)
+    setMeta('name', 'twitter:description', social)
     setMeta('name', 'twitter:image', image)
 
     let canonical = document.head.querySelector('link[rel="canonical"]') as HTMLLinkElement | null
@@ -41,7 +55,7 @@ export function PageMeta({ title, description, path = '/', ogImage }: PageMetaPr
       document.head.appendChild(canonical)
     }
     canonical.href = url
-  }, [title, description, path, ogImage])
+  }, [title, description, ogDescription, path, indexable, ogImage])
 
   return null
 }

@@ -64,42 +64,22 @@ Alternativa do Mac: túnel SSH até o container do Postgres
 
 1. **Build Command:** trocar para `pnpm build:site`
    (builda `apps/web` **e** `apps/console` — o console é copiado para `apps/web/dist/console`).
-2. **Nginx (custom config):** usar `deploy/nginx-my-site.conf` — proxy com
+2. **Nginx (custom config):** colar `deploy/nginx-my-site.conf` inteiro — proxy com
    `resolver 127.0.0.11` + variável `$api_upstream` apontando para o alias
    `my-site-api:3000` (não o UUID do container). Hostname literal em `proxy_pass`
-   sem variável derruba o nginx no boot (crash loop).
-
-```nginx
-server {
-    listen 80;
-    server_name _;
-    root /usr/share/nginx/html;
-    index index.html;
-
-    resolver 127.0.0.11 valid=10s ipv6=off;
-
-    location /api/ {
-        set $api_upstream http://my-site-api:3000;
-        proxy_pass $api_upstream;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_read_timeout 90s;
-    }
-
-    location /console/ {
-        try_files $uri $uri/ /console/index.html;
-    }
-
-    location / {
-        try_files $uri $uri/ /index.html;
-    }
-}
-```
+   sem variável derruba o nginx no boot (crash loop). A config também depende dos
+   HTMLs por rota gerados no build (`/termos` → `termos.html`): ela tenta
+   `$uri.html` e devolve **404 de verdade** no que não existe, em vez de servir a
+   home em qualquer endereço. Editar o arquivo no repo **não** muda nada sozinho —
+   o Coolify guarda a cópia dele; sempre colar de novo na UI e redeployar.
 
 3. **Connect To Predefined Network:** ativado também no `my-site` (senão o nginx não resolve o
    alias `my-site-api` na rede `coolify`).
+
+4. **Domínios:** só `https://dupply.com.br` e `https://www.dupply.com.br`, com
+   **Redirect: non-www** — o www precisa continuar na lista (senão o Traefik não emite
+   certificado para ele), mas responde 301 para o apex. Domínio `*.sslip.io` fora da
+   lista: ele serve o site inteiro em 200 e vira conteúdo duplicado aos olhos do Google.
 
 Os redirects de host da Vercel (`projetos.`, `drive.`, `webmail.` → Zoho) saem do `vercel.json`
 e passam a ser regras de DNS/redirect no Cloudflare quando o DNS migrar.

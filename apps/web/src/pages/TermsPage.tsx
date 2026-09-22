@@ -10,7 +10,7 @@ import {
   TERMOS_PATH,
   WHATSAPP_URL,
 } from '../constants/links'
-import { SITE_NAME } from '../constants/site'
+import { routeSeo } from '../constants/seo'
 import '../styles/landing.css'
 import '../styles/home.css'
 
@@ -19,11 +19,7 @@ const UPDATED_AT = '27 de agosto de 2026'
 export function TermsPage() {
   return (
     <>
-      <PageMeta
-        title={`Termos de Serviço | ${SITE_NAME}`}
-        description="Condições de uso do site, do diagnóstico gratuito e da plataforma Dupply Atende — responsabilidades, canais de mensagem, uso de IA e limites do serviço."
-        path={TERMOS_PATH}
-      />
+      <PageMeta route={routeSeo(TERMOS_PATH)} />
       <SkipLink />
       <Header />
       <main id="conteudo-principal" className="legal-page">

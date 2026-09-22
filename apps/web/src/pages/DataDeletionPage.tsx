@@ -10,7 +10,7 @@ import {
   PRIVACY_EMAIL,
   WHATSAPP_URL,
 } from '../constants/links'
-import { SITE_NAME } from '../constants/site'
+import { routeSeo } from '../constants/seo'
 import '../styles/landing.css'
 import '../styles/home.css'
 
@@ -20,11 +20,7 @@ const DELETION_DEADLINE_DAYS = 30
 export function DataDeletionPage() {
   return (
     <>
-      <PageMeta
-        title={`Exclusão de dados | ${SITE_NAME}`}
-        description="Como solicitar a exclusão dos seus dados na Dupply, incluindo dados obtidos das plataformas Instagram e WhatsApp através do Dupply Atende."
-        path={EXCLUSAO_DADOS_PATH}
-      />
+      <PageMeta route={routeSeo(EXCLUSAO_DADOS_PATH)} />
       <SkipLink />
       <Header />
       <main id="conteudo-principal" className="legal-page">

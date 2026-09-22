@@ -13,14 +13,14 @@ import { FaqJsonLd } from '../components/seo/FaqJsonLd'
 import { JsonLd } from '../components/seo/JsonLd'
 import { PageMeta } from '../components/seo/PageMeta'
 import { SkipLink } from '../components/seo/SkipLink'
-import { SITE_DESCRIPTION, SITE_TITLE } from '../constants/site'
+import { routeSeo } from '../constants/seo'
 import '../styles/landing.css'
 import '../styles/home.css'
 
 export function HomePage() {
   return (
     <div className="dp-home">
-      <PageMeta title={SITE_TITLE} description={SITE_DESCRIPTION} path="/" />
+      <PageMeta route={routeSeo('/')} />
       <JsonLd />
       <FaqJsonLd />
       <SkipLink />
