@@ -77,9 +77,14 @@ Alternativa do Mac: túnel SSH até o container do Postgres
    alias `my-site-api` na rede `coolify`).
 
 4. **Domínios:** só `https://dupply.com.br` e `https://www.dupply.com.br`, com
-   **Redirect: non-www** — o www precisa continuar na lista (senão o Traefik não emite
-   certificado para ele), mas responde 301 para o apex. Domínio `*.sslip.io` fora da
-   lista: ele serve o site inteiro em 200 e vira conteúdo duplicado aos olhos do Google.
+   **Redirect: both**. O www precisa continuar na lista (senão o Traefik não emite
+   certificado para ele) e o 301 para o apex sai do nginx — o "Redirect: non-www" do
+   Coolify faria o Traefik responder **307**, e redirect temporário não consolida os
+   sinais das duas versões no Google. Domínio `*.sslip.io` fora da lista: ele serve o
+   site inteiro em 200 e vira conteúdo duplicado.
+
+5. **Watch Paths:** inclui `deploy/**`, para que mexer no nginx deste diretório dispare
+   um deploy — é no deploy que o Coolify escreve a config do container.
 
 Os redirects de host da Vercel (`projetos.`, `drive.`, `webmail.` → Zoho) saem do `vercel.json`
 e passam a ser regras de DNS/redirect no Cloudflare quando o DNS migrar.
