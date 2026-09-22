@@ -1,3 +1,6 @@
+import { PageMeta } from '../../components/seo/PageMeta'
+import { DIAGNOSTICO_TEST_PATH } from '../../constants/links'
+import { routeSeo } from '../../constants/seo'
 import { DiagnosticoTopbar } from './components/DiagnosticoTopbar'
 import '../../styles/landing.css'
 import { LoadingScreen } from './components/LoadingScreen'
@@ -23,6 +26,7 @@ export function DiagnosticoTestPage() {
 
   return (
     <div className="diag-app diag-test-app">
+      <PageMeta route={routeSeo(DIAGNOSTICO_TEST_PATH)} />
       <DiagnosticoTopbar backTo="/diagnostico" backLabel="← Diagnóstico real" />
 
       {screen === 'gate' ? (

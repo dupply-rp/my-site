@@ -5,6 +5,7 @@ import { DiagnosticoPage } from './features/diagnostico/DiagnosticoPage'
 import { DiagnosticoTestPage } from './features/diagnostico/DiagnosticoTestPage'
 import { DataDeletionPage } from './pages/DataDeletionPage'
 import { HomePage } from './pages/HomePage'
+import { NotFoundPage } from './pages/NotFoundPage'
 import { PrivacyPage } from './pages/PrivacyPage'
 import { TermsPage } from './pages/TermsPage'
 import './styles/landing.css'
@@ -21,6 +22,7 @@ function App() {
         <Route path="/termos" element={<TermsPage />} />
         <Route path="/exclusao-de-dados" element={<DataDeletionPage />} />
         <Route path="/TC_teste" element={<DiagnosticoTestPage />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>
   )

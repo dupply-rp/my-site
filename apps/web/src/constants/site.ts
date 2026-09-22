@@ -1,4 +1,8 @@
-export const SITE_URL = import.meta.env.VITE_SITE_URL ?? 'https://dupply.com.br'
+// `import.meta.env` não existe quando este módulo é lido pelo vite.config (Node),
+// que reaproveita as constantes para gerar o HTML estático de cada rota.
+const viteEnv = (import.meta as ImportMeta & { env?: Record<string, string | undefined> }).env
+
+export const SITE_URL = viteEnv?.VITE_SITE_URL ?? 'https://dupply.com.br'
 
 export const SITE_NAME = 'Dupply'
 
