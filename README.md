@@ -14,8 +14,14 @@ packages/
   ui/        Design system (scaffold)
   config/    ESLint + TSConfig compartilhados
 docs/
-  ROADMAP.md Roadmap das fases de evolução
+  ROADMAP.md      Roadmap das fases de evolução
+documentacao.md   Documentação completa — site, sistema, fases e identidade visual
 ```
+
+## Documentação
+
+- **[documentacao.md](./documentacao.md)** — o que existe hoje, como funciona, variáveis, deploy e plano da Fase 1 (landing)
+- **[docs/ROADMAP.md](./docs/ROADMAP.md)** — fases do produto (landing → SaaS → WhatsApp)
 
 ## Desenvolvimento
 
@@ -33,4 +39,11 @@ Variáveis de ambiente: copie `.env.example` para `.env.local` na raiz.
 
 ## Roadmap
 
-Ver [docs/ROADMAP.md](./docs/ROADMAP.md) para as fases de evolução (SaaS, multi-tenant, WhatsApp, etc.).
+| Fase | Foco | Status |
+|------|------|--------|
+| Infra + Diagnóstico (A, A.2, B) | Backend, console, relatório duplo, CTAs | ✅ Concluído |
+| **Fase 1** | Landing page — responsividade e identidade visual | 🔜 Próxima |
+| Fase 2 | Billing, Clerk, CRM | Pendente |
+| Fase 3 | WhatsApp | Pendente |
+
+Detalhes em [documentacao.md](./documentacao.md) e [docs/ROADMAP.md](./docs/ROADMAP.md).
