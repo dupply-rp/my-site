@@ -9,7 +9,7 @@ const structuredData = {
       '@id': `${SITE_URL}/#organization`,
       name: SITE_NAME,
       url: SITE_URL,
-      logo: `${SITE_URL}/og-image.png`,
+      logo: `${SITE_URL}/favicon.png`,
       description: SITE_DESCRIPTION,
       sameAs: [
         'https://www.instagram.com/dupplybr',

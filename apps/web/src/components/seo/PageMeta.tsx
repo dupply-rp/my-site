@@ -27,7 +27,7 @@ export function PageMeta({ route, ogImage }: PageMetaProps) {
 
   useEffect(() => {
     const url = `${SITE_URL}${path === '/' ? '/' : path}`
-    const image = ogImage ?? `${SITE_URL}/og-image.png`
+    const image = ogImage ?? `${SITE_URL}/og-image-2026-10.jpg`
     const social = ogDescription ?? description
 
     document.title = title
