@@ -6,13 +6,13 @@ export const SITE_URL = viteEnv?.VITE_SITE_URL ?? 'https://dupply.com.br'
 
 export const SITE_NAME = 'Dupply'
 
-export const SITE_TITLE = 'Dupply | IA aplicada à realidade da sua empresa'
+export const SITE_TITLE = 'Dupply | Método para a IA funcionar na sua operação'
 
 export const SITE_DESCRIPTION =
-  'A Dupply aplica inteligência artificial para eliminar desperdícios, organizar processos e devolver tempo ao que gera valor para empresas reais.'
+  '21 anos fazendo tecnologia funcionar em operação que não pode parar. A Dupply leva esse método para a sua empresa, e a IA vem junto. Diagnóstico gratuito.'
 
 export const SITE_OG_DESCRIPTION =
-  'Menos promessas. Mais resultados. IA aplicada a problemas reais de negócio.'
+  'O que falta na sua operação não é mais uma ferramenta de IA. É método por trás dela.'
 
 export const SITE_LOCALE = 'pt_BR'
 
