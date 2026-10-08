@@ -138,6 +138,7 @@ export const produtos = [
       'Junta num só painel as conversas de WhatsApp, Instagram e Telegram, com fila para a equipe, funil de vendas e IA que responde ou ajuda a responder.',
     piloto: false,
     nota: '',
+    site: 'https://atende.dupply.com.br',
   },
   {
     nome: 'Otto',
@@ -145,6 +146,7 @@ export const produtos = [
       'Assistente financeiro que organiza as contas de uma pessoa ou de um pequeno negócio, e responde pelo aplicativo e pelo WhatsApp.',
     piloto: false,
     nota: '',
+    site: '',
   },
   {
     nome: 'Congregar',
@@ -152,6 +154,7 @@ export const produtos = [
       'Sistema para a igreja organizar membros, ministérios, escalas de voluntários e tesouraria num lugar só, com aplicativo para os membros.',
     piloto: false,
     nota: '',
+    site: '',
   },
   {
     nome: 'Imob',
@@ -159,5 +162,6 @@ export const produtos = [
       'Site próprio de imóveis com a marca da imobiliária, mais um painel para cadastrar imóveis e receber interessados.',
     piloto: false,
     nota: '',
+    site: '',
   },
 ] as const

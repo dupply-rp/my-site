@@ -32,19 +32,20 @@ export function SolucoesSection() {
               </div>
               <p>{produto.descricao}</p>
               {produto.nota ? <p className="dp-nota">{produto.nota}</p> : null}
+              {/* Produto com site próprio leva para ele; os outros, para o WhatsApp. */}
               <a
                 className="dp-produto-link"
-                href={whatsappProduto(produto.nome)}
+                href={produto.site || whatsappProduto(produto.nome)}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() =>
-                  trackCtaClick('whatsapp', {
+                  trackCtaClick(produto.site ? 'site_produto' : 'whatsapp', {
                     location: 'produto_' + produto.nome.toLowerCase(),
-                    destination: 'whatsapp',
+                    destination: produto.site ? 'site_produto' : 'whatsapp',
                   })
                 }
               >
-                Falar sobre o {produto.nome}
+                {produto.site ? `Conhecer o ${produto.nome}` : `Falar sobre o ${produto.nome}`}
                 <IconeSeta />
               </a>
             </article>
